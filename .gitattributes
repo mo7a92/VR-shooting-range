@@ -1,0 +1,40 @@
+* text=auto eol=lf
+*.cs text diff=csharp
+*.shader text
+*.cginc text
+*.hlsl text
+*.asmdef text
+*.json text
+*.md text
+*.txt text
+*.inputactions text
+*.obj text
+# Unity YAML (text, keep LF)
+*.unity text
+*.prefab text
+*.mat text
+*.asset text
+*.meta text
+*.anim text
+*.controller text
+*.physicMaterial text
+*.preset text
+*.shadergraph text
+# Binary
+*.png binary
+*.jpg binary
+*.tif binary
+*.tga binary
+*.psd binary
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.fbx binary
+*.FBX binary
+*.ttf binary
+*.otf binary
+*.dll binary
+*.so binary
+*.aar binary
+*.jar binary
+*.apk binary

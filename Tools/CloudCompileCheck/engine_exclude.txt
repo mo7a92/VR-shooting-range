@@ -1,0 +1,8 @@
+# VectorGraphics depends on LibTessDotNet (third-party, not in UnityCsReference)
+Modules/VectorGraphics/Runtime/VectorClip.cs
+Modules/VectorGraphics/Runtime/VectorSceneTessellation.cs
+Modules/VectorGraphics/Runtime/VectorUtils.cs
+Modules/VectorGraphics/Runtime/VectorUtilsTessellation.cs
+# test bindings
+Modules/Marshalling/MarshallingTests.bindings.cs
+Modules/Marshalling/MarshallingTests2.bindings.cs

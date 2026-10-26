@@ -191,7 +191,9 @@ namespace VRRange.Editor
             var go = EditorRefs.Child(root, "TeleportArea", new Vector3(0f, 0.005f, (BackWallZ + 0.4f - 0.3f) * 0.5f));
             var bc = EditorRefs.Ensure<BoxCollider>(go); bc.size = new Vector3(RoomWidth - 0.6f, 0.01f, -BackWallZ - 0.8f); bc.center = Vector3.zero;
             var area = EditorRefs.Ensure<TeleportationArea>(go);
-            area.interactionLayers = InteractionLayerMask.GetMask(ProjectSettingsSetup.TeleportInteractionLayer);
+            int mask = InteractionLayerMask.GetMask(ProjectSettingsSetup.TeleportInteractionLayer);
+            if (mask == 0) mask = 1 << ProjectSettingsSetup.TeleportInteractionLayerIndex; // layer name not applied yet: use the Starter Assets' fixed bit
+            area.interactionLayers = mask;
             area.matchOrientation = MatchOrientation.WorldSpaceUp;
             go.layer = EditorRefs.Layer("Environment");
         }

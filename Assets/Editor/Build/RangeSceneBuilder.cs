@@ -195,7 +195,7 @@ namespace VRRange.Editor
                 RangePaths.EnsureFolder(RangePaths.Settings);
                 AssetDatabase.CreateAsset(ls, RangePaths.LightingSettings);
             }
-            ls.lightmapper = LightingSettings.Lightmapper.ProgressiveGPU;
+            ls.lightmapper = LightingSettings.Lightmapper.ProgressiveCPU; // works on every machine; switch to ProgressiveGPU locally for speed
             ls.realtimeGI = false; ls.bakedGI = true; ls.mixedBakeMode = MixedLightingMode.Subtractive;
             ls.lightmapResolution = 6f; ls.lightmapMaxSize = 1024; ls.lightmapPadding = 2; ls.lightmapCompression = LightmapCompression.NormalQuality;
             ls.directSampleCount = 16; ls.indirectSampleCount = 128; ls.environmentSampleCount = 64; ls.maxBounces = 2;

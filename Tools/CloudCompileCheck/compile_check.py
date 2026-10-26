@@ -180,30 +180,29 @@ unit("Unity.Mathematics", [os.path.join(MATH, "Unity.Mathematics")], asmdef=os.p
 unit("UnityEngine.UI", [os.path.join(UGUI, "Runtime")], asmdef=os.path.join(UGUI, "Runtime/UnityEngine.UI.asmdef"),
      exclude_patterns=[r"UIElements/PanelEventHandler\.cs$", r"UIElements/PanelRaycaster\.cs$"])  # 2021-era UI Toolkit bridge, not used by this project
 unit("UnityEditor.UI", [os.path.join(UGUI, "Editor")], refs=[O("UnityEngine.UI")], asmdef=os.path.join(UGUI, "Editor/UnityEditor.UI.asmdef"))
+unit("UnityEditor.UI", [os.path.join(UGUI, "Editor")], refs=[O("UnityEngine.UI")], asmdef=os.path.join(UGUI, "Editor/UnityEditor.UI.asmdef"))
 unit("Unity.TextMeshPro", [os.path.join(TMP, "Scripts/Runtime")], refs=[O("UnityEngine.UI")], asmdef=os.path.join(TMP, "Scripts/Runtime/Unity.TextMeshPro.asmdef"),
      stub=True)  # TMP 3.0.9 font-generation bodies target older FontEngine signatures; Unity 6 ships TMP inside ugui 2.0.0. API surface only.
-unit("Unity.InputSystem", [os.path.join(IS, "InputSystem")], refs=[O("UnityEngine.UI"), O("UnityEditor.UI")], exclude_dirs=[os.path.join(IS, "InputSystem/Plugins/InputForUI")], asmdef=os.path.join(IS, "InputSystem/Unity.InputSystem.asmdef"))
+unit("Unity.InputSystem", [os.path.join(IS, "InputSystem")], refs=[O("UnityEngine.UI"), O("UnityEditor.UI")], exclude_dirs=[os.path.join(IS, "InputSystem/Plugins/InputForUI")],
+     asmdef=os.path.join(IS, "InputSystem/Unity.InputSystem.asmdef"),
+     stub=True)  # editor tooling bodies use UnityEditor internals that the stub reference lacks; API surface only
 unit("Unity.XR.CoreUtils", [os.path.join(CU, "Runtime")], refs=[O("Unity.InputSystem"), O("UnityEngine.SpatialTracking"), O("UnityEngine.UI")], asmdef=os.path.join(CU, "Runtime/Unity.XR.CoreUtils.asmdef"))
 unit("Unity.XR.Management", [os.path.join(XRM, "Runtime")], refs=[O("UnityEngine.XR.LegacyInputHelpers"), O("Unity.XR.CoreUtils")], asmdef=os.path.join(XRM, "Runtime/Unity.XR.Management.asmdef"))
 unit("Unity.XR.OpenXR", [os.path.join(OXR, "Runtime")], refs=[O("Unity.XR.Management"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("UnityEngine.XR.LegacyInputHelpers"), O("UnityEngine.SpatialTracking")],
      exclude_dirs=[os.path.join(OXR, "Runtime", d) for d in ("RuntimeDebugger", "TestTooling", "MockRuntime", "MetaQuest", "OculusQuest", "ConformanceAutomation")],
      exclude_patterns=[r"AutomaticDynamicResolutionFeature\.cs$"],  # needs URP assembly, not part of this reference build
-     asmdef=os.path.join(OXR, "Runtime/Unity.XR.OpenXR.asmdef"))
-unit("Unity.XR.OpenXR.Features.MetaQuestSupport", [os.path.join(OXR, "Runtime/MetaQuest")], refs=[O("Unity.XR.OpenXR"), O("Unity.XR.Management")], asmdef=os.path.join(OXR, "Runtime/MetaQuest/Unity.XR.OpenXR.Features.MetaQuestSupport.asmdef"))
+     asmdef=os.path.join(OXR, "Runtime/Unity.XR.OpenXR.asmdef"), editor=False)  # player mode: editor-mode build needs URP + XR Management editor internals
+unit("Unity.XR.OpenXR.Features.MetaQuestSupport", [os.path.join(OXR, "Runtime/MetaQuest")], refs=[O("Unity.XR.OpenXR"), O("Unity.XR.Management")], asmdef=os.path.join(OXR, "Runtime/MetaQuest/Unity.XR.OpenXR.Features.MetaQuestSupport.asmdef"), editor=False)
 unit("Unity.XR.Interaction.Toolkit", [os.path.join(XRI, "Runtime")],
      refs=[O("UnityEngine.UI"), O("UnityEngine.SpatialTracking"), O("UnityEngine.XR.LegacyInputHelpers"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("Unity.XR.Management"), O("Unity.Mathematics"), O("Unity.XR.OpenXR"), O("Unity.TextMeshPro")],
-     asmdef=os.path.join(XRI, "Runtime/Unity.XR.Interaction.Toolkit.asmdef"))
+     asmdef=os.path.join(XRI, "Runtime/Unity.XR.Interaction.Toolkit.asmdef"), editor=False)  # player mode (see OpenXR)
 unit("Unity.XR.Interaction.Toolkit.Samples.StarterAssets", [os.path.join(ROOT, "Assets/Samples/XR Interaction Toolkit/3.3.2/Starter Assets")],
-     refs=[O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), O("Unity.XR.Management"), O("Unity.XR.OpenXR")],
+     refs=[O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), O("Unity.XR.Management"), O("Unity.XR.OpenXR"), O("Unity.Mathematics")],
      exclude_dirs=[os.path.join(ROOT, "Assets/Samples/XR Interaction Toolkit/3.3.2/Starter Assets/Editor")],
-     asmdef=os.path.join(ROOT, "Assets/Samples/XR Interaction Toolkit/3.3.2/Starter Assets/StarterAssets.asmdef"))
+     asmdef=os.path.join(ROOT, "Assets/Samples/XR Interaction Toolkit/3.3.2/Starter Assets/StarterAssets.asmdef"), editor=False)
 # --- editor assemblies of packages needed by VRRange.Editor ---
 unit("Unity.XR.CoreUtils.Editor", [os.path.join(CU, "Editor")], refs=[O("Unity.XR.CoreUtils"), O("Unity.InputSystem"), EDITOR_STUBS], asmdef=os.path.join(CU, "Editor/Unity.XR.CoreUtils.Editor.asmdef"), editor=True)
 unit("Unity.XR.Management.Editor", [os.path.join(XRM, "Editor")], refs=[O("Unity.XR.Management"), O("Unity.XR.CoreUtils"), O("Unity.XR.CoreUtils.Editor"), O("Unity.InputSystem"), EDITOR_STUBS], asmdef=os.path.join(XRM, "Editor/Unity.XR.Management.Editor.asmdef"), editor=True)
-unit("Unity.XR.OpenXR.Editor", [os.path.join(OXR, "Editor")], refs=[O("Unity.XR.OpenXR"), O("Unity.XR.Management"), O("Unity.XR.Management.Editor"), O("Unity.XR.CoreUtils"), O("Unity.XR.CoreUtils.Editor"), O("Unity.InputSystem"), EDITOR_STUBS],
-     exclude_dirs=[os.path.join(OXR, "Editor", d) for d in ("RuntimeDebugger", "MetaQuest", "OculusQuest")], asmdef=os.path.join(OXR, "Editor/Unity.XR.OpenXR.Editor.asmdef"), editor=True)
-unit("Unity.XR.OpenXR.Features.MetaQuestSupport.Editor", [os.path.join(OXR, "Editor/MetaQuest")], refs=[O("Unity.XR.OpenXR"), O("Unity.XR.OpenXR.Editor"), O("Unity.XR.OpenXR.Features.MetaQuestSupport"), O("Unity.XR.Management"), O("Unity.XR.Management.Editor"), O("Unity.XR.CoreUtils"), O("Unity.InputSystem"), EDITOR_STUBS],
-     asmdef=os.path.join(OXR, "Editor/MetaQuest/Unity.XR.OpenXR.Features.MetaQuestSupport.Editor.asmdef"), editor=True)
 # --- project assemblies ---
 unit("VRRange.Runtime", [os.path.join(ROOT, "Assets/Scripts")],
      refs=[O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), O("Unity.XR.Management"), O("Unity.XR.OpenXR"), O("Unity.Mathematics")],
@@ -212,8 +211,10 @@ unit("VRRange.Runtime.Player", [os.path.join(ROOT, "Assets/Scripts")],
      refs=[O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), O("Unity.XR.Management"), O("Unity.XR.OpenXR"), O("Unity.Mathematics")],
      asmdef=os.path.join(ROOT, "Assets/Scripts/VRRange.Runtime.asmdef"), editor=False)
 unit("VRRange.Editor", [os.path.join(ROOT, "Assets/Editor")],
-     refs=[O("VRRange.Runtime"), O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("Unity.XR.CoreUtils.Editor"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), O("Unity.XR.Management"), O("Unity.XR.Management.Editor"), O("Unity.XR.OpenXR"), O("Unity.XR.OpenXR.Editor"), O("Unity.XR.OpenXR.Features.MetaQuestSupport"), O("Unity.XR.OpenXR.Features.MetaQuestSupport.Editor"), O("Unity.Mathematics"), EDITOR_STUBS],
-     exclude_patterns=[r"UrpSettingsSetup\.cs$"],  # URP (com.unity.render-pipelines.universal) is not part of the cloud reference build; verified by source inspection only
+     refs=[O("VRRange.Runtime"), O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("Unity.XR.CoreUtils.Editor"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), O("Unity.XR.Management"), O("Unity.XR.Management.Editor"), O("Unity.XR.OpenXR"), O("Unity.XR.OpenXR.Features.MetaQuestSupport"), O("Unity.Mathematics"), EDITOR_STUBS],
+     # Not compile-checked in the cloud (verified against package source by inspection): URP asset setup and OpenXR
+     # feature setup use com.unity.render-pipelines.universal / Unity.XR.OpenXR.Editor which the reference build lacks.
+     exclude_patterns=[r"UrpSettingsSetup\.cs$", r"OpenXRSettingsSetup\.cs$"],
      asmdef=os.path.join(ROOT, "Assets/Editor/VRRange.Editor.asmdef"), editor=True)
 
 
@@ -251,6 +252,7 @@ def main():
         defines = list(EDITOR_DEFINES if u["editor"] else PLAYER_DEFINES)
         if u["asmdef"]: defines += version_defines_for(u["asmdef"])
         if u["name"] == "UnityEngine.UI": defines = [d for d in defines if d != "PACKAGE_UITOOLKIT"]  # ugui 1.0 bridge excluded
+        if u["name"].startswith("Unity.XR.Interaction.Toolkit"): defines = [d for d in defines if d != "UIELEMENTS_MODULE_PRESENT"]  # XRI UI Toolkit path needs the excluded ugui bridge
         if u["defines"]: defines += u["defines"]
         srcs = collect_sources(u["dirs"], u["exclude_dirs"], u["exclude_patterns"])
         refs = list(u["refs"])

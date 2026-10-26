@@ -89,7 +89,11 @@ static class Program
             var init = node.Initializer;
             if (init != null)
             {
-                var args = init.ArgumentList.Arguments.Select(a => SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.DefaultLiteralExpression)).WithRefKindKeyword(a.RefKindKeyword));
+                var paramNames = new HashSet<string>(node.ParameterList.Parameters.Select(p => p.Identifier.Text));
+                var args = init.ArgumentList.Arguments.Select(a =>
+                    (a.Expression is IdentifierNameSyntax id && paramNames.Contains(id.Identifier.Text)) || a.Expression is LiteralExpressionSyntax
+                        ? a.WithNameColon(null)
+                        : SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.DefaultLiteralExpression)).WithRefKindKeyword(a.RefKindKeyword));
                 init = init.WithArgumentList(SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(args)));
             }
             if (init != null && init.IsKind(SyntaxKind.ThisConstructorInitializer)) init = null; // chaining is irrelevant for stubs
@@ -124,7 +128,7 @@ static class Program
             node = (PropertyDeclarationSyntax)base.VisitPropertyDeclaration(node);
             if (node.ExpressionBody != null)
                 return node.WithExpressionBody(SyntaxFactory.ArrowExpressionClause(SyntaxFactory.ThrowExpression(SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression))));
-            if (node.Initializer != null) return node.WithInitializer(null);
+            if (node.Initializer != null) return node.WithInitializer(null).WithSemicolonToken(default);
             return node;
         }
         public override SyntaxNode VisitIndexerDeclaration(IndexerDeclarationSyntax node)

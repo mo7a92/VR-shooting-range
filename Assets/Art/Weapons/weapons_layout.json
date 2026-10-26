@@ -1,0 +1,220 @@
+{
+  "materials": {
+    "Gunmetal": "gunmetal",
+    "Polymer": "polymer_dark",
+    "Rubber": "backstop_rubber",
+    "Metal": "metal_brushed",
+    "Dark": "gunmetal"
+  },
+  "weapons": {
+    "pistol": {
+      "parts": [
+        {
+          "name": "body",
+          "file": "pistol_body.obj",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "role": "static"
+        },
+        {
+          "name": "slide",
+          "file": "pistol_slide.obj",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "role": "slide"
+        },
+        {
+          "name": "trigger",
+          "file": "pistol_trigger.obj",
+          "pivot": [
+            0,
+            -0.003,
+            0.04
+          ],
+          "role": "trigger"
+        },
+        {
+          "name": "magazine",
+          "file": "pistol_magazine.obj",
+          "pivot": [
+            0,
+            -0.012,
+            -0.012
+          ],
+          "role": "magazine"
+        }
+      ],
+      "muzzle": [
+        0,
+        0.04,
+        0.145
+      ],
+      "grip": [
+        0,
+        -0.045,
+        -0.02
+      ],
+      "gripPitchDegrees": 0,
+      "secondaryGrip": null,
+      "colliderCenter": [
+        0,
+        0.0,
+        0.03
+      ],
+      "colliderSize": [
+        0.035,
+        0.14,
+        0.2
+      ],
+      "mass": 0.9
+    },
+    "rifle": {
+      "parts": [
+        {
+          "name": "body",
+          "file": "rifle_body.obj",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "role": "static"
+        },
+        {
+          "name": "charging_handle",
+          "file": "rifle_charging_handle.obj",
+          "pivot": [
+            0,
+            0.055,
+            -0.14
+          ],
+          "role": "slide"
+        },
+        {
+          "name": "trigger",
+          "file": "rifle_trigger.obj",
+          "pivot": [
+            0,
+            -0.025,
+            0.02
+          ],
+          "role": "trigger"
+        },
+        {
+          "name": "magazine",
+          "file": "rifle_magazine.obj",
+          "pivot": [
+            0,
+            -0.035,
+            0.03
+          ],
+          "role": "magazine"
+        }
+      ],
+      "muzzle": [
+        0,
+        0.03,
+        0.735
+      ],
+      "grip": [
+        0,
+        -0.06,
+        -0.05
+      ],
+      "gripPitchDegrees": 0,
+      "secondaryGrip": [
+        0,
+        0.0,
+        0.3
+      ],
+      "colliderCenter": [
+        0,
+        0.0,
+        0.15
+      ],
+      "colliderSize": [
+        0.06,
+        0.2,
+        0.95
+      ],
+      "mass": 3.2
+    },
+    "smg": {
+      "parts": [
+        {
+          "name": "body",
+          "file": "smg_body.obj",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "role": "static"
+        },
+        {
+          "name": "charging_handle",
+          "file": "smg_charging_handle.obj",
+          "pivot": [
+            -0.03,
+            0.035,
+            0.1
+          ],
+          "role": "slide"
+        },
+        {
+          "name": "trigger",
+          "file": "smg_trigger.obj",
+          "pivot": [
+            0,
+            -0.03,
+            0.0
+          ],
+          "role": "trigger"
+        },
+        {
+          "name": "magazine",
+          "file": "smg_magazine.obj",
+          "pivot": [
+            0,
+            -0.045,
+            0.06
+          ],
+          "role": "magazine"
+        }
+      ],
+      "muzzle": [
+        0,
+        0.02,
+        0.42
+      ],
+      "grip": [
+        0,
+        -0.07,
+        -0.06
+      ],
+      "gripPitchDegrees": 0,
+      "secondaryGrip": [
+        0,
+        -0.05,
+        0.18
+      ],
+      "colliderCenter": [
+        0,
+        0.0,
+        0.05
+      ],
+      "colliderSize": [
+        0.06,
+        0.2,
+        0.75
+      ],
+      "mass": 2.4
+    }
+  }
+}

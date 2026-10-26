@@ -86,6 +86,8 @@ def version_defines_for(asmdef_path):
 def collect_sources(dirs, exclude_dirs=(), exclude_patterns=()):
     files = []
     for d in dirs:
+        if os.path.isfile(d):
+            files.append(d); continue
         for dp, dn, fn in os.walk(d):
             rel = os.path.relpath(dp, d)
             parts = [x for x in rel.split(os.sep) if x and x != "."]
@@ -118,7 +120,7 @@ def compile_asm(name, sources, refs, defines, out_dir=OUT, unsafe=True, langvers
         f.write(f"-langversion:{langversion}\n")
         if unsafe: f.write("-unsafe\n")
         f.write("-warn:0\n" if nowarn else "-warn:4\n")
-        f.write("-nowarn:1701,1702,CS0618\n")
+        f.write("-nowarn:1701,1702\n" if not nowarn else "-nowarn:1701,1702,CS0618\n")
         f.write("-deterministic\n-debug-\n-optimize-\n")
         f.write("-define:" + ";".join(defines) + "\n")
         for r in bcl_refs() + unity_refs() + list(refs):
@@ -131,6 +133,9 @@ def compile_asm(name, sources, refs, defines, out_dir=OUT, unsafe=True, langvers
     log = p.stdout + p.stderr
     with open(os.path.join(out_dir, name + ".log"), "w") as f: f.write(log)
     errors = [l for l in log.splitlines() if re.search(r"error CS\d+", l)]
+    if not nowarn:
+        for w in sorted(set(l for l in log.splitlines() if re.search(r"warning CS(0618|0619|0612|0108|0114)", l)))[:60]:
+            print("    WARN", w.replace(ROOT + "/", ""))
     uniq = sorted(set(errors))
     ok = p.returncode == 0 and os.path.exists(out)
     print(f"[{name}] {'OK' if ok else 'FAILED'} files={len(sources)} errors={len(uniq)} ({time.time()-t0:.1f}s)")
@@ -210,7 +215,7 @@ unit("VRRange.Runtime", [os.path.join(ROOT, "Assets/Scripts")],
 unit("VRRange.Runtime.Player", [os.path.join(ROOT, "Assets/Scripts")],
      refs=[O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), O("Unity.XR.Management"), O("Unity.XR.OpenXR"), O("Unity.Mathematics")],
      asmdef=os.path.join(ROOT, "Assets/Scripts/VRRange.Runtime.asmdef"), editor=False)
-unit("VRRange.Editor", [os.path.join(ROOT, "Assets/Editor")],
+unit("VRRange.Editor", [os.path.join(ROOT, "Assets/Editor"), os.path.join(ROOT, "Tools/CloudCompileCheck/shims/ProjectEditorShims.cs")],
      refs=[O("VRRange.Runtime"), O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("Unity.XR.CoreUtils.Editor"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), O("Unity.XR.Management"), O("Unity.XR.Management.Editor"), O("Unity.XR.OpenXR"), O("Unity.XR.OpenXR.Features.MetaQuestSupport"), O("Unity.Mathematics"), EDITOR_STUBS],
      # Not compile-checked in the cloud (verified against package source by inspection): URP asset setup and OpenXR
      # feature setup use com.unity.render-pipelines.universal / Unity.XR.OpenXR.Editor which the reference build lacks.
@@ -236,10 +241,15 @@ def apply_reference_patches():
             src = re.sub(r"(class PointerEvent : IPointerEvent\s*\{)", r"\1\n            public UnityEngine.PenStatus penStatus => default; public Vector2 tilt => default;", src, count=1)
             open(f, "w").write(src); print("[patch] added Unity 6 IPointerEvent members to reference copy")
 
+NUNIT = os.path.join(S, "unityrefs/nunit/lib/netstandard2.0/nunit.framework.dll")
+unit("VRRange.Tests.EditMode", [os.path.join(ROOT, "Assets/Tests/EditMode")],
+     refs=[O("VRRange.Runtime"), O("Unity.XR.Interaction.Toolkit"), O("Unity.InputSystem"), O("Unity.XR.CoreUtils"), O("UnityEngine.UI"), O("Unity.TextMeshPro"), NUNIT],
+     asmdef=os.path.join(ROOT, "Assets/Tests/EditMode/VRRange.Tests.EditMode.asmdef"), editor=True, defines=["UNITY_INCLUDE_TESTS"])
+
 def main():
     args = sys.argv[1:]
     apply_reference_patches()
-    if "--no-clean" not in args:
+    if "--no-clean" not in args and "--project-only" not in args and "--only" not in args:
         for f in glob.glob(os.path.join(OUT, '*.dll')): os.remove(f)
     only = None; verbose = "--verbose" in args; project_only = "--project-only" in args
     if "--only" in args: only = args[args.index("--only") + 1]

@@ -191,17 +191,20 @@ namespace VRRange.Tests
                 Assert.IsTrue(h.IsCalibrated, "hand rig joints not found");
                 var smr = h.HandRoot.GetComponentInChildren<SkinnedMeshRenderer>();
                 Assert.IsNotNull(smr, "hand has no skinned mesh"); Assert.IsTrue(smr.enabled);
-                // curl calibration: closing the fist must move the index tip toward the palm side
+                // curl calibration: from a fully open hand, a half curl (~95 deg over three joints) must move the index tip
+                // toward the palm side. (A full fist would bring the tip back near the palm plane, so we compare open vs half.)
+                h.OverridePose(HandPose.Create("TestOpen", 0f, 0f, 0f, 0f, 0f, 0.5f, false), 3f);
+                yield return new WaitForSeconds(0.6f);
                 Assert.IsTrue(h.TryGetTip(HandPresence.Finger.Index, out var tipOpen));
                 var palm = h.PalmWorldPosition; var inward = h.PalmInwardWorld;
-                yield return null;
+                float handLen = Vector3.Distance(palm, tipOpen);
+                Assert.That(handLen, Is.InRange(0.05f, 0.25f), $"hand model scale looks wrong (palm to index tip {handLen:0.000} m)");
                 float openDot = Vector3.Dot(tipOpen - palm, inward);
-                // force a fist by simulating a pose override
-                h.OverridePose(HandPose.Create("TestFist", 1f, 1f, 1f, 1f, 1f, 0.1f, false), 2f);
+                h.OverridePose(HandPose.Create("TestHalf", 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.3f, false), 3f);
                 yield return new WaitForSeconds(0.6f);
                 Assert.IsTrue(h.TryGetTip(HandPresence.Finger.Index, out var tipClosed));
                 float closedDot = Vector3.Dot(tipClosed - h.PalmWorldPosition, h.PalmInwardWorld);
-                Assert.Greater(closedDot, openDot + 0.02f, $"{(h.IsLeft ? "left" : "right")} index tip should move toward the palm when curling (open {openDot:0.000}, closed {closedDot:0.000})");
+                Assert.Greater(closedDot, openDot + 0.02f, $"{(h.IsLeft ? "left" : "right")} index tip should move toward the palm when curling (open {openDot:0.000}, half {closedDot:0.000})");
                 h.OverridePose(null, 0f);
             }
             // weapon grip anchors are valid for both hands

@@ -18,7 +18,7 @@ namespace VRRange.Editor
         public const string ProductName = "VR Shooting Range";
         public const string CompanyName = "UniversityProject";
         public const string PackageId = "com.universityproject.vrshootingrange";
-        public const string Version = "0.1.0";
+        public const string Version = "0.2.0";
         public const string OpenXRLoaderTypeName = "UnityEngine.XR.OpenXR.OpenXRLoader";
 
         public static readonly string[] RequiredLayers = { "Weapon", "Projectile", "Target", "Environment" };
@@ -53,7 +53,7 @@ namespace VRRange.Editor
             PlayerSettings.Android.forceSDCardPermission = false;
             PlayerSettings.Android.androidTVCompatibility = false;
             PlayerSettings.Android.optimizedFramePacing = false; // XR runtime paces frames
-            PlayerSettings.Android.bundleVersionCode = Mathf.Max(1, PlayerSettings.Android.bundleVersionCode);
+            PlayerSettings.Android.bundleVersionCode = Mathf.Max(2, PlayerSettings.Android.bundleVersionCode);
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
             PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { GraphicsDeviceType.Vulkan });
             PlayerSettings.MTRendering = true;

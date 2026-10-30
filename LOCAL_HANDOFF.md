@@ -51,8 +51,8 @@ git checkout claude/determined-feynman-nc2t0l
 Without a bake the scene uses a handful of mixed/realtime lights and still runs.
 
 ## 5. Build the APK
-A cloud-built APK already exists (46 MB, see `TEST_RESULTS.md`); it was handed over as a file in the session and
-is not stored in git. To rebuild locally:
+A cloud-built APK already exists (V2, 0.2.0, 57 MB, see `TEST_RESULTS.md`); it was handed over as a file in the
+session and is not stored in git. To rebuild locally:
 - Menu **VR Range → Build → Build Quest 2 APK** → `Builds/VRShootingRange.apk`, or
 - `powershell -ExecutionPolicy Bypass -File Tools\Windows\build_apk.ps1` (add `-BakeLighting` to bake first,
   `-Development` for a debug build). The first IL2CPP build takes 10–25 minutes.
@@ -80,14 +80,21 @@ is not stored in git. To rebuild locally:
 - [ ] Target controls: distance 5/10/15/25 m moves the target; horizontal / near-far / random / pop-up motion.
 - [ ] Accuracy Challenge: 3-s countdown, 20 shots, results panel with grade; Restart works.
 - [ ] Moving Target Challenge: 60-s timer, moving targets by difficulty, results.
+- [ ] **Hands**: both hands visible at all times, fingers close with grip, index follows trigger; no controller model shown.
+- [ ] **Weight**: rifle one-handed sags and lags visibly; adding the second hand on the handguard steadies it and reduces recoil;
+      pistol stays snappy; SMG in between. If a weapon sits wrongly in the hand, see section 8.
+- [ ] Shell casings eject and tinkle; lane scoreboard above the booth updates; combo text appears after 3 hits in a row.
 - [ ] Performance: enable the OVR Metrics Tool (Meta Quest Developer Hub) or read `adb logcat -s VrApi`
       for FPS. Target 72 FPS. If low: bake lighting, reduce `renderScale` in `URP-Quest2.asset`, or lower MSAA to 2x.
 - [ ] Comfort: no camera shake; snap turn 45°; vignette during smooth movement if enabled.
 
-## 8. If the weapon points the wrong way in your hand
-Edit `Assets/Art/Weapons/weapons_layout.json` → `gripPitchDegrees` per weapon (e.g. `-30`), then
-**VR Range → Setup → Rebuild Everything**. Or rotate the `Attach` child of the weapon prefab in
-`Assets/Generated/Prefabs` directly.
+## 8. If the weapon or the hand sits wrongly
+- Weapon angle in the hand: edit `gripPitchDegrees` in `Assets/Art/Weapons/weapons_layout.json` (e.g. `-30`), then
+  **VR Range → Setup → Rebuild Everything**; or rotate the `Attach` child of the weapon prefab in `Assets/Generated/Prefabs`.
+- Hand placement on the grip: the `primaryPalm` / `supportPalm` entries in the same JSON (palm position, finger
+  direction, back-of-hand direction in weapon space) drive the `PrimaryGrip` / `SupportGrip` anchors; the free-hand pose
+  relative to the controller is on the `Hand Visual` object's `HandPresence` component (*Free Palm Offset / Euler*).
+- Weight feel too strong or weak: tune the *Weight & handling* block of `Assets/Settings/Weapon_*.asset` in Play mode.
 
 ## 9. Handing problems back to a Claude Code *local* session
 Open Claude Code in the project folder on your PC and paste:

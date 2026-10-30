@@ -6,9 +6,13 @@ distinct handling, pooled projectiles with drop and time of flight, bullseye and
 three play modes with world-space VR menus, teleport + snap-turn comfort locomotion.
 
 The project was written in a cloud session and then verified with the real Unity 6000.3.27f1 editor in a
-container: it imports and compiles, the generated scene/prefabs/settings are committed, EditMode (16) and
-PlayMode (4) tests pass, and a Quest 2 APK builds (`TEST_RESULTS.md`). Headset testing is still pending.
-Art and audio are procedurally generated and fully redistributable (`ASSET_CREDITS.md`).
+container: it imports and compiles, the generated scene/prefabs/settings are committed, EditMode (21) and
+PlayMode (10) tests pass, and a Quest 2 APK builds (`TEST_RESULTS.md`). Headset testing is still pending.
+
+**V2 premium upgrade:** weapons have simulated weight and balance (inertia lag, sag, sway, two-point aiming with a
+support hand, grip-dependent recoil and haptics), visible animated hands follow the controllers and snap to per-weapon
+grip anchors, shell casings eject, and the range was rebuilt with CC0 PBR materials, booths, baffles and reverb.
+Art and audio are procedurally generated or CC0 and fully redistributable (`ASSET_CREDITS.md`).
 
 ## Quick start (Windows)
 1. Install Unity Hub + Unity 6.3 LTS with *Android Build Support, OpenJDK, Android SDK & NDK Tools*.

@@ -26,6 +26,16 @@ behaviour is only confirmed once tested on a Quest 2 (see `TEST_RESULTS.md`).
 - Distinct audio, muzzle flash, visual recoil (weapon model kick + spring recovery) and haptics per weapon.
   The camera is never moved or shaken.
 
+## 3b. Weight, handling and hands (V2)
+- Per-weapon handling profile (`WeaponDefinition`): virtual mass, balance, one/two-hand response, sag, sway, lag clamps,
+  support-hand influence, grip transition time, recoil multipliers and recovery per grip, instability.
+- One-handed: lag behind the hand (clamped), muzzle sag, sway, slower recoil recovery; rifle clearly harder to hold one-handed.
+- Two-handed: two-point aim through both hands (primary authority, configurable support influence), reduced sway/sag,
+  faster recovery, smooth blend in/out; no snapping.
+- Visible rigged hands on both controllers with pose presets (open, idle, fist, pinch, pistol/rifle/SMG grips, support
+  grip), trigger finger following the trigger, reload pinch on the free hand, hands snapped to weapon grip anchors.
+- Ejected shell casings (pooled), lane scoreboards, combo counter, personal bests, countdown and round audio.
+
 ## 4. Projectiles
 - Pooled, non-rigidbody projectiles with swept raycasts, gravity-scaled drop, time of flight, tracer trail,
   surface-dependent decals, particles and audio. One hit per projectile (no double scoring).

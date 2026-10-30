@@ -27,6 +27,10 @@ Meta Quest 2 standalone VR shooting range (university project). C#, Android ARM6
 PlayMode 4/4, Quest 2 APK builds. Generated scene/prefabs/settings and all `.meta` files are committed; keep GUIDs
 stable (do not delete/recreate `.meta` files). Headset testing pending.
 
+**V2 (premium upgrade):** `WeaponHandlingTransformer` (weight/lag/sag/sway/two-point aim/recoil) replaces XRI's default grab
+transformer on weapons; `Assets/Scripts/Hands` drives the XR Hands sample rig from controller input and weapon grip anchors
+(`PrimaryGrip`/`SupportGrip`, authored in `weapons_layout.json`). CC0 PBR sets live in `Assets/Art/Textures/PBR` (ambientCG).
+
 **Commands**
 - Cloud compile check: `python3 Tools/CloudCompileCheck/compile_check.py` (needs toolchain, see script header).
 - Local (Windows): open in Unity Hub → **VR Range > Setup > Run Full Setup**; build via

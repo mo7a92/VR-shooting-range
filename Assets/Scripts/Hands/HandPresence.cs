@@ -78,10 +78,10 @@ namespace VRRange.Hands
         void OnEnable()
         {
             // find the controller's interactors (siblings / parent) to learn what this hand is holding
-            var root = m_ControllerAttach != null ? m_ControllerAttach : transform;
-            var parent = root.parent != null ? root.parent : root;
+            // scope: the controller object this hand belongs to (its interactors and its controller model)
+            var scope = m_ControllerAttach != null ? m_ControllerAttach : (transform.parent != null ? transform.parent : transform);
             m_Interactors.Clear();
-            parent.GetComponentsInChildren(true, m_Interactors);
+            scope.GetComponentsInChildren(true, m_Interactors);
             foreach (var i in m_Interactors) { i.selectEntered.AddListener(OnSelectEntered); i.selectExited.AddListener(OnSelectExited); }
             if (m_HideControllerModel) SetControllerModelVisible(false);
         }
@@ -97,9 +97,9 @@ namespace VRRange.Hands
             if (m_ControllerRenderers == null)
             {
                 var list = new List<Renderer>();
-                var parent = m_ControllerAttach != null && m_ControllerAttach.parent != null ? m_ControllerAttach.parent : transform.parent;
-                if (parent != null)
-                    foreach (var r in parent.GetComponentsInChildren<Renderer>(true))
+                var scope = m_ControllerAttach != null ? m_ControllerAttach : transform.parent;
+                if (scope != null)
+                    foreach (var r in scope.GetComponentsInChildren<Renderer>(true))
                         if (!r.transform.IsChildOf(transform) && !(r is LineRenderer) && !(r is TrailRenderer) && !(r is ParticleSystemRenderer)) list.Add(r);
                 m_ControllerRenderers = list.ToArray();
             }
@@ -120,9 +120,15 @@ namespace VRRange.Hands
             string[] names = { "Thumb", "Index", "Middle", "Ring", "Little" };
             var indexProx = Find("IndexProximal"); var littleProx = Find("LittleProximal"); var middleProx = Find("MiddleProximal");
             if (indexProx == null || littleProx == null || middleProx == null) { Debug.LogWarning("[VRRange] HandPresence: finger joints not found", this); return; }
-            // Palm inward normal from the wrist / index / little triangle (sign depends on handedness, not on rig axes).
+            // Palm inward normal: the finger-plane normal, oriented toward the side the (opposed) thumb tip sits on in the
+            // rest pose. Falls back to the handedness rule (palm-down bind pose) if the thumb lies in the plane.
             var cross = Vector3.Cross(indexProx.position - m_Wrist.position, littleProx.position - m_Wrist.position).normalized;
-            var palmInward = m_IsLeft ? cross : -cross;
+            var thumbTip = Find("ThumbTip"); var thumbMeta = Find("ThumbMetacarpal");
+            float thumbSide = thumbTip != null ? Vector3.Dot(cross, thumbTip.position - (thumbMeta != null ? thumbMeta.position : m_Wrist.position)) : 0f;
+            float handSize = Vector3.Distance(m_Wrist.position, middleProx.position);
+            Vector3 palmInward;
+            if (Mathf.Abs(thumbSide) > handSize * 0.08f) palmInward = thumbSide > 0f ? cross : -cross;
+            else palmInward = m_IsLeft ? cross : -cross;
             var fingerDir = (middleProx.position - m_Wrist.position).normalized;
             // Palm pose in hand-root space: centre between wrist and knuckles, forward along fingers, up = back of hand.
             var palmCentre = Vector3.Lerp(m_Wrist.position, (indexProx.position + littleProx.position) * 0.5f, 0.6f);
@@ -154,6 +160,22 @@ namespace VRRange.Hands
                 m_Fingers[f] = c;
             }
             m_Calibrated = true;
+            // Empirical sign check (rotation handedness differs between conventions): bend the index proximal by +10 deg
+            // and verify the tip moved toward the palm; if not, flip every curl axis. Rest pose is restored afterwards.
+            var idx = m_Fingers[1];
+            if (idx != null && idx.proximal != null && idx.tip != null)
+            {
+                float before = Vector3.Dot(idx.tip.position - palmCentre, palmInward);
+                var saved = idx.proximal.localRotation;
+                idx.proximal.localRotation = idx.rest[1] * Quaternion.AngleAxis(10f, idx.curlAxisLocal[1]);
+                float after = Vector3.Dot(idx.tip.position - palmCentre, palmInward);
+                idx.proximal.localRotation = saved;
+                if (after < before)
+                {
+                    foreach (var c in m_Fingers) { if (c == null) continue; for (int j = 0; j < 4; j++) c.curlAxisLocal[j] = -c.curlAxisLocal[j]; c.spreadAxisLocal = -c.spreadAxisLocal; }
+                }
+                Debug.Log($"[VRRange] Hand {(m_IsLeft ? "L" : "R")} calibrated: size {handSize:0.000} m, thumbSide {thumbSide:0.0000}, curl sign {(after < before ? "flipped" : "kept")}");
+            }
         }
 
         // ---------- interaction events ----------

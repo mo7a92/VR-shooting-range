@@ -84,14 +84,22 @@ namespace VRRange.Editor
         {
             bool changed = false;
             string path = mi.assetPath;
+            bool handModel = path.StartsWith(RangePaths.ArtHands);
             if (mi.globalScale != 1f) { mi.globalScale = 1f; changed = true; }
-            if (mi.useFileScale != false) { mi.useFileScale = false; changed = true; }
+            // Our OBJ weapons are authored in metres (ignore file scale); the XR Hands FBX files carry a cm file scale that must be kept.
+            if (mi.useFileScale != handModel) { mi.useFileScale = handModel; changed = true; }
             if (mi.importNormals != ModelImporterNormals.Import) { mi.importNormals = ModelImporterNormals.Import; changed = true; }
             if (mi.importTangents != ModelImporterTangents.CalculateMikk) { mi.importTangents = ModelImporterTangents.CalculateMikk; changed = true; }
             if (mi.materialImportMode != ModelImporterMaterialImportMode.None) { mi.materialImportMode = ModelImporterMaterialImportMode.None; changed = true; }
             bool isHand = path.StartsWith(RangePaths.ArtHands);
             if (mi.importAnimation != false) { mi.importAnimation = false; changed = true; }
-            if (isHand && mi.animationType != ModelImporterAnimationType.None) { mi.animationType = ModelImporterAnimationType.None; changed = true; } // plain transform rig driven by HandPresence
+            if (isHand)
+            {
+                // keep the skinned rig (joints + SkinnedMeshRenderer); HandPresence rotates the joints directly, no clips needed
+                if (mi.animationType != ModelImporterAnimationType.Generic) { mi.animationType = ModelImporterAnimationType.Generic; changed = true; }
+                if (mi.optimizeGameObjects) { mi.optimizeGameObjects = false; changed = true; }
+                if (mi.importBlendShapes) { mi.importBlendShapes = false; changed = true; }
+            }
             if (mi.meshCompression != ModelImporterMeshCompression.Low) { mi.meshCompression = ModelImporterMeshCompression.Low; changed = true; }
             if (!mi.isReadable) { mi.isReadable = true; changed = true; } // builder reads submesh material names
             return changed;

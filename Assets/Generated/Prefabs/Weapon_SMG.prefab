@@ -155,6 +155,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6953348429492594438}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1319318036589834839
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6376965911863403438}
+  - component: {fileID: 4181170529045904428}
+  m_Layer: 0
+  m_Name: PrimaryGrip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6376965911863403438
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319318036589834839}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.33852842, y: -0.076756485, z: -0.66028357, w: 0.6659824}
+  m_LocalPosition: {x: 0.022, y: -0.075, z: -0.062}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6953348429492594438}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4181170529045904428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319318036589834839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91633b9d6f2398c0eb58cc92798009d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VRRange.Runtime::VRRange.Hands.WeaponGripAnchor
+  role: 0
+  pose: {fileID: 11400000, guid: 903f76688a9287548a774f3c021d1b83, type: 2}
+  authoredForRightHand: 1
 --- !u!1 &2237652637391290004
 GameObject:
   m_ObjectHideFlags: 0
@@ -222,6 +269,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 3b4a1f1766267cd478458f98f3a75a33, type: 2}
+  - {fileID: 2100000, guid: 450a930d21bf33ccaa26e24476adb922, type: 2}
   - {fileID: 2100000, guid: 8f4db32338e4ecc4e84dc8e5b991b109, type: 2}
   - {fileID: 2100000, guid: 73f19e3b1fe1fef67be1370d3052e5be, type: 2}
   - {fileID: 2100000, guid: b75ff4fdfd551584eb19935fe52275d7, type: 2}
@@ -249,6 +297,53 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &2666965072010496071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6846684262467319135}
+  - component: {fileID: 836458762775367316}
+  m_Layer: 0
+  m_Name: SupportGrip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6846684262467319135
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2666965072010496071}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.34696364, y: -0.09576784, z: -0.693386, w: 0.62422806}
+  m_LocalPosition: {x: 0.02, y: -0.055, z: 0.18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6953348429492594438}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &836458762775367316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2666965072010496071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91633b9d6f2398c0eb58cc92798009d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VRRange.Runtime::VRRange.Hands.WeaponGripAnchor
+  role: 1
+  pose: {fileID: 11400000, guid: 424ea1583e3ba80a29c9ed4780707086, type: 2}
+  authoredForRightHand: 1
 --- !u!1 &4811310155511647773
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,6 +361,7 @@ GameObject:
   - component: {fileID: 5972057901078981329}
   - component: {fileID: 3483989001780661887}
   - component: {fileID: 2207543100842857446}
+  - component: {fileID: 5820214954602762806}
   m_Layer: 8
   m_Name: Weapon_SMG
   m_TagString: Untagged
@@ -290,6 +386,9 @@ Transform:
   - {fileID: 6438631877506850719}
   - {fileID: 106803035650903087}
   - {fileID: 8343717174794975858}
+  - {fileID: 6376965911863403438}
+  - {fileID: 6846684262467319135}
+  - {fileID: 5427557582981243021}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &606775964424922160
@@ -573,7 +672,7 @@ MonoBehaviour:
   m_RetainTransformParent: 1
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
-  m_AddDefaultGrabTransformers: 1
+  m_AddDefaultGrabTransformers: 0
   m_FarAttachMode: 0
   m_LimitLinearVelocity: 0
   m_LimitAngularVelocity: 0
@@ -617,6 +716,10 @@ MonoBehaviour:
   m_MuzzleFlash: {fileID: 2193471367273840751}
   m_AudioSource: {fileID: 5488700245074736099}
   m_MuzzleLight: {fileID: 2065583605922314594}
+  m_Handling: {fileID: 5820214954602762806}
+  m_PrimaryAnchor: {fileID: 4181170529045904428}
+  m_SupportAnchor: {fileID: 836458762775367316}
+  m_EjectionPort: {fileID: 5427557582981243021}
 --- !u!114 &2207543100842857446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -632,6 +735,22 @@ MonoBehaviour:
   m_HomeSocket: {fileID: 0}
   m_ReturnAfterSeconds: 8
   m_FloorY: -1
+--- !u!114 &5820214954602762806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4811310155511647773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7a4a8a4022c1115a9451f361878ab7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VRRange.Runtime::VRRange.Weapons.WeaponHandlingTransformer
+  m_Definition: {fileID: 11400000, guid: b0fd65ec95b4635fdad6d432e69e2c39, type: 2}
+  m_PrimaryGrip: {fileID: 106803035650903087}
+  m_SupportGrip: {fileID: 8343717174794975858}
+  m_WeightSimulation: 1
 --- !u!1 &5174875391209047630
 GameObject:
   m_ObjectHideFlags: 0
@@ -844,6 +963,37 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6772360110636901006
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5427557582981243021}
+  m_Layer: 0
+  m_Name: EjectionPort
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5427557582981243021
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6772360110636901006}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.03, y: 0.03, z: 0.08}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6953348429492594438}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7805637250345937082
 GameObject:
   m_ObjectHideFlags: 0

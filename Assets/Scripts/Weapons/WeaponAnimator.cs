@@ -27,7 +27,6 @@ namespace VRRange.Weapons
         float m_SlideOffset, m_SlideTarget, m_SlideTravel;
         bool m_SlideLocked, m_TriggerPulled;
         float m_MagProgress = 1f; // 1 = seated, 0 = fully out
-        bool m_MagInserting;
         float m_MagSpeed = 1f;
 
         public Transform ModelRoot => m_ModelRoot;
@@ -61,7 +60,6 @@ namespace VRRange.Weapons
         {
             if (m_Magazine == null) return;
             m_MagSpeed = 2f / Mathf.Max(0.2f, duration); // half the time out, half the time in
-            m_MagInserting = false;
             StopAllCoroutines();
             StartCoroutine(ReloadRoutine(duration));
         }
@@ -71,10 +69,10 @@ namespace VRRange.Weapons
             float half = duration * 0.5f;
             float t = 0f;
             while (t < half) { t += Time.deltaTime; m_MagProgress = 1f - Mathf.Clamp01(t / half); yield return null; }
-            m_MagProgress = 0f; m_MagInserting = true;
+            m_MagProgress = 0f;
             t = 0f;
             while (t < half) { t += Time.deltaTime; m_MagProgress = Mathf.Clamp01(t / half); yield return null; }
-            m_MagProgress = 1f; m_MagInserting = false;
+            m_MagProgress = 1f;
         }
 
         void Update()

@@ -11,6 +11,10 @@ namespace VRRange.Editor
         public const string ArtSigns = "Assets/Art/Signs";
         public const string ArtFx = "Assets/Art/FX";
         public const string ArtWeapons = "Assets/Art/Weapons";
+        public const string ArtHands = "Assets/Art/Hands";
+        public const string ArtUI = "Assets/Art/UI";
+        public const string HandLeftModel = ArtHands + "/LeftHand.fbx";
+        public const string HandRightModel = ArtHands + "/RightHand.fbx";
         public const string Audio = "Assets/Audio";
         public const string Generated = "Assets/Generated";
         public const string Materials = "Assets/Generated/Materials";

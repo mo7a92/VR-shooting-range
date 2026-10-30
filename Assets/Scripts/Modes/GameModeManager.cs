@@ -18,6 +18,9 @@ namespace VRRange.Modes
         public SessionStats stats;
         public string grade;
         public int maxPossibleScore;
+        public int personalBest;
+        public bool isNewPersonalBest;
+        public int bestCombo;
     }
 
     /// <summary>
@@ -40,6 +43,13 @@ namespace VRRange.Modes
         ModeState m_State = ModeState.Idle;
         float m_Countdown, m_TimeRemaining;
         ModeResult m_LastResult;
+        int m_LastCountdownSecond = -1;
+        int m_Combo, m_BestCombo;
+
+        public int Combo => m_Combo;
+        public int BestCombo => m_BestCombo;
+        public event Action<int> ComboChanged;
+        public event Action<int> CountdownSecond; // 3, 2, 1, 0(go)
 
         public event Action<ModeState> StateChanged;
         public event Action<GameMode> ModeStarted;
@@ -71,12 +81,20 @@ namespace VRRange.Modes
             if (m_Settings != null) m_PracticeDistance = m_Settings.defaultDistance;
         }
 
-        void OnEnable() { if (ScoreManager.Instance != null) ScoreManager.Instance.ShotFired += OnShotFired; }
-        void OnDisable() { if (ScoreManager.Instance != null) ScoreManager.Instance.ShotFired -= OnShotFired; }
+        void OnEnable() { if (ScoreManager.Instance != null) { ScoreManager.Instance.ShotFired += OnShotFired; ScoreManager.Instance.HitRegistered += OnHitRegistered; } }
+        void OnDisable() { if (ScoreManager.Instance != null) { ScoreManager.Instance.ShotFired -= OnShotFired; ScoreManager.Instance.HitRegistered -= OnHitRegistered; } }
+
+        void OnHitRegistered(HitResult r)
+        {
+            if (m_State != ModeState.Running) return;
+            if (r.points > 0) { m_Combo++; m_BestCombo = Mathf.Max(m_BestCombo, m_Combo); }
+            else m_Combo = 0;
+            ComboChanged?.Invoke(m_Combo);
+        }
 
         void Start()
         {
-            if (ScoreManager.Instance != null) { ScoreManager.Instance.ShotFired -= OnShotFired; ScoreManager.Instance.ShotFired += OnShotFired; }
+            if (ScoreManager.Instance != null) { ScoreManager.Instance.ShotFired -= OnShotFired; ScoreManager.Instance.ShotFired += OnShotFired; ScoreManager.Instance.HitRegistered -= OnHitRegistered; ScoreManager.Instance.HitRegistered += OnHitRegistered; }
             if (m_Lanes.Count == 0) m_Lanes.AddRange(FindObjectsByType<TargetLane>(FindObjectsSortMode.None));
             if (m_Weapons.Count == 0) m_Weapons.AddRange(FindObjectsByType<Weapon>(FindObjectsSortMode.None));
             StartFreePractice();
@@ -91,6 +109,8 @@ namespace VRRange.Modes
                 case ModeState.Countdown:
                     m_Countdown -= Time.deltaTime;
                     CountdownTick?.Invoke(Mathf.Max(0f, m_Countdown));
+                    int sec = Mathf.CeilToInt(m_Countdown);
+                    if (sec != m_LastCountdownSecond) { m_LastCountdownSecond = sec; CountdownSecond?.Invoke(sec); Audio.AudioManager.PlayCountdown(sec); }
                     if (m_Countdown <= 0f) BeginRunning();
                     break;
                 case ModeState.Running:
@@ -146,6 +166,7 @@ namespace VRRange.Modes
             ApplyLaneSetup();
             float mult = mode == GameMode.MovingTargetChallenge && m_Settings != null ? m_Settings.Profile(m_Difficulty).scoreMultiplier : 1f;
             ScoreManager.Instance?.BeginSession(mult);
+            m_Combo = 0; m_BestCombo = 0; m_LastCountdownSecond = -1; ComboChanged?.Invoke(0);
             ModeStarted?.Invoke(mode);
             if (mode == GameMode.FreePractice)
             {
@@ -214,10 +235,18 @@ namespace VRRange.Modes
             var rules = m_Lanes.Count > 0 && m_Lanes[0] != null && m_Lanes[0].Target != null ? m_Lanes[0].Target.Rules : null;
             int perShot = rules != null ? rules.MaxPoints : 10;
             if (m_Mode == GameMode.AccuracyChallenge && m_Settings != null) maxPoints = m_Settings.accuracyChallengeShots * perShot;
-            m_LastResult = new ModeResult { mode = m_Mode, difficulty = m_Difficulty, stats = stats, maxPossibleScore = maxPoints, grade = GradeFor(stats, maxPoints) };
+            string key = $"VRRange.Best.{m_Mode}.{m_Difficulty}";
+            int best = PlayerPrefs.GetInt(key, 0);
+            bool newBest = stats.score > best;
+            if (newBest) { PlayerPrefs.SetInt(key, stats.score); PlayerPrefs.Save(); best = stats.score; }
+            m_LastResult = new ModeResult { mode = m_Mode, difficulty = m_Difficulty, stats = stats, maxPossibleScore = maxPoints, grade = GradeFor(stats, maxPoints), personalBest = best, isNewPersonalBest = newBest, bestCombo = m_BestCombo };
             SetState(ModeState.Finished);
+            Audio.AudioManager.PlayRoundComplete();
             ModeFinished?.Invoke(m_LastResult);
         }
+
+        /// <summary>Stored personal best for a mode/difficulty (0 if none).</summary>
+        public static int PersonalBest(GameMode mode, Difficulty d) => PlayerPrefs.GetInt($"VRRange.Best.{mode}.{d}", 0);
 
         public static string GradeFor(SessionStats stats, int maxPossible)
         {

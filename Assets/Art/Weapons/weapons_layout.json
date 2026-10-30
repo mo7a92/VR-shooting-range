@@ -1,10 +1,13 @@
 {
   "materials": {
-    "Gunmetal": "gunmetal",
-    "Polymer": "polymer_dark",
-    "Rubber": "backstop_rubber",
-    "Metal": "metal_brushed",
-    "Dark": "gunmetal"
+    "Gunmetal": "pbr_metal_dark",
+    "Polymer": "pbr_polymer",
+    "Rubber": "pbr_rubber",
+    "Metal": "pbr_metal_brushed",
+    "Dark": "flat",
+    "Grip": "pbr_polymer",
+    "White": "flat",
+    "Emissive": "flat"
   },
   "weapons": {
     "pistol": {
@@ -72,7 +75,30 @@
         0.14,
         0.2
       ],
-      "mass": 0.9
+      "mass": 0.9,
+      "primaryPalm": {
+        "pos": [
+          0.022,
+          -0.045,
+          -0.018
+        ],
+        "forward": [
+          -0.55,
+          -0.35,
+          0.76
+        ],
+        "up": [
+          0.83,
+          -0.1,
+          0.55
+        ],
+        "pose": "PistolGrip"
+      },
+      "ejectionPort": [
+        0.018,
+        0.05,
+        0.045
+      ]
     },
     "rifle": {
       "parts": [
@@ -143,7 +169,48 @@
         0.2,
         0.95
       ],
-      "mass": 3.2
+      "mass": 3.2,
+      "primaryPalm": {
+        "pos": [
+          0.022,
+          -0.065,
+          -0.052
+        ],
+        "forward": [
+          -0.55,
+          -0.35,
+          0.76
+        ],
+        "up": [
+          0.83,
+          -0.1,
+          0.55
+        ],
+        "pose": "RiflePrimary"
+      },
+      "supportPalm": {
+        "pos": [
+          -0.012,
+          0.0,
+          0.3
+        ],
+        "forward": [
+          0.3,
+          0.95,
+          0.0
+        ],
+        "up": [
+          -0.95,
+          0.3,
+          0.0
+        ],
+        "pose": "RifleSupport"
+      },
+      "ejectionPort": [
+        0.03,
+        0.03,
+        0.02
+      ]
     },
     "smg": {
       "parts": [
@@ -214,7 +281,48 @@
         0.2,
         0.75
       ],
-      "mass": 2.4
+      "mass": 2.4,
+      "primaryPalm": {
+        "pos": [
+          0.022,
+          -0.075,
+          -0.062
+        ],
+        "forward": [
+          -0.55,
+          -0.35,
+          0.76
+        ],
+        "up": [
+          0.83,
+          -0.1,
+          0.55
+        ],
+        "pose": "SmgGrip"
+      },
+      "supportPalm": {
+        "pos": [
+          0.02,
+          -0.055,
+          0.18
+        ],
+        "forward": [
+          -0.6,
+          -0.3,
+          0.74
+        ],
+        "up": [
+          0.8,
+          -0.2,
+          0.56
+        ],
+        "pose": "RifleSupport"
+      },
+      "ejectionPort": [
+        0.03,
+        0.03,
+        0.08
+      ]
     }
   }
 }

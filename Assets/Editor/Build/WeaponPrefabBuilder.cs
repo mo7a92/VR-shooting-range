@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using VRRange.Core;
+using VRRange.Hands;
 using VRRange.Weapons;
 
 namespace VRRange.Editor
@@ -12,7 +13,8 @@ namespace VRRange.Editor
     public static class WeaponPrefabBuilder
     {
         [System.Serializable] class Part { public string name; public string file; public float[] pivot; public string role; }
-        [System.Serializable] class WeaponLayout { public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; }
+        [System.Serializable] class Palm { public float[] pos; public float[] forward; public float[] up; public string pose; }
+        [System.Serializable] class WeaponLayout { public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public float[] ejectionPort; }
 
         public static readonly Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
 
@@ -104,6 +106,7 @@ namespace VRRange.Editor
             if (secondary != null) grab.secondaryAttachTransform = secondary.transform;
             grab.selectMode = def != null && def.twoHanded ? InteractableSelectMode.Multiple : InteractableSelectMode.Single;
             grab.throwOnDetach = true; grab.retainTransformParent = true; grab.attachEaseInTime = 0f; grab.trackScale = false;
+            grab.addDefaultGrabTransformers = false; // WeaponHandlingTransformer replaces XRI's general transformer
 
             var animator = root.AddComponent<WeaponAnimator>();
             animator.Configure(model.transform, slide, trigger, magazine);
@@ -111,10 +114,36 @@ namespace VRRange.Editor
             weapon.Initialize(def, muzzle.transform, animator, flash, audio, light);
             root.AddComponent<WeaponHome>();
 
+            // Weight / handling simulation and hand grip anchors
+            var handling = root.AddComponent<WeaponHandlingTransformer>();
+            handling.Configure(def, attach.transform, secondary != null ? secondary.transform : null);
+            var primaryAnchor = BuildAnchor(root, "PrimaryGrip", layout.primaryPalm, GripRole.Primary, V(layout.grip));
+            var supportAnchor = layout.supportPalm != null && layout.supportPalm.pos != null ? BuildAnchor(root, "SupportGrip", layout.supportPalm, GripRole.Support, V(layout.secondaryGrip)) : null;
+            weapon.SetHandling(handling, primaryAnchor, supportAnchor);
+            if (layout.ejectionPort != null && layout.ejectionPort.Length >= 3)
+            {
+                var port = EditorRefs.Child(root, "EjectionPort", V(layout.ejectionPort));
+                weapon.SetEjectionPort(port.transform);
+            }
+
             var path = $"{RangePaths.Prefabs}/Weapon_{display}.prefab";
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
             Object.DestroyImmediate(root);
             return prefab;
+        }
+
+        static WeaponGripAnchor BuildAnchor(GameObject root, string name, Palm palm, GripRole role, Vector3 fallbackPos)
+        {
+            var go = EditorRefs.Child(root, name);
+            Vector3 pos = palm != null && palm.pos != null ? V(palm.pos) : fallbackPos;
+            Vector3 fwd = palm != null && palm.forward != null ? V(palm.forward) : new Vector3(-0.55f, -0.35f, 0.76f);
+            Vector3 up = palm != null && palm.up != null ? V(palm.up) : new Vector3(0.83f, -0.1f, 0.55f);
+            go.transform.localPosition = pos;
+            go.transform.localRotation = Quaternion.LookRotation(fwd.normalized, up.normalized);
+            var anchor = EditorRefs.Ensure<WeaponGripAnchor>(go);
+            anchor.role = role; anchor.authoredForRightHand = true;
+            anchor.pose = SettingsAssetBuilder.Pose(palm != null ? palm.pose : (role == GripRole.Primary ? "PistolGrip" : "RifleSupport"));
+            return anchor;
         }
 
         /// <summary>OBJ files list `usemtl` names in a deterministic order; map them to generated materials.</summary>
@@ -129,11 +158,14 @@ namespace VRRange.Editor
                 string n = i < names.Count ? names[i] : "Gunmetal";
                 mats[i] = n switch
                 {
-                    "Polymer" => MaterialLibrary.Pbr("polymer_dark", "WeaponPolymer", 8f),
-                    "Rubber" => MaterialLibrary.Pbr("backstop_rubber", "WeaponRubber", 6f),
-                    "Metal" => MaterialLibrary.Pbr("metal_brushed", "WeaponMetal", 6f),
+                    "Polymer" => MaterialLibrary.Pbr("pbr_polymer", "WeaponPolymer", 10f, 0.35f, new Color(0.55f, 0.55f, 0.57f)),
+                    "Grip" => MaterialLibrary.Pbr("pbr_polymer", "WeaponGripTexture", 40f, 0.25f, new Color(0.35f, 0.35f, 0.36f)),
+                    "Rubber" => MaterialLibrary.Pbr("pbr_rubber", "WeaponRubber", 8f),
+                    "Metal" => MaterialLibrary.Pbr("pbr_metal_brushed", "WeaponMetal", 8f),
                     "Dark" => MaterialLibrary.Flat("WeaponDark", new Color(0.04f, 0.04f, 0.045f), 0.5f, 0.6f),
-                    _ => MaterialLibrary.Pbr("gunmetal", "WeaponGunmetal", 6f),
+                    "White" => MaterialLibrary.Flat("SightWhite", new Color(0.95f, 0.95f, 0.9f), 0.3f, 0f, new Color(0.6f, 0.6f, 0.55f)),
+                    "Emissive" => MaterialLibrary.Flat("ReticleRed", new Color(1f, 0.1f, 0.1f), 0.5f, 0f, new Color(4f, 0.2f, 0.2f)),
+                    _ => MaterialLibrary.Pbr("pbr_metal_dark", "WeaponGunmetal", 8f, 0.6f, new Color(0.7f, 0.72f, 0.75f)),
                 };
             }
             return mats;

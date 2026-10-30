@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using VRRange.Core;
+using VRRange.Hands;
 
 namespace VRRange.Editor
 {
@@ -12,6 +14,8 @@ namespace VRRange.Editor
         public static WeaponDefinition Pistol { get; private set; }
         public static WeaponDefinition Rifle { get; private set; }
         public static WeaponDefinition Smg { get; private set; }
+        static readonly Dictionary<string, HandPose> s_Poses = new Dictionary<string, HandPose>();
+        public static HandPose Pose(string name) => s_Poses.TryGetValue(name ?? "", out var p) ? p : (s_Poses.TryGetValue("Fist", out var f) ? f : null);
 
         public static void Build(bool force)
         {
@@ -46,8 +50,48 @@ namespace VRRange.Editor
                 w.hapticAmplitude = 0.5f; w.hapticDuration = 0.04f; w.secondaryHandHapticScale = 0.6f; w.muzzleFlashScale = 0.9f; w.tracerColor = new Color(1f, 0.9f, 0.6f);
                 Audio(w, "smg_fire");
             });
+            // Handling profiles are always (re)applied: they are tuned together with WeaponHandlingTransformer.
+            ApplyHandling(Pistol, mass: 0.9f, balance: 0.04f, oneHandResp: 0.035f, twoHandResp: 0.03f, sag1: 0.6f, sag2: 0.2f, sway1: 0.18f, sway2: 0.08f, posLag: 0.012f, rotLag: 4f, recoilUnsup: 1.1f, recoilSup: 0.8f, recUnsup: 14f, recSup: 18f, instab: 0.15f);
+            ApplyHandling(Rifle, mass: 3.4f, balance: 0.28f, oneHandResp: 0.14f, twoHandResp: 0.035f, sag1: 4.5f, sag2: 0.35f, sway1: 0.7f, sway2: 0.1f, posLag: 0.03f, rotLag: 9f, recoilUnsup: 1.6f, recoilSup: 0.55f, recUnsup: 6f, recSup: 16f, instab: 0.3f);
+            ApplyHandling(Smg, mass: 2.4f, balance: 0.14f, oneHandResp: 0.08f, twoHandResp: 0.035f, sag1: 2.2f, sag2: 0.3f, sway1: 0.4f, sway2: 0.1f, posLag: 0.02f, rotLag: 6f, recoilUnsup: 1.35f, recoilSup: 0.65f, recUnsup: 9f, recSup: 17f, instab: 0.22f);
+            BuildHandPoses(force);
             AssetDatabase.SaveAssets();
-            SetupLog.Ok("ScoringRules, GameModeSettings and 3 WeaponDefinitions ready in Assets/Settings");
+            SetupLog.Ok("ScoringRules, GameModeSettings, 3 WeaponDefinitions (with handling profiles) and hand poses ready in Assets/Settings");
+        }
+
+        static void ApplyHandling(WeaponDefinition w, float mass, float balance, float oneHandResp, float twoHandResp, float sag1, float sag2, float sway1, float sway2, float posLag, float rotLag, float recoilUnsup, float recoilSup, float recUnsup, float recSup, float instab)
+        {
+            if (w == null) return;
+            if (w.slideRackClip == null) w.slideRackClip = Clip("Weapons/slide_rack");
+            w.virtualMassKg = mass; w.balanceForwardMetres = balance; w.oneHandResponseSeconds = oneHandResp; w.twoHandResponseSeconds = twoHandResp;
+            w.oneHandSagDegrees = sag1; w.twoHandSagDegrees = sag2; w.oneHandSwayDegrees = sway1; w.twoHandSwayDegrees = sway2; w.swayFrequencyHz = 0.7f;
+            w.maxPositionLagMetres = posLag; w.maxRotationLagDegrees = rotLag; w.supportHandInfluence = 0.85f; w.gripTransitionSeconds = 0.18f;
+            w.recoilUnsupportedMultiplier = recoilUnsup; w.recoilSupportedMultiplier = recoilSup; w.recoveryUnsupported = recUnsup; w.recoverySupported = recSup;
+            w.instabilityPerShot = instab; w.instabilityDecayPerSecond = 2.5f;
+            EditorUtility.SetDirty(w);
+        }
+
+        static void BuildHandPoses(bool force)
+        {
+            s_Poses.Clear();
+            RangePaths.EnsureFolder(RangePaths.Settings + "/HandPoses");
+            void P(string name, float thumb, float index, float middle, float ring, float little, float spread, bool trig)
+            {
+                var path = $"{RangePaths.Settings}/HandPoses/{name}.asset";
+                var pose = AssetDatabase.LoadAssetAtPath<HandPose>(path);
+                if (pose == null) { pose = HandPose.Create(name, thumb, index, middle, ring, little, spread, trig); AssetDatabase.CreateAsset(pose, path); }
+                else if (force) { pose.thumb = thumb; pose.index = index; pose.middle = middle; pose.ring = ring; pose.little = little; pose.thumbSpread = spread; pose.indexFollowsTrigger = trig; EditorUtility.SetDirty(pose); }
+                s_Poses[name] = pose;
+            }
+            P("Open", 0.05f, 0.0f, 0.0f, 0.0f, 0.0f, 0.6f, false);
+            P("Idle", 0.3f, 0.15f, 0.2f, 0.25f, 0.3f, 0.45f, false);
+            P("Fist", 0.9f, 0.95f, 0.95f, 0.95f, 0.95f, 0.1f, false);
+            P("Pinch", 0.6f, 0.65f, 0.8f, 0.85f, 0.9f, 0.2f, false);
+            P("Point", 0.8f, 0.0f, 0.95f, 0.95f, 0.95f, 0.2f, false);
+            P("PistolGrip", 0.55f, 0.35f, 0.9f, 0.92f, 0.94f, 0.25f, true);
+            P("RiflePrimary", 0.6f, 0.35f, 0.9f, 0.92f, 0.94f, 0.2f, true);
+            P("RifleSupport", 0.7f, 0.75f, 0.8f, 0.82f, 0.85f, 0.15f, false);
+            P("SmgGrip", 0.55f, 0.35f, 0.9f, 0.92f, 0.94f, 0.25f, true);
         }
 
         static void Audio(WeaponDefinition w, string fireClip)
@@ -57,6 +101,7 @@ namespace VRRange.Editor
             w.reloadStartClip = Clip("Weapons/mag_out");
             w.reloadEndClip = Clip("Weapons/mag_in");
             w.fireModeClip = Clip("Weapons/fire_mode_switch");
+            w.slideRackClip = Clip("Weapons/slide_rack");
         }
 
         public static AudioClip Clip(string relative)

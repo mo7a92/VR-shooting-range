@@ -137,7 +137,7 @@ def cylinder(mesh, center, radius, length, axis="z", segments=16, mat="Gunmetal"
 def box(mesh, center, size, mat="Gunmetal", rot=(0, 0, 0)): chamfer_box(mesh, center, size, 0.0, mat, rot)
 
 # ---------------- weapons ----------------
-layout = {"materials": {"Gunmetal": "gunmetal", "Polymer": "polymer_dark", "Rubber": "backstop_rubber", "Metal": "metal_brushed", "Dark": "gunmetal"}, "weapons": {}}
+layout = {"materials": {"Gunmetal": "pbr_metal_dark", "Polymer": "pbr_polymer", "Rubber": "pbr_rubber", "Metal": "pbr_metal_brushed", "Dark": "flat", "Grip": "pbr_polymer", "White": "flat", "Emissive": "flat"}, "weapons": {}}
 
 def part(weapon, name, build, pivot=(0, 0, 0), role="static"):
     """Build a part mesh with geometry expressed relative to the part pivot (world = pivot + local)."""
@@ -150,7 +150,10 @@ def rel(pivot, p): return (p[0] - pivot[0], p[1] - pivot[1], p[2] - pivot[2])
 
 def pistol():
     w = "pistol"; layout["weapons"][w] = {"parts": [], "muzzle": [0, 0.04, 0.145], "grip": [0, -0.045, -0.02], "gripPitchDegrees": 0, "secondaryGrip": None,
-                                        "colliderCenter": [0, 0.0, 0.03], "colliderSize": [0.035, 0.14, 0.2], "mass": 0.9}
+                                        "colliderCenter": [0, 0.0, 0.03], "colliderSize": [0.035, 0.14, 0.2], "mass": 0.9,
+                                        # palm anchors: pos, forward (direction of the proximal finger segments), up (back of hand), hand pose name
+                                        "primaryPalm": {"pos": [0.022, -0.045, -0.018], "forward": [-0.55, -0.35, 0.76], "up": [0.83, -0.1, 0.55], "pose": "PistolGrip"},
+                                        "ejectionPort": [0.018, 0.05, 0.045]}
     def body(m):
         chamfer_box(m, (0, 0.012, 0.03), (0.028, 0.026, 0.16), 0.004, "Polymer")           # frame
         chamfer_box(m, (0, -0.045, -0.018), (0.03, 0.1, 0.044), 0.006, "Polymer", rot=(-14, 0, 0))  # grip, raked back
@@ -159,11 +162,21 @@ def pistol():
         box(m, (0, 0.0, 0.088), (0.02, 0.012, 0.03), "Polymer")                              # accessory rail block
         box(m, (0, 0.045, -0.062), (0.008, 0.012, 0.01), "Gunmetal")                         # hammer
         box(m, (0, 0.06, -0.045), (0.026, 0.008, 0.008), "Dark")                             # rear sight
+        for sx in (-1, 1): cylinder(m, (sx * 0.0135, 0.06, -0.049), 0.0012, 0.002, "z", 8, "White")  # rear sight dots
+        for sx in (-1, 1): box(m, (sx * 0.0152, -0.045, -0.018), (0.002, 0.07, 0.03), "Grip", rot=(-14, 0, 0))  # stippled grip panels
+        box(m, (0, 0.004, -0.045), (0.024, 0.008, 0.03), "Polymer", rot=(-14, 0, 0))         # beavertail
+        cylinder(m, (-0.016, -0.012, -0.012), 0.004, 0.003, "x", 10, "Dark")                 # magazine release
+        box(m, (-0.0155, 0.02, -0.02), (0.002, 0.005, 0.03), "Dark")                         # slide stop lever
+        for i in range(3): box(m, (0, -0.007, 0.078 + i * 0.012), (0.02, 0.003, 0.004), "Dark")  # rail slots
+        for i in range(3): box(m, (0, -0.028 + i * 0.012, 0.06 + i * 0.004), (0.012, 0.004, 0.012), "Polymer")  # rounded guard front
     def slide(m):
         chamfer_box(m, (0, 0.042, 0.03), (0.03, 0.03, 0.18), 0.006, "Gunmetal")
         box(m, (0.0145, 0.045, 0.045), (0.004, 0.012, 0.03), "Dark")                         # ejection port
         for i in range(5): box(m, (0, 0.042, -0.045 + i * 0.006), (0.032, 0.02, 0.002), "Dark")  # rear serrations
         box(m, (0, 0.061, 0.11), (0.004, 0.008, 0.006), "Dark")                               # front sight
+        cylinder(m, (0, 0.062, 0.1135), 0.0012, 0.002, "z", 8, "White")                         # front sight dot
+        for i in range(4): box(m, (0, 0.042, 0.09 + i * 0.006), (0.032, 0.02, 0.002), "Dark")  # front serrations
+        box(m, (0.0165, 0.045, 0.03), (0.002, 0.004, 0.012), "Metal")                           # extractor
         cylinder(m, (0, 0.042, 0.125), 0.0075, 0.012, "z", 12, "Metal")                      # barrel end
         cylinder(m, (0, 0.042, 0.1305), 0.0045, 0.002, "z", 10, "Dark")                      # bore
     def trigger(m):
@@ -178,7 +191,10 @@ def pistol():
 
 def rifle():
     w = "rifle"; layout["weapons"][w] = {"parts": [], "muzzle": [0, 0.03, 0.735], "grip": [0, -0.06, -0.05], "gripPitchDegrees": 0, "secondaryGrip": [0, 0.0, 0.30],
-                                       "colliderCenter": [0, 0.0, 0.15], "colliderSize": [0.06, 0.2, 0.95], "mass": 3.2}
+                                       "colliderCenter": [0, 0.0, 0.15], "colliderSize": [0.06, 0.2, 0.95], "mass": 3.2,
+                                       "primaryPalm": {"pos": [0.022, -0.065, -0.052], "forward": [-0.55, -0.35, 0.76], "up": [0.83, -0.1, 0.55], "pose": "RiflePrimary"},
+                                       "supportPalm": {"pos": [-0.012, 0.0, 0.30], "forward": [0.3, 0.95, 0.0], "up": [-0.95, 0.3, 0.0], "pose": "RifleSupport"},
+                                       "ejectionPort": [0.03, 0.03, 0.02]}
     def body(m):
         chamfer_box(m, (0, 0.02, 0.0), (0.05, 0.06, 0.26), 0.006, "Gunmetal")                 # upper receiver
         chamfer_box(m, (0, -0.015, -0.02), (0.044, 0.04, 0.2), 0.004, "Polymer")             # lower receiver
@@ -198,10 +214,27 @@ def rifle():
         chamfer_box(m, (0, -0.065, -0.055), (0.032, 0.1, 0.04), 0.005, "Polymer", rot=(-20, 0, 0))  # pistol grip
         box(m, (0, -0.04, 0.02), (0.014, 0.004, 0.07), "Polymer")                             # trigger guard bottom
         box(m, (0, -0.022, 0.052), (0.014, 0.036, 0.004), "Polymer")                          # trigger guard front
-        # red dot optic
+        # red dot optic with turrets, lens and emissive dot
         box(m, (0, 0.068, -0.03), (0.03, 0.012, 0.05), "Gunmetal")
         cylinder(m, (0, 0.092, -0.03), 0.016, 0.06, "z", 12, "Gunmetal")
         cylinder(m, (0, 0.092, 0.001), 0.013, 0.002, "z", 12, "Dark")
+        cylinder(m, (0, 0.092, -0.061), 0.012, 0.002, "z", 12, "Dark")
+        cylinder(m, (0, 0.092, -0.056), 0.0025, 0.002, "z", 8, "Emissive")                    # reticle dot (seen from behind)
+        cylinder(m, (0, 0.11, -0.03), 0.006, 0.008, "y", 10, "Dark"); cylinder(m, (0.018, 0.092, -0.03), 0.006, 0.008, "x", 10, "Dark")  # turrets
+        # receiver details
+        box(m, (0.026, 0.028, 0.02), (0.003, 0.02, 0.07), "Dark")                               # ejection port cover
+        cylinder(m, (0.028, 0.03, -0.04), 0.006, 0.014, "x", 10, "Gunmetal")                    # forward assist
+        box(m, (-0.024, 0.0, -0.06), (0.004, 0.006, 0.02), "Metal", rot=(0, 0, 0))              # selector lever
+        box(m, (-0.024, 0.01, 0.03), (0.004, 0.02, 0.012), "Dark")                              # bolt release
+        cylinder(m, (0.024, -0.02, 0.04), 0.004, 0.004, "x", 10, "Dark")                        # magazine release
+        for i in range(3): box(m, (0, -0.066 + i * 0.016, -0.038), (0.034, 0.003, 0.004), "Dark", rot=(-20, 0, 0))  # grip finger grooves
+        for i in range(5): box(m, (0, 0.003, 0.2 + i * 0.045), (0.006, 0.004, 0.025), "Dark")   # M-LOK slots (bottom of handguard)
+        for i in range(4): box(m, (0, 0.012, -0.16 - i * 0.025), (0.02, 0.004, 0.006), "Dark")  # stock adjustment notches
+        box(m, (0, 0.045, -0.36), (0.03, 0.016, 0.14), "Polymer")                               # cheek riser
+        cylinder(m, (0, 0.052, 0.38), 0.004, 0.13, "z", 8, "Metal")                             # gas tube
+        for i in range(3): box(m, (0, 0.03, 0.69 + i * 0.012), (0.03, 0.004, 0.006), "Dark")     # flash hider slots
+        for i in range(3): box(m, (0, -0.075 + i * 0.03, 0.03), (0.032, 0.002, 0.066), "Dark", rot=(-8, 0, 0))  # magazine ribs (visual on body for alignment)
+        box(m, (0.0, -0.03, 0.44), (0.02, 0.008, 0.004), "Metal")                               # sling loop
     def charging(m):
         box(m, (0, 0.0, 0.0), (0.03, 0.012, 0.03), "Gunmetal"); box(m, (0, 0.0, 0.012), (0.012, 0.008, 0.01), "Dark")
     def trigger(m): box(m, (0, -0.012, 0.0), (0.007, 0.024, 0.007), "Gunmetal")
@@ -215,7 +248,10 @@ def rifle():
 
 def smg():
     w = "smg"; layout["weapons"][w] = {"parts": [], "muzzle": [0, 0.02, 0.42], "grip": [0, -0.07, -0.06], "gripPitchDegrees": 0, "secondaryGrip": [0, -0.05, 0.18],
-                                     "colliderCenter": [0, 0.0, 0.05], "colliderSize": [0.06, 0.2, 0.75], "mass": 2.4}
+                                     "colliderCenter": [0, 0.0, 0.05], "colliderSize": [0.06, 0.2, 0.75], "mass": 2.4,
+                                     "primaryPalm": {"pos": [0.022, -0.075, -0.062], "forward": [-0.55, -0.35, 0.76], "up": [0.83, -0.1, 0.55], "pose": "SmgGrip"},
+                                     "supportPalm": {"pos": [0.02, -0.055, 0.18], "forward": [-0.6, -0.3, 0.74], "up": [0.8, -0.2, 0.56], "pose": "RifleSupport"},
+                                     "ejectionPort": [0.03, 0.03, 0.08]}
     def body(m):
         chamfer_box(m, (0, 0.02, 0.05), (0.05, 0.065, 0.30), 0.006, "Gunmetal")               # receiver
         cylinder(m, (0, 0.02, 0.27), 0.024, 0.16, "z", 12, "Gunmetal")                        # barrel shroud
@@ -235,6 +271,15 @@ def smg():
         box(m, (0.02, 0.025, -0.25), (0.008, 0.012, 0.22), "Gunmetal"); box(m, (-0.02, 0.025, -0.25), (0.008, 0.012, 0.22), "Gunmetal")  # stock bars
         box(m, (0, 0.02, -0.37), (0.05, 0.09, 0.015), "Rubber")                               # butt plate
         box(m, (0, 0.02, -0.11), (0.05, 0.03, 0.02), "Gunmetal")                              # stock hinge
+        cylinder(m, (0, 0.02, -0.11), 0.012, 0.054, "x", 10, "Dark")                            # hinge pin
+        for i in range(4): cylinder(m, (0, -0.03 - i * 0.02, 0.18), 0.0145, 0.004, "y", 10, "Dark")  # foregrip ridges
+        box(m, (-0.026, 0.035, 0.1), (0.002, 0.006, 0.09), "Dark")                              # charging handle slot
+        box(m, (0.026, 0.028, 0.08), (0.002, 0.018, 0.045), "Dark")                             # ejection port
+        cylinder(m, (0.024, -0.03, 0.08), 0.004, 0.004, "x", 10, "Dark")                        # magazine release
+        box(m, (-0.024, -0.005, -0.03), (0.004, 0.006, 0.018), "Metal")                         # safety lever
+        cylinder(m, (0, 0.07, -0.08), 0.006, 0.006, "z", 12, "Dark")                            # rear aperture
+        cylinder(m, (0, 0.02, 0.41), 0.012, 0.004, "z", 12, "Metal")                            # muzzle thread collar
+        for sx in (-1, 1): box(m, (sx * 0.0165, -0.075, -0.062), (0.002, 0.07, 0.03), "Grip", rot=(-18, 0, 0))  # grip panels
     def charging(m): box(m, (0, 0.0, 0.0), (0.02, 0.01, 0.025), "Gunmetal"); box(m, (-0.012, 0.0, 0.0), (0.006, 0.014, 0.012), "Dark")
     def trigger(m): box(m, (0, -0.012, 0.0), (0.007, 0.024, 0.007), "Gunmetal")
     def magazine(m):
@@ -247,7 +292,7 @@ def smg():
 
 def write_mtl():
     with open(os.path.join(OUT, "weapons.mtl"), "w") as fh:
-        for name, (kd) in {"Gunmetal": (0.18, 0.19, 0.21), "Polymer": (0.12, 0.12, 0.13), "Rubber": (0.1, 0.1, 0.1), "Metal": (0.6, 0.61, 0.63), "Dark": (0.05, 0.05, 0.06)}.items():
+        for name, (kd) in {"Gunmetal": (0.18, 0.19, 0.21), "Polymer": (0.12, 0.12, 0.13), "Rubber": (0.1, 0.1, 0.1), "Metal": (0.6, 0.61, 0.63), "Dark": (0.05, 0.05, 0.06), "Grip": (0.1, 0.1, 0.1), "White": (0.95, 0.95, 0.95), "Emissive": (1.0, 0.1, 0.1)}.items():
             fh.write(f"newmtl {name}\nKd {kd[0]} {kd[1]} {kd[2]}\nKs 0.2 0.2 0.2\nNs 40\n\n")
 
 if __name__ == "__main__":

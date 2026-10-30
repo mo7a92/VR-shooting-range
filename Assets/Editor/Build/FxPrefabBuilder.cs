@@ -13,6 +13,7 @@ namespace VRRange.Editor
         public static GameObject MuzzleFlash { get; private set; }
         public static GameObject ImpactMarker { get; private set; }
         public static GameObject OneShotAudio { get; private set; }
+        public static GameObject ShellCasing { get; private set; }
 
         public static void Build()
         {
@@ -24,6 +25,7 @@ namespace VRRange.Editor
             MuzzleFlash = BuildMuzzleFlash();
             ImpactMarker = BuildImpactMarker();
             OneShotAudio = BuildOneShotAudio();
+            ShellCasing = BuildShellCasing();
             SetupLog.Ok("FX prefabs built");
         }
 
@@ -112,6 +114,20 @@ namespace VRRange.Editor
             var q = EditorRefs.MeshObject(go, "Quad", mesh, new[] { mat }, Vector3.zero);
             q.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             return Save(go, "ImpactMarker");
+        }
+
+        static GameObject BuildShellCasing()
+        {
+            var go = new GameObject("ShellCasing"); go.layer = EditorRefs.Layer("Projectile");
+            var mesh = EditorMeshUtil.Cylinder("CasingMesh", 0.0045f, 0.024f, 10, true);
+            var brass = MaterialLibrary.Flat("Brass", new Color(0.85f, 0.65f, 0.3f), 0.75f, 1f);
+            var vis = EditorRefs.MeshObject(go, "Visual", mesh, new[] { brass }, Vector3.zero);
+            vis.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            var col = go.AddComponent<CapsuleCollider>(); col.direction = 2; col.radius = 0.0045f; col.height = 0.024f;
+            var rb = go.AddComponent<Rigidbody>(); rb.mass = 0.012f; rb.linearDamping = 0.2f; rb.angularDamping = 0.5f; rb.interpolation = RigidbodyInterpolation.None;
+            rb.collisionDetectionMode = CollisionDetectionMode.Discrete; rb.maxAngularVelocity = 60f;
+            go.AddComponent<VRRange.Ballistics.ShellCasing>();
+            return Save(go, "ShellCasing");
         }
 
         static GameObject BuildOneShotAudio()

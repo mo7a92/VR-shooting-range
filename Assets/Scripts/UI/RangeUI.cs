@@ -45,6 +45,8 @@ namespace VRRange.UI
         public TMP_Text ammoLabel;
         public TMP_Text lastHitLabel;
         public TMP_Text hintLabel;
+        public TMP_Text comboLabel;
+        public TMP_Text bestLabel;
 
         [Header("Results")]
         public TMP_Text resultsTitle;
@@ -80,6 +82,8 @@ namespace VRRange.UI
                 gm.ModeFinished += OnModeFinished;
                 gm.ModeStarted += _ => RefreshLabels();
                 gm.CountdownTick += t => SetText(timerLabel, t > 0f ? $"Ready: {Mathf.CeilToInt(t)}" : "GO!");
+                gm.CountdownSecond += s2 => { SetText(lastHitLabel, s2 > 0 ? s2.ToString() : "GO!"); m_LastHitTimer = 1f; };
+                gm.ComboChanged += c => SetText(comboLabel, c >= 3 ? $"COMBO x{c}" : "");
                 foreach (var w in gm.Weapons) HookWeapon(w);
             }
             if (sm != null) { sm.StatsChanged += OnStatsChanged; sm.HitRegistered += OnHit; }
@@ -146,6 +150,8 @@ namespace VRRange.UI
             m_Sb.Append("\nBullseyes: ").Append(r.stats.bullseyes);
             m_Sb.Append("\nTime: ").Append(FormatTime(r.stats.elapsedSeconds));
             m_Sb.Append("\nDifficulty: ").Append(r.difficulty).Append("   Grade: ").Append(r.grade);
+            m_Sb.Append("\nBest combo: ").Append(r.bestCombo);
+            m_Sb.Append(r.isNewPersonalBest ? "\n<color=#F5C81A>NEW PERSONAL BEST!</color>" : $"\nPersonal best: {r.personalBest}");
             SetText(resultsBody, m_Sb.ToString());
         }
 
@@ -156,6 +162,8 @@ namespace VRRange.UI
             SetText(modeLabel, ModeName(gm.CurrentMode));
             SetText(difficultyLabel, $"Difficulty: {gm.CurrentDifficulty}");
             SetText(laneStatusLabel, $"Distance {gm.CurrentDistance:0} m   Motion: {gm.CurrentMotion}");
+            int best = GameModeManager.PersonalBest(gm.CurrentMode, gm.CurrentDifficulty);
+            SetText(bestLabel, best > 0 ? $"Personal best ({gm.CurrentDifficulty}): {best}" : "No personal best yet");
             if (laneControlsPanel != null) laneControlsPanel.SetActive(gm.CurrentMode == GameMode.FreePractice);
         }
 

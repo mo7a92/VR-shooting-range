@@ -23,3 +23,18 @@ Kd 0.05 0.05 0.06
 Ks 0.2 0.2 0.2
 Ns 40
 
+newmtl Grip
+Kd 0.1 0.1 0.1
+Ks 0.2 0.2 0.2
+Ns 40
+
+newmtl White
+Kd 0.95 0.95 0.95
+Ks 0.2 0.2 0.2
+Ns 40
+
+newmtl Emissive
+Kd 1.0 0.1 0.1
+Ks 0.2 0.2 0.2
+Ns 40
+

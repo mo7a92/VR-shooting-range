@@ -17,11 +17,14 @@ namespace VRRange.Editor
         static readonly Color ButtonHover = new Color(0.22f, 0.48f, 0.78f, 1f);
         static readonly Color AccentColor = new Color(0.95f, 0.78f, 0.1f, 1f);
         static TMP_FontAsset s_Font;
+        static Sprite s_PanelSprite, s_ButtonSprite, s_OutlineSprite, s_ShadowSprite;
+        static Sprite LoadSprite(string name) => AssetDatabase.LoadAssetAtPath<Sprite>($"{RangePaths.ArtUI}/{name}.png");
 
         public static RangeUI Build(Transform sceneRoot)
         {
             SetupLog.Section("VR UI");
             s_Font = GetFont();
+            s_PanelSprite = LoadSprite("ui_panel_rounded"); s_ButtonSprite = LoadSprite("ui_button"); s_OutlineSprite = LoadSprite("ui_outline"); s_ShadowSprite = LoadSprite("ui_shadow");
             EnsureEventSystem(sceneRoot);
             var root = new GameObject("RangeUI"); root.transform.SetParent(sceneRoot, false);
             var ui = root.AddComponent<RangeUI>();
@@ -34,6 +37,7 @@ namespace VRRange.Editor
             ui.accuracyButton = Button(menu, "Accuracy", "Accuracy Challenge", new Vector2(0, 105), 440, 80);
             ui.movingButton = Button(menu, "Moving", "Moving Target Challenge", new Vector2(0, 10), 440, 80);
             ui.difficultyLabel = Label(menu, "DifficultyLabel", "Difficulty: Medium", 24, new Vector2(0, -70), 480, 36, AccentColor);
+            ui.bestLabel = Label(menu, "BestLabel", "", 20, new Vector2(0, -185), 480, 30, new Color(0.85f, 0.85f, 0.85f));
             ui.difficultyButtons = new[]
             {
                 Button(menu, "Easy", "Easy", new Vector2(-150, -130), 130, 60), Button(menu, "Medium", "Medium", new Vector2(0, -130), 130, 60), Button(menu, "Hard", "Hard", new Vector2(150, -130), 130, 60)
@@ -70,7 +74,8 @@ namespace VRRange.Editor
             ui.accuracyLabel = Label(hud, "Accuracy", "Accuracy 0%", 26, new Vector2(270, 25), 200, 44, Color.white);
             ui.timerLabel = Label(hud, "Timer", "Time 0.0s", 26, new Vector2(-230, -25), 240, 40, Color.white);
             ui.ammoLabel = Label(hud, "Ammo", "Pick a weapon from the counter", 22, new Vector2(110, -25), 440, 40, new Color(0.85f, 0.9f, 1f));
-            ui.lastHitLabel = Label(hud, "LastHit", "", 30, new Vector2(0, -75), 720, 44, AccentColor);
+            ui.lastHitLabel = Label(hud, "LastHit", "", 30, new Vector2(-150, -75), 420, 44, AccentColor);
+            ui.comboLabel = Label(hud, "Combo", "", 30, new Vector2(230, -75), 260, 44, new Color(1f, 0.55f, 0.2f));
             ui.hudPanel = hud;
 
             // Results (same spot as the main menu, shown when a challenge ends)
@@ -87,6 +92,31 @@ namespace VRRange.Editor
 
             SetupLog.Ok("World-space UI built (menu, lane controls, HUD, results)");
             return ui;
+        }
+
+        /// <summary>Digital scoreboard text on each booth's screen housing (built by EnvironmentBuilder).</summary>
+        public static void BuildLaneScoreboards(Transform sceneRoot, System.Collections.Generic.List<VRRange.Targets.TargetLane> lanes)
+        {
+            if (s_Font == null) s_Font = GetFont();
+            var root = new GameObject("LaneScoreboards"); root.transform.SetParent(sceneRoot, false);
+            int n = 0;
+            foreach (var lane in lanes)
+            {
+                if (lane == null) continue;
+                float x = EnvironmentBuilder.LaneX(lane.LaneIndex);
+                var go = new GameObject($"Scoreboard{lane.LaneIndex + 1}", typeof(RectTransform));
+                go.transform.SetParent(root.transform, false);
+                go.transform.localPosition = new Vector3(x, 2.62f, 0.95f - 0.052f); // on the screen face (-Z side of the housing)
+                go.transform.localRotation = Quaternion.identity; go.transform.localScale = Vector3.one / PixelsPerMetre;
+                var canvas = go.AddComponent<Canvas>(); canvas.renderMode = RenderMode.WorldSpace;
+                go.GetComponent<RectTransform>().sizeDelta = new Vector2(420, 170);
+                var text = Label(go, "Text", "LANE", 30, Vector2.zero, 410, 160, new Color(0.3f, 1f, 0.5f));
+                text.alignment = TextAlignmentOptions.Center; text.fontStyle = FontStyles.Bold;
+                var sb = go.AddComponent<VRRange.UI.LaneScoreboard>();
+                sb.Initialize(lane, text);
+                n++;
+            }
+            SetupLog.Ok($"{n} lane scoreboards built");
         }
 
         static void EnsureEventSystem(Transform sceneRoot)
@@ -109,10 +139,16 @@ namespace VRRange.Editor
             go.AddComponent<CanvasScaler>().dynamicPixelsPerUnit = 2f;
             go.AddComponent<TrackedDeviceGraphicRaycaster>();
             var rt = go.GetComponent<RectTransform>(); rt.sizeDelta = new Vector2(width, height);
-            var bg = go.AddComponent<Image>(); bg.color = PanelColor;
+            var bg = go.AddComponent<Image>(); bg.color = PanelColor; bg.sprite = s_PanelSprite; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 0.5f;
+            if (s_ShadowSprite != null)
+            {
+                var shadow = new GameObject("Shadow", typeof(RectTransform)); shadow.transform.SetParent(go.transform, false); shadow.transform.SetAsFirstSibling();
+                var srt = shadow.GetComponent<RectTransform>(); srt.anchorMin = Vector2.zero; srt.anchorMax = Vector2.one; srt.offsetMin = new Vector2(-24, -30); srt.offsetMax = new Vector2(24, 18);
+                var simg = shadow.AddComponent<Image>(); simg.sprite = s_ShadowSprite; simg.type = Image.Type.Sliced; simg.color = new Color(0, 0, 0, 0.6f); simg.raycastTarget = false;
+            }
             var border = new GameObject("Border", typeof(RectTransform)); border.transform.SetParent(go.transform, false);
-            var brt = border.GetComponent<RectTransform>(); brt.anchorMin = Vector2.zero; brt.anchorMax = Vector2.one; brt.offsetMin = new Vector2(6, 6); brt.offsetMax = new Vector2(-6, -6);
-            var bimg = border.AddComponent<Image>(); bimg.color = new Color(0.12f, 0.14f, 0.18f, 0.95f); bimg.raycastTarget = false;
+            var brt = border.GetComponent<RectTransform>(); brt.anchorMin = Vector2.zero; brt.anchorMax = Vector2.one; brt.offsetMin = new Vector2(4, 4); brt.offsetMax = new Vector2(-4, -4);
+            var bimg = border.AddComponent<Image>(); bimg.color = AccentColor; bimg.sprite = s_OutlineSprite; bimg.type = Image.Type.Sliced; bimg.pixelsPerUnitMultiplier = 0.5f; bimg.raycastTarget = false;
             return go;
         }
 
@@ -122,7 +158,7 @@ namespace VRRange.Editor
             var t = Label(panel, "Title", text, size, new Vector2(0, rt.sizeDelta.y * 0.5f - 50), rt.sizeDelta.x - 40, 70, AccentColor);
             var bar = new GameObject("TitleBar", typeof(RectTransform)); bar.transform.SetParent(panel.transform, false); bar.transform.SetAsFirstSibling(); bar.transform.SetSiblingIndex(1);
             var brt = bar.GetComponent<RectTransform>(); brt.anchoredPosition = new Vector2(0, rt.sizeDelta.y * 0.5f - 50); brt.sizeDelta = new Vector2(rt.sizeDelta.x - 12, 80);
-            var img = bar.AddComponent<Image>(); img.color = new Color(0.1f, 0.2f, 0.35f, 1f); img.raycastTarget = false;
+            var img = bar.AddComponent<Image>(); img.color = new Color(0.1f, 0.2f, 0.35f, 1f); img.raycastTarget = false; img.sprite = s_PanelSprite; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 0.5f;
             return t;
         }
 
@@ -140,7 +176,7 @@ namespace VRRange.Editor
         {
             var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(panel.transform, false);
             var rt = go.GetComponent<RectTransform>(); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(width, height);
-            var img = go.AddComponent<Image>(); img.color = color ?? ButtonColor;
+            var img = go.AddComponent<Image>(); img.color = color ?? ButtonColor; img.sprite = s_ButtonSprite; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 0.6f;
             var btn = go.AddComponent<Button>();
             var colors = btn.colors; colors.normalColor = Color.white; colors.highlightedColor = new Color(1.25f, 1.25f, 1.25f); colors.pressedColor = new Color(0.7f, 0.7f, 0.7f); colors.selectedColor = Color.white; btn.colors = colors;
             Label(go, "Label", text, Mathf.Min(28f, height * 0.42f), Vector2.zero, width - 10, height, Color.white);

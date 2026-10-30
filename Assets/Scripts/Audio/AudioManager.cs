@@ -13,6 +13,9 @@ namespace VRRange.Audio
         [SerializeField] AudioClip m_AmbienceLoop;
         [SerializeField] AudioClip m_UiClick;
         [SerializeField] AudioClip m_TargetHitDing;
+        [SerializeField] AudioClip[] m_CountdownClips;   // 3, 2, 1, go
+        [SerializeField] AudioClip m_RoundComplete;
+        [SerializeField] AudioClip m_MenuConfirm;
         [SerializeField, Range(0f, 1f)] float m_AmbienceVolume = 0.35f;
         [SerializeField, Range(4, 64)] int m_PoolSize = 24;
 
@@ -49,6 +52,14 @@ namespace VRRange.Audio
 
         public static void PlayUiClick() { if (Instance != null && Instance.m_UiClick != null && Camera.main != null) PlayAt(Instance.m_UiClick, Camera.main.transform.position, 0.6f); }
         public static void PlayTargetDing(Vector3 at) { if (Instance != null) PlayAt(Instance.m_TargetHitDing, at, 0.9f, 0.05f); }
+        public static void PlayCountdown(int second)
+        {
+            if (Instance == null || Instance.m_CountdownClips == null || Instance.m_CountdownClips.Length == 0 || Camera.main == null) return;
+            int idx = second <= 0 ? Instance.m_CountdownClips.Length - 1 : Mathf.Clamp(3 - second, 0, Instance.m_CountdownClips.Length - 1);
+            PlayAt(Instance.m_CountdownClips[idx], Camera.main.transform.position + Camera.main.transform.forward, 0.7f);
+        }
+        public static void PlayRoundComplete() { if (Instance != null && Camera.main != null) PlayAt(Instance.m_RoundComplete, Camera.main.transform.position + Camera.main.transform.forward, 0.8f); }
+        public static void PlayMenuConfirm() { if (Instance != null && Camera.main != null) PlayAt(Instance.m_MenuConfirm, Camera.main.transform.position + Camera.main.transform.forward, 0.6f); }
 
         System.Collections.IEnumerator ReleaseLater(AudioSource src, float delay)
         {

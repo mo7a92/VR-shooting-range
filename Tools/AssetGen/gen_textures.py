@@ -141,6 +141,13 @@ def gunmetal(size=512):
     alb = colorize(n, (40, 42, 46), (70, 72, 78)); alb[scratches] += 50
     material("gunmetal", alb, h, np.full_like(h, 0.85), 0.55 + 0.15 * n, 1.5)
 
+def skin(size=512):
+    """Subtle skin albedo (pores + mottling) for the hand models, mid skin tone; smoothness ~0.4."""
+    pores = tileable(fbm(size, 96, 2, 0.5, 101)); mottle = tileable(fbm(size, 6, 4, 0.55, 102))
+    h = pores * 0.35 + mottle * 0.65
+    alb = colorize(h, (178, 128, 104), (214, 168, 140))
+    material("skin", alb, pores, np.zeros_like(h), np.full_like(h, 0.42), 1.2)
+
 def acoustic_panel(size=512):
     g = tileable(fbm(size, 48, 3, 0.5, 71))
     alb = colorize(g, (172, 166, 150), (196, 190, 174))
@@ -243,9 +250,34 @@ def distance_label(m, size=(512, 256)):
     d.text((size[0] / 2, size[1] / 2), f"{m} m", fill=(30, 30, 30), font=font(150), anchor="mm")
     img.save(os.path.join(SIGNS, f"distance_{m}m.png")); print("wrote", f"Signs/distance_{m}m.png")
 
+UI = os.path.join(ROOT, "Assets", "Art", "UI")
+os.makedirs(UI, exist_ok=True)
+
+def ui_sprites():
+    """9-sliceable rounded panel / button / outline sprites (white, tinted at runtime) + icons."""
+    def rounded(size, radius, fill, outline=None, outline_w=0):
+        img = Image.new("RGBA", (size, size), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+        d.rounded_rectangle([0, 0, size - 1, size - 1], radius=radius, fill=fill, outline=outline, width=outline_w)
+        return img
+    rounded(64, 14, (255, 255, 255, 255)).save(os.path.join(UI, "ui_panel_rounded.png"))
+    rounded(64, 12, (255, 255, 255, 255), (255, 255, 255, 255), 0).save(os.path.join(UI, "ui_button.png"))
+    rounded(64, 12, (0, 0, 0, 0), (255, 255, 255, 255), 3).save(os.path.join(UI, "ui_outline.png"))
+    # soft shadow
+    sh = Image.new("RGBA", (96, 96), (0, 0, 0, 0)); ImageDraw.Draw(sh).rounded_rectangle([12, 12, 83, 83], radius=16, fill=(0, 0, 0, 160))
+    sh.filter(ImageFilter.GaussianBlur(6)).save(os.path.join(UI, "ui_shadow.png"))
+    # icons: target, pistol, rifle, timer, trophy (simple glyphs)
+    def icon(name, draw_fn):
+        img = Image.new("RGBA", (128, 128), (0, 0, 0, 0)); d = ImageDraw.Draw(img); draw_fn(d); img.save(os.path.join(UI, f"icon_{name}.png"))
+    icon("target", lambda d: [d.ellipse([8 + i * 18, 8 + i * 18, 120 - i * 18, 120 - i * 18], outline=(255, 255, 255, 255), width=8) for i in range(3)])
+    icon("timer", lambda d: (d.ellipse([14, 20, 114, 120], outline=(255, 255, 255, 255), width=8), d.line([64, 70, 64, 40], fill=(255, 255, 255, 255), width=8), d.line([64, 70, 86, 82], fill=(255, 255, 255, 255), width=8), d.rectangle([52, 8, 76, 20], fill=(255, 255, 255, 255))))
+    icon("trophy", lambda d: (d.rounded_rectangle([30, 14, 98, 70], radius=14, fill=(255, 255, 255, 255)), d.rectangle([56, 70, 72, 92], fill=(255, 255, 255, 255)), d.rectangle([36, 92, 92, 108], fill=(255, 255, 255, 255))))
+    icon("move", lambda d: (d.line([20, 64, 108, 64], fill=(255, 255, 255, 255), width=8), d.polygon([(108, 64), (84, 44), (84, 84)], fill=(255, 255, 255, 255)), d.polygon([(20, 64), (44, 44), (44, 84)], fill=(255, 255, 255, 255))))
+    print("wrote UI sprites")
+
 def main():
+    ui_sprites()
     concrete_floor(); painted_block_wall(); acoustic_ceiling(); rubber_backstop(); wood_laminate()
-    brushed_metal(); polymer(); gunmetal(); acoustic_panel(); target_face(); bullet_hole(); muzzle_flash(); light_panel()
+    brushed_metal(); polymer(); gunmetal(); acoustic_panel(); skin(); target_face(); bullet_hole(); muzzle_flash(); light_panel()
     sign("sign_safety", ["EYE AND EAR PROTECTION", "REQUIRED BEYOND THIS POINT", "", "Keep weapons pointed downrange"], title="SAFETY")
     sign("sign_firing_line", ["FIRING LINE", "DO NOT CROSS WHILE THE RANGE IS HOT"], bg=(200, 30, 30), fg=(255, 255, 255), border=(255, 255, 255))
     sign("sign_rules", ["1. Treat every weapon as loaded", "2. Finger off the trigger until ready", "3. Fire only at your lane's target", "4. Return weapons to the counter", "5. Reset targets between sessions"], title="RANGE RULES", bg=(245, 245, 240), title_bg=(30, 60, 120))

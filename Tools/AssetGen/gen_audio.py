@@ -124,6 +124,22 @@ def main():
     write(os.path.join(U, "ui_click.wav"), click(0.08, 1200, 0.02, 0.5))
     write(os.path.join(U, "target_reset_motor.wav"), normalize(lowpass(noise(int(SR * 0.6)), 500) * env(int(SR * 0.6), 0.05, 0.4) * 0.6 + 0.3 * np.sin(2 * np.pi * 95 * t(0.6)) * env(int(SR * 0.6), 0.05, 0.35), 0.5))
     write(os.path.join(A, "range_ambience_loop.wav"), ambience())
+    # mechanical and feedback sounds
+    for i, f in enumerate((5200, 6100, 4700)):
+        n = int(SR * 0.25); x = t(0.25)
+        s = (np.sin(2 * np.pi * f * x) * 0.6 + np.sin(2 * np.pi * f * 2.3 * x) * 0.25) * env(n, 0.0003, 0.035) + highpass(noise(n), 5000) * env(n, 0.0003, 0.006) * 0.5
+        write(os.path.join(W, f"casing_bounce_{i + 1}.wav"), normalize(reverb(s, 0.12), 0.45))
+    write(os.path.join(W, "slide_rack.wav"), normalize(np.concatenate([clack(0.12, 700, 0.03), clack(0.2, 480, 0.05)]), 0.8))
+    write(os.path.join(W, "bolt_release.wav"), normalize(clack(0.25, 320, 0.07), 0.85))
+    for i, f in enumerate((880, 880, 880, 1320)):
+        n = int(SR * (0.15 if i < 3 else 0.5)); x = np.arange(n) / SR
+        s = np.sin(2 * np.pi * f * x) * env(n, 0.005, 0.12 if i < 3 else 0.35) * 0.6
+        write(os.path.join(U, f"countdown_{i + 1}.wav"), normalize(s, 0.55))
+    n = int(SR * 0.35); x = t(0.35)
+    write(os.path.join(U, "menu_confirm.wav"), normalize((np.sin(2 * np.pi * 660 * x) * env(n, 0.005, 0.08) + np.sin(2 * np.pi * 990 * x) * env(n, 0.06, 0.12)) * 0.5, 0.5))
+    write(os.path.join(U, "ui_hover.wav"), click(0.05, 2200, 0.01, 0.25))
+    n = int(SR * 1.2); x = t(1.2)
+    write(os.path.join(U, "round_complete.wav"), normalize(sum(np.sin(2 * np.pi * f * x) * env(n, 0.01 + k * 0.12, 0.5) * 0.4 for k, f in enumerate((523.25, 659.25, 783.99, 1046.5))), 0.6))
 
 if __name__ == "__main__":
     main()

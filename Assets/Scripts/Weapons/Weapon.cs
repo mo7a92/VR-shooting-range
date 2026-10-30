@@ -7,6 +7,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using VRRange.Audio;
 using VRRange.Ballistics;
 using VRRange.Core;
+using VRRange.Hands;
 using VRRange.Scoring;
 
 namespace VRRange.Weapons
@@ -25,6 +26,10 @@ namespace VRRange.Weapons
         [SerializeField] ParticleSystem m_MuzzleFlash;
         [SerializeField] AudioSource m_AudioSource;
         [SerializeField] Light m_MuzzleLight;
+        [SerializeField] WeaponHandlingTransformer m_Handling;
+        [SerializeField] WeaponGripAnchor m_PrimaryAnchor;
+        [SerializeField] WeaponGripAnchor m_SupportAnchor;
+        [SerializeField] Transform m_EjectionPort;
 
         XRGrabInteractable m_Grab;
         FireMode m_FireMode = FireMode.Semi;
@@ -38,6 +43,8 @@ namespace VRRange.Weapons
         public event Action<Weapon, int, int> AmmoChanged;      // weapon, rounds, magazineSize
         public event Action<Weapon, bool> ReloadStateChanged;  // weapon, isReloading
         public event Action<Weapon, FireMode> FireModeChanged;
+        /// <summary>Raised when the set of hands holding the weapon changes (one-handed <-> two-handed, hand swap).</summary>
+        public event Action<Weapon> GripChanged;
 
         public WeaponDefinition Definition => m_Definition;
         public XRGrabInteractable Grab => m_Grab;
@@ -48,6 +55,10 @@ namespace VRRange.Weapons
         public bool IsHeld => m_Grab != null && m_Grab.isSelected && PrimaryHandInteractor != null;
         public FireMode CurrentFireMode => m_FireMode;
         public string DisplayName => m_Definition != null ? m_Definition.displayName : name;
+        public WeaponHandlingTransformer Handling => m_Handling;
+        public bool IsTwoHanded => m_Handling != null && m_Handling.IsTwoHanded;
+        /// <summary>Number of controller hands currently holding the weapon (sockets excluded).</summary>
+        public int HandCount { get { int n = 0; if (m_Grab != null) foreach (var i in m_Grab.interactorsSelecting) if (i is XRBaseInputInteractor) n++; return n; } }
 
         /// <summary>The first controller interactor holding the weapon (sockets are ignored).</summary>
         public XRBaseInputInteractor PrimaryHandInteractor
@@ -64,6 +75,27 @@ namespace VRRange.Weapons
         public void Initialize(WeaponDefinition definition, Transform muzzle, WeaponAnimator animator, ParticleSystem muzzleFlash, AudioSource audioSource, Light muzzleLight)
         {
             m_Definition = definition; m_Muzzle = muzzle; m_Animator = animator; m_MuzzleFlash = muzzleFlash; m_AudioSource = audioSource; m_MuzzleLight = muzzleLight;
+        }
+
+        public void SetHandling(WeaponHandlingTransformer handling, WeaponGripAnchor primary, WeaponGripAnchor support)
+        {
+            m_Handling = handling; m_PrimaryAnchor = primary; m_SupportAnchor = support;
+        }
+
+        public void SetEjectionPort(Transform port) { m_EjectionPort = port; }
+
+        /// <summary>Grip anchor for a hand interactor: the first hand gets the primary grip, the second the support grip.</summary>
+        public WeaponGripAnchor GetGripAnchorFor(IXRInteractor interactor)
+        {
+            if (m_Grab == null || interactor == null) return m_PrimaryAnchor;
+            int hands = 0;
+            foreach (var i in m_Grab.interactorsSelecting)
+            {
+                if (!(i is XRBaseInputInteractor)) continue;
+                if (ReferenceEquals(i, interactor)) return hands == 0 ? m_PrimaryAnchor : (m_SupportAnchor != null ? m_SupportAnchor : m_PrimaryAnchor);
+                hands++;
+            }
+            return m_PrimaryAnchor;
         }
 
         void Awake()
@@ -100,12 +132,17 @@ namespace VRRange.Weapons
         void OnSelectEntered(SelectEnterEventArgs args)
         {
             if (args.interactorObject is XRBaseInputInteractor)
+            {
                 AmmoChanged?.Invoke(this, m_Rounds, MagazineSize);
+                GripChanged?.Invoke(this);
+                SendHaptics(0.25f, 0.04f);
+            }
         }
 
         void OnSelectExited(SelectExitEventArgs args)
         {
             if (PrimaryHandInteractor == null) { m_TriggerHeld = false; m_Animator?.SetTriggerPulled(false); }
+            if (args.interactorObject is XRBaseInputInteractor) GripChanged?.Invoke(this);
         }
 
         void OnActivated(ActivateEventArgs args)
@@ -168,12 +205,26 @@ namespace VRRange.Weapons
 
             ScoreManager.NotifyShot();
 
-            m_Animator?.PlayFire(m_Definition.kickBackMetres, m_Definition.kickUpDegrees, m_Definition.kickSideDegrees, m_Definition.recoverySpeed, m_Definition.slideTravel);
+            if (m_Handling != null)
+            {
+                // Pose-level recoil (grip- and weight-dependent) on the whole weapon; the model keeps a small residual kick for the slide/bolt feel.
+                m_Handling.AddRecoilImpulse(m_Definition.kickBackMetres, m_Definition.kickUpDegrees, m_Definition.kickSideDegrees);
+                m_Animator?.PlayFire(m_Definition.kickBackMetres * 0.3f, m_Definition.kickUpDegrees * 0.25f, m_Definition.kickSideDegrees * 0.3f, m_Definition.recoverySpeed, m_Definition.slideTravel);
+            }
+            else m_Animator?.PlayFire(m_Definition.kickBackMetres, m_Definition.kickUpDegrees, m_Definition.kickSideDegrees, m_Definition.recoverySpeed, m_Definition.slideTravel);
             if (m_MuzzleFlash != null) { m_MuzzleFlash.transform.localScale = Vector3.one * m_Definition.muzzleFlashScale; m_MuzzleFlash.Play(true); }
             if (m_MuzzleLight != null && isActiveAndEnabled) StartCoroutine(FlashLight());
             PlayClip(m_Definition.fireClip, m_Definition.fireVolume, 0.06f);
-            SendHaptics(m_Definition.hapticAmplitude, m_Definition.hapticDuration);
+            float gripScale = m_Handling != null ? Mathf.Lerp(1.15f, 0.85f, m_Handling.TwoHandBlend) : 1f; // unsupported shots kick the hand harder
+            SendHaptics(m_Definition.hapticAmplitude * gripScale, m_Definition.hapticDuration);
             if (m_Rounds <= 0) m_Animator?.SetSlideLocked(true);
+
+            if (m_EjectionPort != null)
+            {
+                var port = m_EjectionPort;
+                var vel = port.right * UnityEngine.Random.Range(1.6f, 2.6f) + port.up * UnityEngine.Random.Range(0.8f, 1.6f) + port.forward * UnityEngine.Random.Range(-0.3f, 0.3f);
+                ShellCasingPool.Eject(port.position, vel, UnityEngine.Random.insideUnitSphere * 30f, m_Definition.weaponClass == WeaponClass.Pistol ? 0.8f : 1f);
+            }
 
             Fired?.Invoke(this);
             AmmoChanged?.Invoke(this, m_Rounds, MagazineSize);
@@ -206,10 +257,12 @@ namespace VRRange.Weapons
             PlayClip(m_Definition.reloadStartClip, 0.8f, 0.03f);
             m_Animator?.PlayReload(m_Definition.reloadSeconds);
             SendHaptics(0.3f, 0.05f);
+            PoseFreeHandForReload();
             yield return new WaitForSeconds(m_Definition.reloadSeconds);
             m_Rounds = m_Definition.magazineSize;
             m_Animator?.SetSlideLocked(false);
             PlayClip(m_Definition.reloadEndClip, 0.8f, 0.03f);
+            if (m_Definition.slideRackClip != null) { yield return new WaitForSeconds(0.12f); PlayClip(m_Definition.slideRackClip, 0.7f, 0.04f); m_Animator?.PlayFire(0f, 0f, 0f, 12f, m_Definition.slideTravel); }
             SendHaptics(0.4f, 0.06f);
             m_Reloading = false;
             ReloadStateChanged?.Invoke(this, false);
@@ -236,6 +289,23 @@ namespace VRRange.Weapons
             m_Animator?.SetSlideLocked(false);
             AmmoChanged?.Invoke(this, m_Rounds, MagazineSize);
         }
+
+        /// <summary>The hand that is not holding this weapon mimes grabbing the magazine during a reload.</summary>
+        void PoseFreeHandForReload()
+        {
+            var primary = PrimaryHandInteractor;
+            if (primary == null) return;
+            bool primaryIsLeft = primary.handedness == InteractorHandedness.Left;
+            foreach (var hand in FindObjectsByType<HandPresence>(FindObjectsSortMode.None))
+            {
+                if (hand.IsLeft == primaryIsLeft || hand.HeldWeapon != null) continue;
+                hand.OverridePose(null, 0f); // clear any stale override
+                hand.OverridePose(ReloadPinchPose, m_Definition.reloadSeconds * 0.9f);
+            }
+        }
+
+        static HandPose s_ReloadPinch;
+        static HandPose ReloadPinchPose => s_ReloadPinch != null ? s_ReloadPinch : (s_ReloadPinch = HandPose.Create("ReloadPinch", 0.55f, 0.6f, 0.75f, 0.85f, 0.9f, 0.2f, false));
 
         void PlayClip(AudioClip clip, float volume, float pitchJitter)
         {

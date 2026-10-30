@@ -11,7 +11,7 @@ namespace VRRange.Editor
         {
             SetupLog.Section("Art import settings");
             int textures = 0, audio = 0, models = 0;
-            foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { RangePaths.ArtTextures, RangePaths.ArtSigns, RangePaths.ArtFx }))
+            foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { RangePaths.ArtTextures, RangePaths.ArtSigns, RangePaths.ArtFx, RangePaths.ArtUI }))
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 if (AssetImporter.GetAtPath(path) is TextureImporter ti && ConfigureTexture(ti, path)) { ti.SaveAndReimport(); textures++; }
@@ -21,7 +21,7 @@ namespace VRRange.Editor
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 if (AssetImporter.GetAtPath(path) is AudioImporter ai && ConfigureAudio(ai, path)) { ai.SaveAndReimport(); audio++; }
             }
-            foreach (var guid in AssetDatabase.FindAssets("t:Model", new[] { RangePaths.ArtWeapons }))
+            foreach (var guid in AssetDatabase.FindAssets("t:Model", new[] { RangePaths.ArtWeapons, RangePaths.ArtHands }))
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 if (AssetImporter.GetAtPath(path) is ModelImporter mi && ConfigureModel(mi)) { mi.SaveAndReimport(); models++; }
@@ -34,9 +34,17 @@ namespace VRRange.Editor
             var name = Path.GetFileNameWithoutExtension(path);
             bool changed = false;
             bool isNormal = name.EndsWith("_normal");
-            bool isMask = name.EndsWith("_mask");
+            bool isMask = name.EndsWith("_mask") || name.EndsWith("_ao");
             bool isSprite = path.StartsWith(RangePaths.ArtFx);
-            var type = isNormal ? TextureImporterType.NormalMap : TextureImporterType.Default;
+            bool isUi = path.StartsWith(RangePaths.ArtUI);
+            var type = isNormal ? TextureImporterType.NormalMap : (isUi ? TextureImporterType.Sprite : TextureImporterType.Default);
+            if (isUi)
+            {
+                isSprite = true;
+                var border = name.StartsWith("ui_") && !name.Contains("shadow") ? new Vector4(20, 20, 20, 20) : (name.Contains("shadow") ? new Vector4(30, 30, 30, 30) : Vector4.zero);
+                if (ti.spriteBorder != border) { ti.spriteBorder = border; changed = true; }
+                if (ti.spriteImportMode != SpriteImportMode.Single) { ti.spriteImportMode = SpriteImportMode.Single; changed = true; }
+            }
             if (ti.textureType != type) { ti.textureType = type; changed = true; }
             if (ti.sRGBTexture != (!isNormal && !isMask)) { ti.sRGBTexture = !isNormal && !isMask; changed = true; }
             bool alpha = isMask || isSprite;
@@ -75,12 +83,15 @@ namespace VRRange.Editor
         static bool ConfigureModel(ModelImporter mi)
         {
             bool changed = false;
+            string path = mi.assetPath;
             if (mi.globalScale != 1f) { mi.globalScale = 1f; changed = true; }
             if (mi.useFileScale != false) { mi.useFileScale = false; changed = true; }
             if (mi.importNormals != ModelImporterNormals.Import) { mi.importNormals = ModelImporterNormals.Import; changed = true; }
             if (mi.importTangents != ModelImporterTangents.CalculateMikk) { mi.importTangents = ModelImporterTangents.CalculateMikk; changed = true; }
             if (mi.materialImportMode != ModelImporterMaterialImportMode.None) { mi.materialImportMode = ModelImporterMaterialImportMode.None; changed = true; }
-            if (mi.importAnimation) { mi.importAnimation = false; changed = true; }
+            bool isHand = path.StartsWith(RangePaths.ArtHands);
+            if (mi.importAnimation != false) { mi.importAnimation = false; changed = true; }
+            if (isHand && mi.animationType != ModelImporterAnimationType.None) { mi.animationType = ModelImporterAnimationType.None; changed = true; } // plain transform rig driven by HandPresence
             if (mi.meshCompression != ModelImporterMeshCompression.Low) { mi.meshCompression = ModelImporterMeshCompression.Low; changed = true; }
             if (!mi.isReadable) { mi.isReadable = true; changed = true; } // builder reads submesh material names
             return changed;

@@ -16,6 +16,18 @@ namespace VRRange.Editor
 
         public static void ResetCache() => s_Cache.Clear();
 
+        /// <summary>Finds &lt;set&gt;&lt;suffix&gt;.png/.jpg in Assets/Art/Textures or its PBR subfolder (CC0 ambientCG sets).</summary>
+        public static Texture2D FindTexture(string set, string suffix)
+        {
+            foreach (var dir in new[] { RangePaths.ArtTextures + "/PBR", RangePaths.ArtTextures })
+                foreach (var ext in new[] { ".png", ".jpg" })
+                {
+                    var t = AssetDatabase.LoadAssetAtPath<Texture2D>($"{dir}/{set}{suffix}{ext}");
+                    if (t != null) return t;
+                }
+            return null;
+        }
+
         /// <summary>PBR material from &lt;name&gt;_albedo/_normal/_mask textures in Assets/Art/Textures.</summary>
         public static Material Pbr(string textureSet, string materialName = null, float tiling = 1f, float smoothnessFallback = 0.4f, Color? tint = null)
         {
@@ -26,13 +38,15 @@ namespace VRRange.Editor
             bool created = mat == null;
             if (created) { mat = new Material(Lit); RangePaths.EnsureFolder(RangePaths.Materials); AssetDatabase.CreateAsset(mat, path); }
             mat.shader = Lit;
-            var albedo = AssetDatabase.LoadAssetAtPath<Texture2D>($"{RangePaths.ArtTextures}/{textureSet}_albedo.png");
-            var normal = AssetDatabase.LoadAssetAtPath<Texture2D>($"{RangePaths.ArtTextures}/{textureSet}_normal.png");
-            var mask = AssetDatabase.LoadAssetAtPath<Texture2D>($"{RangePaths.ArtTextures}/{textureSet}_mask.png");
-            if (albedo != null) mat.SetTexture("_BaseMap", albedo); else SetupLog.Warn($"Texture missing: {textureSet}_albedo.png (run Tools/AssetGen/gen_textures.py)");
+            var albedo = FindTexture(textureSet, "_albedo");
+            var normal = FindTexture(textureSet, "_normal");
+            var mask = FindTexture(textureSet, "_mask");
+            var ao = FindTexture(textureSet, "_ao");
+            if (albedo != null) mat.SetTexture("_BaseMap", albedo); else SetupLog.Warn($"Texture missing: {textureSet}_albedo (run Tools/AssetGen/gen_textures.py or fetch_ambientcg.py)");
             if (normal != null) { mat.SetTexture("_BumpMap", normal); mat.EnableKeyword("_NORMALMAP"); }
             if (mask != null) { mat.SetTexture("_MetallicGlossMap", mask); mat.EnableKeyword("_METALLICSPECGLOSSMAP"); mat.SetFloat("_Smoothness", 1f); }
             else mat.SetFloat("_Smoothness", smoothnessFallback);
+            if (ao != null) { mat.SetTexture("_OcclusionMap", ao); mat.EnableKeyword("_OCCLUSIONMAP"); mat.SetFloat("_OcclusionStrength", 1f); }
             mat.SetColor("_BaseColor", tint ?? Color.white);
             mat.SetTextureScale("_BaseMap", new Vector2(tiling, tiling));
             mat.enableInstancing = true;

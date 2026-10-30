@@ -9,6 +9,7 @@ using Unity.XR.CoreUtils;
 using VRRange.Audio;
 using VRRange.Ballistics;
 using VRRange.Core;
+using VRRange.Hands;
 using VRRange.Modes;
 using VRRange.Player;
 using VRRange.Scoring;
@@ -37,6 +38,7 @@ namespace VRRange.Editor
             var weapons = BuildWeaponCounter(root);
             BuildRig(root);
             var ui = UiBuilder.Build(root);
+            UiBuilder.BuildLaneScoreboards(root, lanes);
             ConfigureLightingAndAmbient();
 
             var gm = Object.FindFirstObjectByType<GameModeManager>();
@@ -82,6 +84,11 @@ namespace VRRange.Editor
             }
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            var casings = new GameObject("ShellCasingPool"); casings.transform.SetParent(managers.transform, false);
+            var cp = casings.AddComponent<ShellCasingPool>();
+            if (FxPrefabBuilder.ShellCasing != null) EditorRefs.Set(cp, "m_CasingPrefab", FxPrefabBuilder.ShellCasing.GetComponent<Rigidbody>());
+            EditorRefs.SetArray(cp, "m_BounceClips", new Object[] { SettingsAssetBuilder.Clip("Weapons/casing_bounce_1"), SettingsAssetBuilder.Clip("Weapons/casing_bounce_2"), SettingsAssetBuilder.Clip("Weapons/casing_bounce_3") });
+
             var audio = new GameObject("AudioManager"); audio.transform.SetParent(managers.transform, false);
             var am = audio.AddComponent<AudioManager>();
             var amb = audio.AddComponent<AudioSource>(); amb.playOnAwake = false; amb.loop = true; amb.spatialBlend = 0f;
@@ -90,6 +97,9 @@ namespace VRRange.Editor
             EditorRefs.Set(am, "m_AmbienceLoop", SettingsAssetBuilder.Clip("Ambience/range_ambience_loop"));
             EditorRefs.Set(am, "m_UiClick", SettingsAssetBuilder.Clip("UI/ui_click"));
             EditorRefs.Set(am, "m_TargetHitDing", SettingsAssetBuilder.Clip("Impacts/target_ding"));
+            EditorRefs.SetArray(am, "m_CountdownClips", new Object[] { SettingsAssetBuilder.Clip("UI/countdown_1"), SettingsAssetBuilder.Clip("UI/countdown_2"), SettingsAssetBuilder.Clip("UI/countdown_3"), SettingsAssetBuilder.Clip("UI/countdown_4") });
+            EditorRefs.Set(am, "m_RoundComplete", SettingsAssetBuilder.Clip("UI/round_complete"));
+            EditorRefs.Set(am, "m_MenuConfirm", SettingsAssetBuilder.Clip("UI/menu_confirm"));
         }
 
         static List<TargetLane> BuildLanes(Transform root)
@@ -171,13 +181,45 @@ namespace VRRange.Editor
             }
             rig.transform.position = new Vector3(0f, 0f, -1.4f);
             rig.transform.rotation = Quaternion.identity;
-            rig.AddComponent<PlayerRigSetup>();
+            EditorRefs.Ensure<PlayerRigSetup>(rig);
+            BuildHands(rig);
             var vignette = AssetDatabase.LoadAssetAtPath<GameObject>(RangePaths.TunnelingVignettePrefab);
             var cameraTf = rig.GetComponentInChildren<Camera>()?.transform;
             if (vignette != null && cameraTf != null && cameraTf.Find("TunnelingVignette") == null)
             {
                 var v = (GameObject)PrefabUtility.InstantiatePrefab(vignette); v.transform.SetParent(cameraTf, false);
             }
+        }
+
+        /// <summary>Adds visible, animated hands (XR Hands sample rig) under each controller of the rig.</summary>
+        static void BuildHands(GameObject rig)
+        {
+            var skin = MaterialLibrary.Pbr("skin", "HandSkin", 1f, 0.42f);
+            int built = 0;
+            foreach (var isLeft in new[] { true, false })
+            {
+                string controllerName = isLeft ? "Left Controller" : "Right Controller";
+                Transform controller = null;
+                foreach (var t in rig.GetComponentsInChildren<Transform>(true)) if (t.name == controllerName) { controller = t; break; }
+                if (controller == null) { SetupLog.Warn($"{controllerName} not found in the rig; hand not added"); continue; }
+                var modelAsset = AssetDatabase.LoadAssetAtPath<GameObject>(isLeft ? RangePaths.HandLeftModel : RangePaths.HandRightModel);
+                if (modelAsset == null) { SetupLog.Warn($"Hand model missing: {(isLeft ? RangePaths.HandLeftModel : RangePaths.HandRightModel)}"); continue; }
+                var holder = EditorRefs.Child(controller.gameObject, "Hand Visual");
+                EditorRefs.DestroyChildren(holder.transform);
+                var model = (GameObject)PrefabUtility.InstantiatePrefab(modelAsset);
+                model.transform.SetParent(holder.transform, false);
+                model.name = isLeft ? "LeftHandModel" : "RightHandModel";
+                foreach (var r in model.GetComponentsInChildren<Renderer>(true))
+                {
+                    var mats = new Material[r.sharedMaterials.Length]; for (int i = 0; i < mats.Length; i++) mats[i] = skin;
+                    r.sharedMaterials = mats; r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    if (r is SkinnedMeshRenderer smr) smr.updateWhenOffscreen = true;
+                }
+                var hand = EditorRefs.Ensure<HandPresence>(holder);
+                hand.Configure(isLeft, model.transform, controller, SettingsAssetBuilder.Pose("Open"), SettingsAssetBuilder.Pose("Fist"), SettingsAssetBuilder.Pose("Idle"), SettingsAssetBuilder.Pose("Pinch"));
+                built++;
+            }
+            SetupLog.Ok($"{built} animated hands added to the rig");
         }
 
         static void ConfigureLightingAndAmbient()

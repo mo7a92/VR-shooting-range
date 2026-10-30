@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aabf84a7cb784c4e4a4cc05d4da1faaa, type: 3}
+  m_Name: Weapon_SMG
+  m_EditorClassIdentifier: VRRange.Runtime::VRRange.Core.WeaponDefinition
+  weaponId: smg
+  displayName: SMG
+  weaponClass: 2
+  twoHanded: 1
+  supportedFireModes: 3
+  defaultFireMode: 2
+  roundsPerMinute: 850
+  magazineSize: 32
+  reloadSeconds: 1.9
+  muzzleVelocity: 110
+  spreadDegrees: 0.9
+  gravityMultiplier: 3
+  projectileLifetime: 3
+  kickBackMetres: 0.015
+  kickUpDegrees: 1.8
+  kickSideDegrees: 1.2
+  recoverySpeed: 24
+  slideTravel: 0.025
+  hapticAmplitude: 0.5
+  hapticDuration: 0.04
+  secondaryHandHapticScale: 0.6
+  fireClip: {fileID: 8300000, guid: f7dc70d35478836dba955e7c2b74a030, type: 3}
+  dryFireClip: {fileID: 8300000, guid: a7342e2ed45e7329fbdbccb417e51288, type: 3}
+  reloadStartClip: {fileID: 8300000, guid: c8c6f4260f946371a979025123b4cb30, type: 3}
+  reloadEndClip: {fileID: 8300000, guid: 4350e70c015a4205488e655b85498225, type: 3}
+  fireModeClip: {fileID: 8300000, guid: c952828795ab8155080d31b754bd349f, type: 3}
+  fireVolume: 1
+  muzzleFlashScale: 0.9
+  tracerColor: {r: 1, g: 0.9, b: 0.6, a: 1}

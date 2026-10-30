@@ -23,6 +23,10 @@ Meta Quest 2 standalone VR shooting range (university project). C#, Android ARM6
 - Keep `Library/`, `Temp/`, `Logs/`, builds and credentials out of git.
 - Prefer APIs verified against package sources (XRI 3.3.2, OpenXR 1.16.1, Input System 1.14.2, URP 17.3.0).
 
+**State (2026-10-30):** verified in a real Unity 6000.3.27f1 container run: compiles, setup OK, EditMode 16/16,
+PlayMode 4/4, Quest 2 APK builds. Generated scene/prefabs/settings and all `.meta` files are committed; keep GUIDs
+stable (do not delete/recreate `.meta` files). Headset testing pending.
+
 **Commands**
 - Cloud compile check: `python3 Tools/CloudCompileCheck/compile_check.py` (needs toolchain, see script header).
 - Local (Windows): open in Unity Hub → **VR Range > Setup > Run Full Setup**; build via

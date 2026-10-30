@@ -1,0 +1,28 @@
+// Custom Gradle settings template (Unity 6.3 default with reordered repositories).
+// Google's Maven is queried first (it hosts the Android Gradle Plugin) and Google's official Maven Central mirror
+// before Maven Central itself, so builds survive Maven Central rate limiting (HTTP 429) on shared networks.
+pluginManagement {
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        google()
+        maven { url = uri("https://maven-central.storage-download.googleapis.com/maven2/") }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+include ':launcher', ':unityLibrary'
+**INCLUDES**
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        google()
+        maven { url = uri("https://maven-central.storage-download.googleapis.com/maven2/") }
+        mavenCentral()
+        flatDir {
+            dirs "${project(':unityLibrary').projectDir}/libs"
+        }
+    }
+}

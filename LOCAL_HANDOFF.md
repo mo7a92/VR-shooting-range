@@ -1,8 +1,10 @@
 # LOCAL_HANDOFF — from cloud to your Windows PC and Quest 2
 
-Everything below happens on **your Windows PC**. The cloud session could not run Unity, build an APK or
-touch the headset; it prepared the project so that these steps are short. Expect the first Unity open to
-take 10–20 minutes (package download + import + first-time generation).
+Everything below happens on **your Windows PC**. The cloud session ran the real Unity 6000.3.27f1 editor in a
+container: the project imports and compiles, its setup generated the scene/prefabs/settings (all committed),
+EditMode and PlayMode tests pass, and a Quest 2 APK was built (`TEST_RESULTS.md`). What the cloud could not do
+is touch a headset, so the on-device steps below are yours. Expect the first Unity open to take 5–15 minutes
+(package download + import).
 
 ## 0. What you need (once)
 1. **Unity Hub** → https://unity.com/download. Sign in (free Personal licence is fine).
@@ -26,11 +28,10 @@ git checkout claude/determined-feynman-nc2t0l
 1. Unity Hub → *Add* → *Add project from disk* → choose the `VR-shooting-range` folder → open it with 6.3 LTS.
    If Hub says the exact version `6000.3.27f1` is missing, pick your installed 6000.3.x; Unity upgrades in place.
 2. Wait for packages to resolve and scripts to compile (Console must show no red errors).
-3. A dialog **"VR Shooting Range setup"** appears → *Run setup*. It applies player/XR/URP/OpenXR settings,
-   imports TMP Essentials, builds materials, prefabs and the scene `Assets/Scenes/ShootingRange.unity`, and
-   writes `Logs/VRRangeSetupReport.md`.
-   - If the dialog does not appear: menu **VR Range → Setup → Run Full Setup**.
-   - If the report says *"Input handling switched… needs a restart"*: close Unity and reopen the project once.
+3. The scene, prefabs and all settings are already generated and committed, so normally **no setup dialog
+   appears**. If one does (for example after changing Unity version), choose *Run setup*; it is idempotent.
+   - Optional: **VR Range → Setup → Rebuild Everything** switches the UI to the standard TMP font
+     (the cloud build used a generated fallback font because TMP essentials could not be imported in batch mode).
    - Command-line alternative: `powershell -ExecutionPolicy Bypass -File Tools\Windows\run_setup.ps1`.
 4. **VR Range → Validate Project** → read the dialog / `Logs/VRRangeSetupReport.md`. Fix anything marked ⚠️.
 5. Open the scene: **VR Range → Open Shooting Range Scene**. Press Play to see it (no headset needed to view;
@@ -50,6 +51,8 @@ git checkout claude/determined-feynman-nc2t0l
 Without a bake the scene uses a handful of mixed/realtime lights and still runs.
 
 ## 5. Build the APK
+A cloud-built APK already exists (46 MB, see `TEST_RESULTS.md`); it was handed over as a file in the session and
+is not stored in git. To rebuild locally:
 - Menu **VR Range → Build → Build Quest 2 APK** → `Builds/VRShootingRange.apk`, or
 - `powershell -ExecutionPolicy Bypass -File Tools\Windows\build_apk.ps1` (add `-BakeLighting` to bake first,
   `-Development` for a debug build). The first IL2CPP build takes 10–25 minutes.

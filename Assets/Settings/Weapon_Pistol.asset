@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aabf84a7cb784c4e4a4cc05d4da1faaa, type: 3}
+  m_Name: Weapon_Pistol
+  m_EditorClassIdentifier: VRRange.Runtime::VRRange.Core.WeaponDefinition
+  weaponId: pistol
+  displayName: Pistol
+  weaponClass: 0
+  twoHanded: 0
+  supportedFireModes: 1
+  defaultFireMode: 1
+  roundsPerMinute: 360
+  magazineSize: 12
+  reloadSeconds: 1.5
+  muzzleVelocity: 90
+  spreadDegrees: 0.35
+  gravityMultiplier: 3
+  projectileLifetime: 3
+  kickBackMetres: 0.035
+  kickUpDegrees: 6
+  kickSideDegrees: 0.8
+  recoverySpeed: 16
+  slideTravel: 0.03
+  hapticAmplitude: 0.65
+  hapticDuration: 0.07
+  secondaryHandHapticScale: 0.5
+  fireClip: {fileID: 8300000, guid: 5cc6e8a1dafd25fba931fdea8a83bdf4, type: 3}
+  dryFireClip: {fileID: 8300000, guid: a7342e2ed45e7329fbdbccb417e51288, type: 3}
+  reloadStartClip: {fileID: 8300000, guid: c8c6f4260f946371a979025123b4cb30, type: 3}
+  reloadEndClip: {fileID: 8300000, guid: 4350e70c015a4205488e655b85498225, type: 3}
+  fireModeClip: {fileID: 8300000, guid: c952828795ab8155080d31b754bd349f, type: 3}
+  fireVolume: 1
+  muzzleFlashScale: 0.8
+  tracerColor: {r: 1, g: 0.85, b: 0.5, a: 1}

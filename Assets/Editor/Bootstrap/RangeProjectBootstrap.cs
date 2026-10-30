@@ -95,7 +95,14 @@ namespace VRRange.Editor
                 if (TMPro.TMP_Settings.instance != null) { SetupLog.Ok("TMP Essential Resources present"); return; }
                 string path = File.Exists(TmpPackagePathUgui) ? TmpPackagePathUgui : (File.Exists(TmpPackagePathTmp) ? TmpPackagePathTmp : null);
                 if (path == null) { SetupLog.Warn("TMP Essential Resources package not found; UI will use a fallback font."); return; }
-                if (Application.isBatchMode) { SetupLog.Warn("Batch mode: TMP Essentials cannot be imported non-interactively here; UI uses a fallback font."); return; }
+                if (Application.isBatchMode)
+                {
+                    // Batch mode imports synchronously; no completion callback is needed.
+                    AssetDatabase.ImportPackage(path, false);
+                    AssetDatabase.Refresh();
+                    SetupLog.Ok(TMPro.TMP_Settings.instance != null ? "TMP Essential Resources imported (batch)" : "TMP Essential Resources import attempted in batch mode; UI falls back to a generated font if missing");
+                    return;
+                }
                 AssetDatabase.importPackageCompleted += OnTmpImported;
                 AssetDatabase.importPackageFailed += OnTmpFailed;
                 AssetDatabase.ImportPackage(path, false);

@@ -33,8 +33,6 @@ namespace VRRange.Editor
         {
             var name = Path.GetFileNameWithoutExtension(path);
             bool changed = false;
-            void Set<T>(ref T field, T value) { if (!Equals(field, value)) { field = value; changed = true; } }
-
             bool isNormal = name.EndsWith("_normal");
             bool isMask = name.EndsWith("_mask");
             bool isSprite = path.StartsWith(RangePaths.ArtFx);

@@ -36,15 +36,19 @@ namespace VRRange.Editor
             asset.renderScale = 1.0f;
             asset.supportsCameraDepthTexture = false;
             asset.supportsCameraOpaqueTexture = false;
-            asset.supportsMainLightShadows = true;
             asset.mainLightShadowmapResolution = 1024;
             asset.shadowDistance = 18f;
             asset.shadowCascadeCount = 1;
-            asset.additionalLightsRenderingMode = LightRenderingMode.PerVertex;
             asset.maxAdditionalLightsCount = 4;
-            asset.supportsAdditionalLightShadows = false;
             asset.useSRPBatcher = true;
             asset.colorGradingMode = ColorGradingMode.LowDynamicRange;
+            // These three have internal setters in URP 17.3; write the serialized fields instead (names verified in URP source).
+            var so = new SerializedObject(asset);
+            SetBool(so, "m_MainLightShadowsSupported", true);
+            SetBool(so, "m_AdditionalLightShadowsSupported", false);
+            var mode = so.FindProperty("m_AdditionalLightsRenderingMode");
+            if (mode != null) mode.enumValueIndex = (int)LightRenderingMode.PerVertex;
+            so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(asset);
 
             GraphicsSettings.defaultRenderPipeline = asset;
@@ -57,6 +61,12 @@ namespace VRRange.Editor
             AssetDatabase.SaveAssets();
             SetupLog.Ok("URP asset assigned (Forward, 4x MSAA, no HDR, no depth/opaque textures, per-vertex additional lights)");
             return asset;
+        }
+
+        static void SetBool(SerializedObject so, string name, bool value)
+        {
+            var p = so.FindProperty(name);
+            if (p != null) p.boolValue = value; else SetupLog.Warn($"URP asset field '{name}' not found; set it manually in {RangePaths.UrpAsset}");
         }
     }
 }

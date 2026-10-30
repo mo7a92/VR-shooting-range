@@ -38,7 +38,7 @@ namespace VRRange.Editor
             Check(BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Android, BuildTarget.Android), "Android Build Support installed", "Android Build Support module not installed in this editor (Unity Hub > Installs > Add modules)");
             Check(EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android, "Active build target is Android", "Active build target is not Android (File > Build Profiles > Android > Switch Platform)");
             Check(TMPro.TMP_Settings.instance != null, "TMP Essential Resources imported", "TMP Essential Resources not imported (UI uses fallback font); Window > TextMeshPro > Import TMP Essential Resources");
-            Check(Lightmapping.lightingSettings != null, "Lighting settings assigned", "No lighting settings asset assigned");
+            Check(Lightmapping.TryGetLightingSettings(out var lightingSettings) && lightingSettings != null, "Lighting settings assigned", "No lighting settings asset assigned (the scene builder assigns one when the scene is generated)");
             SetupLog.Info("Lightmaps are NOT baked by setup; run VR Range > Build > Bake Lighting before the final build for best Quest 2 performance.");
         }
 

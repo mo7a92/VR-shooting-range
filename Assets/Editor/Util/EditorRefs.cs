@@ -38,7 +38,12 @@ namespace VRRange.Editor
             return go;
         }
 
-        public static T Ensure<T>(GameObject go) where T : Component => go.GetComponent<T>() ?? go.AddComponent<T>();
+        /// <summary>GetComponent-or-add. Uses an explicit null check: Unity's "missing" objects are not caught by the ?? operator.</summary>
+        public static T Ensure<T>(GameObject go) where T : Component
+        {
+            var c = go.GetComponent<T>();
+            return c != null ? c : go.AddComponent<T>();
+        }
 
         public static GameObject MeshObject(GameObject parent, string name, Mesh mesh, Material[] materials, Vector3 localPos, Vector3 localEuler = default, int layer = -1, bool collider = false, bool isStatic = false)
         {

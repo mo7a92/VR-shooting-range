@@ -170,7 +170,7 @@ namespace VRRange.Weapons
 
             m_Animator?.PlayFire(m_Definition.kickBackMetres, m_Definition.kickUpDegrees, m_Definition.kickSideDegrees, m_Definition.recoverySpeed, m_Definition.slideTravel);
             if (m_MuzzleFlash != null) { m_MuzzleFlash.transform.localScale = Vector3.one * m_Definition.muzzleFlashScale; m_MuzzleFlash.Play(true); }
-            if (m_MuzzleLight != null) StartCoroutine(FlashLight());
+            if (m_MuzzleLight != null && isActiveAndEnabled) StartCoroutine(FlashLight());
             PlayClip(m_Definition.fireClip, m_Definition.fireVolume, 0.06f);
             SendHaptics(m_Definition.hapticAmplitude, m_Definition.hapticDuration);
             if (m_Rounds <= 0) m_Animator?.SetSlideLocked(true);

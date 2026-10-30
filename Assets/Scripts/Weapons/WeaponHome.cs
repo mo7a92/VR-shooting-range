@@ -49,6 +49,8 @@ namespace VRRange.Weapons
         void OnSelectExited(SelectExitEventArgs args)
         {
             if (m_Timer != null) StopCoroutine(m_Timer);
+            // XRI cancels selections when objects are disabled or the scene unloads; never start coroutines then.
+            if (!isActiveAndEnabled || !gameObject.activeInHierarchy) return;
             m_Timer = StartCoroutine(ReturnCountdown());
         }
 

@@ -6,13 +6,21 @@ distinct handling, pooled projectiles with drop and time of flight, bullseye and
 three play modes with world-space VR menus, teleport + snap-turn comfort locomotion.
 
 The project was written in a cloud session and then verified with the real Unity 6000.3.27f1 editor in a
-container: it imports and compiles, the generated scene/prefabs/settings are committed, EditMode (21) and
-PlayMode (10) tests pass, and a Quest 2 APK builds (`TEST_RESULTS.md`). Headset testing is still pending.
+container: it imports and compiles, the generated scene/prefabs/settings are committed, EditMode (34) and
+PlayMode (63) tests pass, and both a Quest 2 APK and a Windows x64 PCVR player build (`TEST_RESULTS.md`,
+`FINAL_QA_REPORT.md`). Headset testing is still pending.
+
+**V3 (PCVR + QA):** the same project runs on Windows through OpenXR (Meta Quest 2 via Virtual Desktop / VDXR or
+SteamVR, Index/Vive/G2/WMR controllers bound), with a separate high-end graphics preset (HDR, 4-cascade soft shadows,
+SSAO, ACES + bloom), a desktop spectator camera for OBS (first/third person, fixed tripod, 16:9, F1–F6), and an
+automated test suite that drives the whole game through scripted XR interactors (weapons, hands, projectiles,
+targets, modes, UI, stress and a full launch-to-restart session).
 
 **V2 premium upgrade:** weapons have simulated weight and balance (inertia lag, sag, sway, two-point aiming with a
 support hand, grip-dependent recoil and haptics), visible animated hands follow the controllers and snap to per-weapon
 grip anchors, shell casings eject, and the range was rebuilt with CC0 PBR materials, booths, baffles and reverb.
-Art and audio are procedurally generated or CC0 and fully redistributable (`ASSET_CREDITS.md`).
+Art is a mix of CC0 photoscanned/game-ready assets (Poly Haven, OpenGameArt), procedurally generated textures and synthesised
+audio, all redistributable (`ASSET_CREDITS.md`). Screenshots: `Docs/Screenshots/final_v7` (before the overhaul: `before_v3`).
 
 ## Quick start (Windows)
 1. Install Unity Hub + Unity 6.3 LTS with *Android Build Support, OpenJDK, Android SDK & NDK Tools*.

@@ -10,8 +10,12 @@ namespace VRRange.Editor
         static readonly Dictionary<string, Mesh> s_Cache = new Dictionary<string, Mesh>();
         public static void ResetCache() => s_Cache.Clear();
 
-        /// <summary>Box with world-size based UV tiling (texelsPerMetre) so textures do not stretch.</summary>
-        public static Mesh Box(string name, Vector3 size, float uvPerMetre = 1f)
+        /// <summary>
+        /// Box with world-size based UV tiling (texelsPerMetre) so textures do not stretch. Large faces are subdivided
+        /// (about one vertex per metre) so per-vertex additional lights (the Quest preset) light walls and floors
+        /// visibly, and a lightmap UV set is generated for baking.
+        /// </summary>
+        public static Mesh Box(string name, Vector3 size, float uvPerMetre = 1f, float maxQuadSize = 1f)
         {
             string path = $"{RangePaths.Meshes}/{name}.asset";
             if (s_Cache.TryGetValue(path, out var cached) && cached != null) return cached;
@@ -23,13 +27,23 @@ namespace VRRange.Editor
             Vector3 h = size * 0.5f;
             void Face(Vector3 normal, Vector3 up, Vector3 right, float w, float hgt)
             {
+                int sx = Mathf.Clamp(Mathf.CeilToInt(w / Mathf.Max(0.05f, maxQuadSize)), 1, 48), sy = Mathf.Clamp(Mathf.CeilToInt(hgt / Mathf.Max(0.05f, maxQuadSize)), 1, 48);
                 int b = v.Count;
                 Vector3 c = Vector3.Scale(normal, h);
-                v.Add(c - right * w * 0.5f - up * hgt * 0.5f); v.Add(c + right * w * 0.5f - up * hgt * 0.5f);
-                v.Add(c + right * w * 0.5f + up * hgt * 0.5f); v.Add(c - right * w * 0.5f + up * hgt * 0.5f);
-                for (int i = 0; i < 4; i++) n.Add(normal);
-                uv.Add(new Vector2(0, 0)); uv.Add(new Vector2(w * uvPerMetre, 0)); uv.Add(new Vector2(w * uvPerMetre, hgt * uvPerMetre)); uv.Add(new Vector2(0, hgt * uvPerMetre));
-                t.AddRange(new[] { b, b + 2, b + 1, b, b + 3, b + 2 });
+                Vector3 origin = c - right * w * 0.5f - up * hgt * 0.5f;
+                for (int j = 0; j <= sy; j++)
+                    for (int i = 0; i <= sx; i++)
+                    {
+                        float fx = (float)i / sx, fy = (float)j / sy;
+                        v.Add(origin + right * (w * fx) + up * (hgt * fy)); n.Add(normal);
+                        uv.Add(new Vector2(w * uvPerMetre * fx, hgt * uvPerMetre * fy));
+                    }
+                for (int j = 0; j < sy; j++)
+                    for (int i = 0; i < sx; i++)
+                    {
+                        int a = b + j * (sx + 1) + i, bb = a + 1, cc = a + sx + 1, d = cc + 1;
+                        t.AddRange(new[] { a, cc, bb, bb, cc, d });
+                    }
             }
             Face(Vector3.forward, Vector3.up, Vector3.left, size.x, size.y);
             Face(Vector3.back, Vector3.up, Vector3.right, size.x, size.y);
@@ -37,10 +51,20 @@ namespace VRRange.Editor
             Face(Vector3.left, Vector3.up, Vector3.back, size.z, size.y);
             Face(Vector3.up, Vector3.forward, Vector3.right, size.x, size.z);
             Face(Vector3.down, Vector3.back, Vector3.right, size.x, size.z);
-            mesh.Clear(); mesh.SetVertices(v); mesh.SetNormals(n); mesh.SetUVs(0, uv); mesh.SetTriangles(t, 0);
+            mesh.Clear();
+            if (v.Count > 65000) mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            mesh.SetVertices(v); mesh.SetNormals(n); mesh.SetUVs(0, uv); mesh.SetTriangles(t, 0);
             mesh.RecalculateTangents(); mesh.RecalculateBounds();
+            LightmapUVs(mesh);
             Save(mesh, path, create); s_Cache[path] = mesh;
             return mesh;
+        }
+
+        /// <summary>Non-overlapping UV2 for lightmaps (the tiled UV0 of boxes/cylinders overlaps between faces).</summary>
+        static void LightmapUVs(Mesh mesh)
+        {
+            try { Unwrapping.GenerateSecondaryUVSet(mesh, new UnwrapParam { angleError = 8f, areaError = 15f, hardAngle = 88f, packMargin = 1f / 256f }); }
+            catch (System.Exception e) { Debug.LogWarning($"[VRRange] lightmap UVs for {mesh.name} failed: {e.Message}"); }
         }
 
         /// <summary>Single-sided quad in the XY plane facing +Z... actually facing -Z (towards a viewer looking at +Z): normal = -Z.</summary>
@@ -59,6 +83,7 @@ namespace VRRange.Editor
             mesh.SetNormals(new List<Vector3> { nrm, nrm, nrm, nrm });
             mesh.SetUVs(0, new List<Vector2> { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) });
             mesh.SetTriangles(normalPositiveZ ? new[] { 0, 1, 2, 0, 2, 3 } : new[] { 0, 2, 1, 0, 3, 2 }, 0);
+            mesh.SetUVs(1, new List<Vector2> { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) });
             mesh.RecalculateTangents(); mesh.RecalculateBounds();
             Save(mesh, path, create); s_Cache[path] = mesh;
             return mesh;
@@ -98,6 +123,7 @@ namespace VRRange.Editor
             }
             mesh.Clear(); mesh.SetVertices(v); mesh.SetNormals(n); mesh.SetUVs(0, uv); mesh.SetTriangles(t, 0);
             mesh.RecalculateTangents(); mesh.RecalculateBounds();
+            LightmapUVs(mesh);
             Save(mesh, path, create); s_Cache[path] = mesh;
             return mesh;
         }

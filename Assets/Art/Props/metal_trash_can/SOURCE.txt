@@ -1,0 +1,4 @@
+Source: Poly Haven model 'metal_trash_can' (https://polyhaven.com/a/metal_trash_can) by GurJas Studios
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [1846.9352722167969, 556.2898814678192, 906.1697272554738]

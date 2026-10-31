@@ -1,0 +1,4 @@
+Source: Poly Haven model 'painted_wooden_bench' (https://polyhaven.com/a/painted_wooden_bench) by Kirill Sannikov
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [1164.9435758590698, 496.5430945158005, 889.2914750613272]

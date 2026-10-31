@@ -1,0 +1,4 @@
+Source: Poly Haven model 'caged_hanging_light' (https://polyhaven.com/a/caged_hanging_light) by Ulan Cabanilla
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [1161.8340015411377, 314.8960471153259, 750.0966191291809]

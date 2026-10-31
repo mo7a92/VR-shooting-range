@@ -1,0 +1,4 @@
+Source: Poly Haven model 'steel_frame_shelves_01' (https://polyhaven.com/a/steel_frame_shelves_01) by James Ray Cock
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [1097.4148511886597, 502.1176338195801, 2140.5010361922905]

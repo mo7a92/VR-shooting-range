@@ -12,10 +12,11 @@ namespace VRRange.Editor
     public static class UiBuilder
     {
         const float PixelsPerMetre = 500f; // canvas scale 0.002: a 500 px wide panel is 1 m
-        static readonly Color PanelColor = new Color(0.08f, 0.09f, 0.11f, 0.92f);
-        static readonly Color ButtonColor = new Color(0.16f, 0.36f, 0.62f, 1f);
-        static readonly Color ButtonHover = new Color(0.22f, 0.48f, 0.78f, 1f);
-        static readonly Color AccentColor = new Color(0.95f, 0.78f, 0.1f, 1f);
+        static readonly Color PanelColor = new Color(0.05f, 0.06f, 0.075f, 0.86f);      // smoked glass
+        static readonly Color ButtonColor = new Color(0.17f, 0.2f, 0.25f, 1f);          // slate
+        static readonly Color ButtonPrimary = new Color(0.82f, 0.56f, 0.12f, 1f);       // amber call-to-action
+        static readonly Color AccentColor = new Color(0.98f, 0.72f, 0.2f, 1f);
+        static readonly Color TextMuted = new Color(0.72f, 0.75f, 0.8f, 1f);
         static TMP_FontAsset s_Font;
         static Sprite s_PanelSprite, s_ButtonSprite, s_OutlineSprite, s_ShadowSprite;
         static Sprite LoadSprite(string name) => AssetDatabase.LoadAssetAtPath<Sprite>($"{RangePaths.ArtUI}/{name}.png");
@@ -30,44 +31,48 @@ namespace VRRange.Editor
             var ui = root.AddComponent<RangeUI>();
 
             // Main menu: left of the spawn point, angled towards the player
-            var menu = Panel(root, "MainMenuPanel", new Vector3(-1.45f, 1.45f, -0.8f), new Vector3(0f, -35f, 0f), 520, 720);
-            Title(menu, "VR SHOOTING RANGE", 44);
-            Label(menu, "SubTitle", "Choose a mode", 24, new Vector2(0, 280), 480, 40, Color.white);
-            ui.freePracticeButton = Button(menu, "FreePractice", "Free Practice", new Vector2(0, 200), 440, 80);
-            ui.accuracyButton = Button(menu, "Accuracy", "Accuracy Challenge", new Vector2(0, 105), 440, 80);
-            ui.movingButton = Button(menu, "Moving", "Moving Target Challenge", new Vector2(0, 10), 440, 80);
-            ui.difficultyLabel = Label(menu, "DifficultyLabel", "Difficulty: Medium", 24, new Vector2(0, -70), 480, 36, AccentColor);
-            ui.bestLabel = Label(menu, "BestLabel", "", 20, new Vector2(0, -185), 480, 30, new Color(0.85f, 0.85f, 0.85f));
+            var menu = Panel(root, "MainMenuPanel", new Vector3(-1.35f, 1.38f, -0.75f), new Vector3(8f, -38f, 0f), 500, 690);
+            Title(menu, "VR SHOOTING RANGE", 40);
+            Label(menu, "SubTitle", "SELECT A MODE", 20, new Vector2(0, 262), 460, 34, TextMuted);
+            ui.freePracticeButton = Button(menu, "FreePractice", "Free Practice", new Vector2(0, 192), 420, 74, ButtonPrimary);
+            ui.accuracyButton = Button(menu, "Accuracy", "Accuracy Challenge", new Vector2(0, 104), 420, 74);
+            ui.movingButton = Button(menu, "Moving", "Moving Target Challenge", new Vector2(0, 16), 420, 74);
+            Divider(menu, new Vector2(0, -34), 440);
+            ui.difficultyLabel = Label(menu, "DifficultyLabel", "Difficulty: Medium", 22, new Vector2(0, -66), 460, 34, AccentColor);
             ui.difficultyButtons = new[]
             {
-                Button(menu, "Easy", "Easy", new Vector2(-150, -130), 130, 60), Button(menu, "Medium", "Medium", new Vector2(0, -130), 130, 60), Button(menu, "Hard", "Hard", new Vector2(150, -130), 130, 60)
+                Button(menu, "Easy", "Easy", new Vector2(-145, -122), 128, 56), Button(menu, "Medium", "Medium", new Vector2(0, -122), 128, 56), Button(menu, "Hard", "Hard", new Vector2(145, -122), 128, 56)
             };
-            Label(menu, "Hint", "Grip: grab   Trigger: fire   A/X: reload   B/Y: fire mode\nLeft stick: teleport   Right stick: turn", 18, new Vector2(0, -225), 480, 70, new Color(0.8f, 0.8f, 0.8f));
-            ui.exitButton = Button(menu, "Exit", "Exit", new Vector2(0, -310), 200, 56, new Color(0.5f, 0.15f, 0.15f));
+            ui.bestLabel = Label(menu, "BestLabel", "", 19, new Vector2(0, -176), 460, 30, TextMuted);
+            Divider(menu, new Vector2(0, -204), 440);
+            Label(menu, "Hint", "GRIP grab      TRIGGER fire      A / X reload      B / Y fire mode\nLEFT STICK teleport      RIGHT STICK turn", 16, new Vector2(0, -244), 460, 60, TextMuted);
+            ui.exitButton = Button(menu, "Exit", "Exit", new Vector2(0, -306), 180, 50, new Color(0.42f, 0.14f, 0.14f));
             ui.mainMenuPanel = menu;
 
             // Lane controls: right of the spawn point
-            var lane = Panel(root, "LaneControlsPanel", new Vector3(1.45f, 1.45f, -0.8f), new Vector3(0f, 35f, 0f), 520, 620);
-            Title(lane, "TARGET CONTROLS", 36);
-            Label(lane, "DistanceTitle", "Distance", 24, new Vector2(0, 220), 480, 36, AccentColor);
+            var lane = Panel(root, "LaneControlsPanel", new Vector3(1.35f, 1.38f, -0.75f), new Vector3(8f, 38f, 0f), 500, 600);
+            Title(lane, "TARGET CONTROLS", 34);
+            Label(lane, "DistanceTitle", "DISTANCE", 20, new Vector2(0, 218), 460, 34, AccentColor);
             ui.distanceButtons = new[]
             {
                 Button(lane, "D5", "5 m", new Vector2(-180, 160), 100, 60), Button(lane, "D10", "10 m", new Vector2(-60, 160), 100, 60),
                 Button(lane, "D15", "15 m", new Vector2(60, 160), 100, 60), Button(lane, "D25", "25 m", new Vector2(180, 160), 100, 60)
             };
-            Label(lane, "MotionTitle", "Target motion", 24, new Vector2(0, 90), 480, 36, AccentColor);
+            Divider(lane, new Vector2(0, 122), 440);
+            Label(lane, "MotionTitle", "TARGET MOTION", 20, new Vector2(0, 90), 460, 34, AccentColor);
             ui.motionButtons = new[]
             {
                 Button(lane, "MStatic", "Static", new Vector2(-120, 30), 200, 56), Button(lane, "MHoriz", "Horizontal", new Vector2(120, 30), 200, 56),
                 Button(lane, "MNearFar", "Near / Far", new Vector2(-120, -40), 200, 56), Button(lane, "MRandom", "Random", new Vector2(120, -40), 200, 56),
                 Button(lane, "MPopUp", "Pop-up", new Vector2(-120, -110), 200, 56)
             };
-            ui.resetTargetsButton = Button(lane, "ResetTargets", "Reset Targets", new Vector2(120, -110), 200, 56, new Color(0.35f, 0.35f, 0.4f));
-            ui.laneStatusLabel = Label(lane, "LaneStatus", "Distance 10 m   Motion: Static", 20, new Vector2(0, -190), 480, 40, Color.white);
+            ui.resetTargetsButton = Button(lane, "ResetTargets", "Reset Targets", new Vector2(120, -110), 200, 56, ButtonPrimary);
+            Divider(lane, new Vector2(0, -160), 440);
+            ui.laneStatusLabel = Label(lane, "LaneStatus", "Distance 10 m   Motion: Static", 20, new Vector2(0, -192), 460, 40, Color.white);
             ui.laneControlsPanel = lane;
 
             // HUD above the centre lane shelf, facing the shooter
-            var hud = Panel(root, "HudPanel", new Vector3(0f, 2.05f, 0.85f), new Vector3(15f, 0f, 0f), 760, 230); // canvases face -Z: visible to the shooter looking downrange
+            var hud = Panel(root, "HudPanel", new Vector3(0f, 2.02f, 0.85f), new Vector3(14f, 0f, 0f), 720, 220); // canvases face -Z: visible to the shooter looking downrange
             ui.modeLabel = Label(hud, "Mode", "Free Practice", 30, new Vector2(0, 80), 720, 40, AccentColor);
             ui.scoreLabel = Label(hud, "Score", "Score 0", 34, new Vector2(-230, 25), 240, 44, Color.white);
             ui.shotsLabel = Label(hud, "Shots", "Shots 0   Hits 0", 26, new Vector2(60, 25), 300, 44, Color.white);
@@ -79,11 +84,11 @@ namespace VRRange.Editor
             ui.hudPanel = hud;
 
             // Results (same spot as the main menu, shown when a challenge ends)
-            var results = Panel(root, "ResultsPanel", new Vector3(-1.45f, 1.45f, -0.8f), new Vector3(0f, -35f, 0f), 520, 620);
-            ui.resultsTitle = Title(results, "RESULTS", 40);
-            ui.resultsBody = Label(results, "Body", "", 26, new Vector2(0, 60), 480, 320, Color.white, TextAlignmentOptions.TopLeft);
-            ui.restartButton = Button(results, "Restart", "Restart", new Vector2(-115, -220), 210, 70);
-            ui.backToMenuButton = Button(results, "Menu", "Main Menu", new Vector2(115, -220), 210, 70, new Color(0.35f, 0.35f, 0.4f));
+            var results = Panel(root, "ResultsPanel", new Vector3(-1.35f, 1.38f, -0.75f), new Vector3(8f, -38f, 0f), 500, 600);
+            ui.resultsTitle = Title(results, "RESULTS", 38);
+            ui.resultsBody = Label(results, "Body", "", 25, new Vector2(0, 50), 440, 320, Color.white, TextAlignmentOptions.TopLeft);
+            ui.restartButton = Button(results, "Restart", "Restart", new Vector2(-110, -220), 200, 66, ButtonPrimary);
+            ui.backToMenuButton = Button(results, "Menu", "Main Menu", new Vector2(110, -220), 200, 66);
             ui.resultsPanel = results;
             results.SetActive(false);
 
@@ -148,8 +153,15 @@ namespace VRRange.Editor
             }
             var border = new GameObject("Border", typeof(RectTransform)); border.transform.SetParent(go.transform, false);
             var brt = border.GetComponent<RectTransform>(); brt.anchorMin = Vector2.zero; brt.anchorMax = Vector2.one; brt.offsetMin = new Vector2(4, 4); brt.offsetMax = new Vector2(-4, -4);
-            var bimg = border.AddComponent<Image>(); bimg.color = AccentColor; bimg.sprite = s_OutlineSprite; bimg.type = Image.Type.Sliced; bimg.pixelsPerUnitMultiplier = 0.5f; bimg.raycastTarget = false;
+            var bimg = border.AddComponent<Image>(); bimg.color = new Color(AccentColor.r, AccentColor.g, AccentColor.b, 0.55f); bimg.sprite = s_OutlineSprite; bimg.type = Image.Type.Sliced; bimg.pixelsPerUnitMultiplier = 0.5f; bimg.raycastTarget = false;
             return go;
+        }
+
+        static void Divider(GameObject panel, Vector2 pos, float width)
+        {
+            var go = new GameObject("Divider", typeof(RectTransform)); go.transform.SetParent(panel.transform, false);
+            var rt = go.GetComponent<RectTransform>(); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(width, 2);
+            var img = go.AddComponent<Image>(); img.color = new Color(1f, 1f, 1f, 0.12f); img.raycastTarget = false;
         }
 
         static TMP_Text Title(GameObject panel, string text, float size)
@@ -158,7 +170,11 @@ namespace VRRange.Editor
             var t = Label(panel, "Title", text, size, new Vector2(0, rt.sizeDelta.y * 0.5f - 50), rt.sizeDelta.x - 40, 70, AccentColor);
             var bar = new GameObject("TitleBar", typeof(RectTransform)); bar.transform.SetParent(panel.transform, false); bar.transform.SetAsFirstSibling(); bar.transform.SetSiblingIndex(1);
             var brt = bar.GetComponent<RectTransform>(); brt.anchoredPosition = new Vector2(0, rt.sizeDelta.y * 0.5f - 50); brt.sizeDelta = new Vector2(rt.sizeDelta.x - 12, 80);
-            var img = bar.AddComponent<Image>(); img.color = new Color(0.1f, 0.2f, 0.35f, 1f); img.raycastTarget = false; img.sprite = s_PanelSprite; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 0.5f;
+            var img = bar.AddComponent<Image>(); img.color = new Color(0.1f, 0.11f, 0.14f, 1f); img.raycastTarget = false; img.sprite = s_PanelSprite; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 0.5f;
+            var line = new GameObject("TitleLine", typeof(RectTransform)); line.transform.SetParent(panel.transform, false); line.transform.SetSiblingIndex(2);
+            var lrt = line.GetComponent<RectTransform>(); lrt.anchoredPosition = new Vector2(0, rt.sizeDelta.y * 0.5f - 92); lrt.sizeDelta = new Vector2(rt.sizeDelta.x - 40, 3);
+            var limg = line.AddComponent<Image>(); limg.color = AccentColor; limg.raycastTarget = false;
+            t.fontStyle = FontStyles.Bold; t.characterSpacing = 4f;
             return t;
         }
 
@@ -178,14 +194,39 @@ namespace VRRange.Editor
             var rt = go.GetComponent<RectTransform>(); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(width, height);
             var img = go.AddComponent<Image>(); img.color = color ?? ButtonColor; img.sprite = s_ButtonSprite; img.type = Image.Type.Sliced; img.pixelsPerUnitMultiplier = 0.6f;
             var btn = go.AddComponent<Button>();
-            var colors = btn.colors; colors.normalColor = Color.white; colors.highlightedColor = new Color(1.25f, 1.25f, 1.25f); colors.pressedColor = new Color(0.7f, 0.7f, 0.7f); colors.selectedColor = Color.white; btn.colors = colors;
-            Label(go, "Label", text, Mathf.Min(28f, height * 0.42f), Vector2.zero, width - 10, height, Color.white);
+            var colors = btn.colors; colors.normalColor = Color.white; colors.highlightedColor = new Color(1.3f, 1.3f, 1.3f); colors.pressedColor = new Color(0.7f, 0.7f, 0.7f); colors.selectedColor = Color.white; colors.fadeDuration = 0.08f; btn.colors = colors;
+            var outline = new GameObject("Outline", typeof(RectTransform)); outline.transform.SetParent(go.transform, false);
+            var ort = outline.GetComponent<RectTransform>(); ort.anchorMin = Vector2.zero; ort.anchorMax = Vector2.one; ort.offsetMin = Vector2.zero; ort.offsetMax = Vector2.zero;
+            var oimg = outline.AddComponent<Image>(); oimg.sprite = s_OutlineSprite; oimg.type = Image.Type.Sliced; oimg.pixelsPerUnitMultiplier = 0.6f; oimg.color = new Color(1f, 1f, 1f, 0.18f); oimg.raycastTarget = false;
+            var lbl = Label(go, "Label", text, Mathf.Min(27f, height * 0.42f), Vector2.zero, width - 10, height, Color.white);
+            lbl.fontStyle = FontStyles.Bold; lbl.characterSpacing = 1.5f;
             return btn;
         }
 
-        /// <summary>Default TMP font if TMP Essentials are imported; otherwise a dynamic font asset generated from Unity's built-in font.</summary>
+        /// <summary>Rajdhani (SIL Open Font License, Assets/Art/UI/Fonts) as an SDF font asset; falls back to the TMP default / a built-in font.</summary>
         public static TMP_FontAsset GetFont()
         {
+            const string rajdhaniPath = RangePaths.Settings + "/Rajdhani SDF.asset";
+            var rajdhani = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(rajdhaniPath);
+            if (rajdhani == null)
+            {
+                var ttf = AssetDatabase.LoadAssetAtPath<Font>(RangePaths.ArtFonts + "/Rajdhani-SemiBold.ttf");
+                if (ttf != null)
+                {
+                    rajdhani = TMP_FontAsset.CreateFontAsset(ttf, 80, 9, UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA, 1024, 1024, AtlasPopulationMode.Dynamic, true);
+                    if (rajdhani != null)
+                    {
+                        RangePaths.EnsureFolder(RangePaths.Settings);
+                        rajdhani.name = "Rajdhani SDF";
+                        AssetDatabase.CreateAsset(rajdhani, rajdhaniPath);
+                        if (rajdhani.material != null) { rajdhani.material.name = "Rajdhani SDF Material"; AssetDatabase.AddObjectToAsset(rajdhani.material, rajdhani); }
+                        if (rajdhani.atlasTexture != null) { rajdhani.atlasTexture.name = "Rajdhani SDF Atlas"; AssetDatabase.AddObjectToAsset(rajdhani.atlasTexture, rajdhani); }
+                        AssetDatabase.SaveAssets();
+                        SetupLog.Ok("UI font: Rajdhani SemiBold (OFL) SDF asset created");
+                    }
+                }
+            }
+            if (rajdhani != null) return rajdhani;
             var settings = TMP_Settings.instance;
             if (settings != null && TMP_Settings.defaultFontAsset != null) return TMP_Settings.defaultFontAsset;
             const string path = RangePaths.Settings + "/RangeUIFont SDF.asset";

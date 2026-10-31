@@ -1,0 +1,41 @@
+{
+ "bounds_min": [
+  -0.0148,
+  -0.0828,
+  -0.103
+ ],
+ "bounds_max": [
+  0.0153,
+  0.1647,
+  0.147
+ ],
+ "parts": {
+  "Body": {
+   "min": [
+    -0.0148,
+    -0.0089,
+    -0.103
+   ],
+   "max": [
+    0.0153,
+    0.1647,
+    0.147
+   ],
+   "tris": 10109
+  },
+  "Magazine": {
+   "min": [
+    -0.0051,
+    -0.0828,
+    -0.0195
+   ],
+   "max": [
+    0.0051,
+    0.0757,
+    0.0133
+   ],
+   "tris": 468
+  }
+ },
+ "source": "OpenGameArt Micro Uzi by TimDev (CC0), bevelled, textures baked here"
+}

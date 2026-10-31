@@ -1,0 +1,4 @@
+Source: Poly Haven model 'security_camera_01' (https://polyhaven.com/a/security_camera_01) by Alexander Otterbeck, Yann Kervran
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [169.5517897605896, 553.6733567714691, 286.04651242494583]

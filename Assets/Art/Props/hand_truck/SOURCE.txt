@@ -1,0 +1,4 @@
+Source: Poly Haven model 'hand_truck' (https://polyhaven.com/a/hand_truck) by Mutanzom3D
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [593.2528674602509, 692.5271153450012, 1402.51275151968]

@@ -32,6 +32,12 @@ namespace VRRange.Editor
             Check(AssetDatabase.LoadAssetAtPath<Mesh>($"{RangePaths.ArtWeapons}/pistol_body.obj") != null, "Weapon meshes present", "Weapon meshes missing (run Tools/AssetGen/gen_weapons.py)");
             Check(UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline != null, "A render pipeline asset is assigned", "No URP asset assigned (Graphics settings)");
             Check(XRPackageMetadataStore.IsLoaderAssigned(ProjectSettingsSetup.OpenXRLoaderTypeName, BuildTargetGroup.Android), "OpenXR loader enabled for Android", "OpenXR loader not enabled for Android (Project Settings > XR Plug-in Management > Android)");
+            Check(XRPackageMetadataStore.IsLoaderAssigned(ProjectSettingsSetup.OpenXRLoaderTypeName, BuildTargetGroup.Standalone), "OpenXR loader enabled for Standalone (Windows PCVR)", "OpenXR loader not enabled for Standalone (Project Settings > XR Plug-in Management > Windows tab)");
+            Check(AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.RenderPipelineAsset>(RangePaths.UrpPcvrAsset) != null, "URP PCVR preset exists", "URP PCVR preset missing (run setup)");
+            Check(QualitySettings.names.Length >= 2 && QualitySettings.names[ProjectSettingsSetup.QuestQualityIndex] == ProjectSettingsSetup.QuestQualityName && QualitySettings.names[ProjectSettingsSetup.PcvrQualityIndex] == ProjectSettingsSetup.PcvrQualityName, "Quality levels: Quest 2 / PCVR", "Quality levels are not 'Quest 2' / 'PCVR' (run setup)");
+            Check(PlayerSettings.runInBackground, "Run In Background enabled (PCVR keeps rendering when the desktop window loses focus)", "Run In Background is off");
+            if (BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64)) SetupLog.Ok("Windows Build Support installed (PCVR build available)");
+            else SetupLog.Info("Windows Build Support module not installed in this editor: the PCVR build needs Unity Hub > Installs > Add modules > Windows Build Support (Mono)");
             OpenXRSettingsSetup.ValidateFeatures();
             Check(PlayerSettings.GetScriptingBackend(NamedBuildTargetAndroid()) == ScriptingImplementation.IL2CPP, "IL2CPP scripting backend", "Scripting backend is not IL2CPP");
             Check(PlayerSettings.Android.targetArchitectures == AndroidArchitecture.ARM64, "ARM64 architecture", "Target architecture is not ARM64");

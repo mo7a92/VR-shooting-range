@@ -55,6 +55,35 @@ namespace VRRange.Editor
             return mat;
         }
 
+        /// <summary>PBR material from a downloaded model's texture set: &lt;folder&gt;/&lt;baseName&gt;_albedo|_normal|_mask|_ao|_emission (Poly Haven / OpenGameArt CC0 assets).</summary>
+        public static Material PbrFromFolder(string folder, string baseName, string materialName, float smoothnessFallback = 0.5f, Color? tint = null, float emissionStrength = 0f)
+        {
+            var path = $"{RangePaths.Materials}/{materialName}.mat";
+            if (s_Cache.TryGetValue(path, out var cached) && cached != null) return cached;
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null) { mat = new Material(Lit); RangePaths.EnsureFolder(RangePaths.Materials); AssetDatabase.CreateAsset(mat, path); }
+            mat.shader = Lit;
+            Texture2D Tex(string suffix)
+            {
+                foreach (var ext in new[] { ".jpg", ".png" }) { var t = AssetDatabase.LoadAssetAtPath<Texture2D>($"{folder}/{baseName}{suffix}{ext}"); if (t != null) return t; }
+                return null;
+            }
+            var albedo = Tex("_albedo"); var normal = Tex("_normal"); var mask = Tex("_mask"); var ao = Tex("_ao"); var emission = Tex("_emission");
+            if (albedo != null) mat.SetTexture("_BaseMap", albedo); else SetupLog.Warn($"Texture missing: {folder}/{baseName}_albedo");
+            if (normal != null) { mat.SetTexture("_BumpMap", normal); mat.EnableKeyword("_NORMALMAP"); } else { mat.SetTexture("_BumpMap", null); mat.DisableKeyword("_NORMALMAP"); }
+            if (mask != null) { mat.SetTexture("_MetallicGlossMap", mask); mat.EnableKeyword("_METALLICSPECGLOSSMAP"); mat.SetFloat("_Smoothness", 1f); }
+            else { mat.SetTexture("_MetallicGlossMap", null); mat.DisableKeyword("_METALLICSPECGLOSSMAP"); mat.SetFloat("_Smoothness", smoothnessFallback); }
+            if (ao != null) { mat.SetTexture("_OcclusionMap", ao); mat.EnableKeyword("_OCCLUSIONMAP"); mat.SetFloat("_OcclusionStrength", 1f); } else { mat.SetTexture("_OcclusionMap", null); mat.DisableKeyword("_OCCLUSIONMAP"); }
+            if (emission != null && emissionStrength > 0f) { mat.SetTexture("_EmissionMap", emission); mat.EnableKeyword("_EMISSION"); mat.SetColor("_EmissionColor", Color.white * emissionStrength); mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive; }
+            else { mat.DisableKeyword("_EMISSION"); mat.SetColor("_EmissionColor", Color.black); }
+            mat.SetColor("_BaseColor", tint ?? Color.white);
+            mat.SetTextureScale("_BaseMap", Vector2.one);
+            mat.enableInstancing = true;
+            EditorUtility.SetDirty(mat);
+            s_Cache[path] = mat;
+            return mat;
+        }
+
         public static Material Flat(string materialName, Color color, float smoothness = 0.3f, float metallic = 0f, Color? emission = null)
         {
             var path = $"{RangePaths.Materials}/{materialName}.mat";

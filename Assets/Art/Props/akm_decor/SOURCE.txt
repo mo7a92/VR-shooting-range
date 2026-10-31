@@ -1,0 +1,3 @@
+Source: OpenGameArt 'AKM' https://opengameart.org/content/akm
+License: CC0 1.0 Universal
+Processed with Tools/AssetGen/blender_process.py (textures unpacked and downsized to 2K, oriented barrel +Z)

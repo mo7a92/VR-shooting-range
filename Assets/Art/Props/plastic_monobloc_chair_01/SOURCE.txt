@@ -1,0 +1,4 @@
+Source: Poly Haven model 'plastic_monobloc_chair_01' (https://polyhaven.com/a/plastic_monobloc_chair_01) by Kuutti Siitonen
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [641.8611407279968, 627.5919079780579, 879.8411972820759]

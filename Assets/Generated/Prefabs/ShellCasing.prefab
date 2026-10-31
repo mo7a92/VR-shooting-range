@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 9005782031138875853}
   - component: {fileID: 4171679012070858975}
   - component: {fileID: 6090637593790463811}
-  - component: {fileID: 1573684901992286805}
+  - component: {fileID: 5619906415714191307}
   m_Layer: 9
   m_Name: ShellCasing
   m_TagString: Untagged
@@ -175,7 +175,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1573684901992286805
+--- !u!114 &5619906415714191307
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -184,6 +184,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 6679371271175697851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 34e0e160151b64339836f5a3c20e3fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VRRange.Runtime::VRRange.Ballistics.ShellCasing

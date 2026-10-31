@@ -1,0 +1,4 @@
+Source: Poly Haven model 'projector_screen' (https://polyhaven.com/a/projector_screen) by PeterM
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [1093.5667157173157, 915.8007800579071, 1799.4642853736877]

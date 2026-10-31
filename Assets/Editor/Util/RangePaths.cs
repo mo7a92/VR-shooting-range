@@ -11,6 +11,9 @@ namespace VRRange.Editor
         public const string ArtSigns = "Assets/Art/Signs";
         public const string ArtFx = "Assets/Art/FX";
         public const string ArtWeapons = "Assets/Art/Weapons";
+        public const string ArtWeaponModels = "Assets/Art/Weapons/Models";
+        public const string ArtProps = "Assets/Art/Props";
+        public const string ArtFonts = "Assets/Art/UI/Fonts";
         public const string ArtHands = "Assets/Art/Hands";
         public const string ArtUI = "Assets/Art/UI";
         public const string HandLeftModel = ArtHands + "/LeftHand.fbx";
@@ -25,6 +28,9 @@ namespace VRRange.Editor
         public const string MainScene = "Assets/Scenes/ShootingRange.unity";
         public const string UrpAsset = "Assets/Settings/URP-Quest2.asset";
         public const string UrpRenderer = "Assets/Settings/URP-Quest2-Renderer.asset";
+        public const string UrpPcvrAsset = "Assets/Settings/URP-PCVR.asset";
+        public const string UrpPcvrRenderer = "Assets/Settings/URP-PCVR-Renderer.asset";
+        public const string PcvrPostProfile = "Assets/Settings/PCVR-PostProcess.asset";
         public const string LightingSettings = "Assets/Settings/RangeLightingSettings.lighting";
         public const string StarterAssets = "Assets/Samples/XR Interaction Toolkit/3.3.2/Starter Assets";
         public const string XrRigPrefab = StarterAssets + "/Prefabs/XR Origin (XR Rig).prefab";

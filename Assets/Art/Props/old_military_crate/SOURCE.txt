@@ -1,0 +1,4 @@
+Source: Poly Haven model 'old_military_crate' (https://polyhaven.com/a/old_military_crate) by Jack Mava
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [1815.3856992721558, 979.0960550308228, 300.932839512825]

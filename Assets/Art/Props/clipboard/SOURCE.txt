@@ -1,0 +1,4 @@
+Source: Poly Haven model 'clipboard' (https://polyhaven.com/a/clipboard) by ProgrammerOnCoffee
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [228.6001443862915, 336.55010163784027, 41.990341851487756]

@@ -31,7 +31,18 @@ stable (do not delete/recreate `.meta` files). Headset testing pending.
 transformer on weapons; `Assets/Scripts/Hands` drives the XR Hands sample rig from controller input and weapon grip anchors
 (`PrimaryGrip`/`SupportGrip`, authored in `weapons_layout.json`). CC0 PBR sets live in `Assets/Art/Textures/PBR` (ambientCG).
 
+**V3 (PCVR + QA):** Windows x64 OpenXR player (`Assets/Editor/Build/PcvrBuildScript.cs`, `Tools/Windows/build_pcvr.ps1`), two
+quality levels with their own URP assets (`URP-Quest2`, `URP-PCVR` + SSAO + `PCVR-PostProcess` volume switched at runtime by
+`PlatformGraphicsSetup`), desktop spectator camera (`Assets/Scripts/Recording/SpectatorCamera.cs`, F1–F6), and a large PlayMode/
+EditMode suite under `Assets/Tests` that mocks controllers with scripted XRI interactors (see `XrTestRig`). Results: `FINAL_QA_REPORT.md`.
+
+**Asset pipeline (V3):** `Tools/AssetGen/fetch_polyhaven.py` (CC0 props/weapon textures) → `blender_process.py` (needs `pip install bpy`:
+weapon FBX with named parts, hands subdivision + skin bake, decor) → `decimate_models.py` (Quest budgets). Weapons are described by
+`Assets/Art/Weapons/weapons_layout.json` (`model`, `textureSet`, part roles, grip/muzzle/palm anchors). Lightmaps live in
+`Assets/Scenes/ShootingRange/`; a scene rebuild drops them, so bake again (`VR Range > Build > Bake Lighting`).
+
 **Commands**
 - Cloud compile check: `python3 Tools/CloudCompileCheck/compile_check.py` (needs toolchain, see script header).
 - Local (Windows): open in Unity Hub → **VR Range > Setup > Run Full Setup**; build via
   **VR Range > Build > Build Quest 2 APK** or `Tools/Windows/build_apk.ps1`; install with `Tools/Windows/install_apk.ps1`.
+- Windows PCVR: **VR Range > Build > Build Windows PCVR (x64)** or `Tools/Windows/build_pcvr.ps1` (needs the Windows Build Support module).

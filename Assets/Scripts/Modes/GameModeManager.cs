@@ -8,7 +8,7 @@ using VRRange.Weapons;
 
 namespace VRRange.Modes
 {
-    public enum ModeState { Idle, Countdown, Running, Finished }
+    public enum ModeState { Idle, Countdown, Running, Finishing, Finished }
 
     [Serializable]
     public struct ModeResult
@@ -221,7 +221,8 @@ namespace VRRange.Modes
 
         System.Collections.IEnumerator FinishAfterProjectilesLand()
         {
-            SetState(ModeState.Countdown); // block further scoring changes to mode state while last shots land
+            // Dedicated state: the last shots still land and score, but no new countdown/GO can be triggered by Update().
+            SetState(ModeState.Finishing);
             yield return new WaitForSeconds(1.0f);
             Finish();
         }

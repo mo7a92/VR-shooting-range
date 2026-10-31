@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using Unity.XR.CoreUtils;
@@ -12,6 +13,7 @@ using VRRange.Core;
 using VRRange.Hands;
 using VRRange.Modes;
 using VRRange.Player;
+using VRRange.Recording;
 using VRRange.Scoring;
 using VRRange.Targets;
 using VRRange.Weapons;
@@ -36,7 +38,8 @@ namespace VRRange.Editor
             EnvironmentBuilder.Build(root);
             var lanes = BuildLanes(root);
             var weapons = BuildWeaponCounter(root);
-            BuildRig(root);
+            var rig = BuildRig(root);
+            BuildSpectatorAndGraphics(root, rig);
             var ui = UiBuilder.Build(root);
             UiBuilder.BuildLaneScoreboards(root, lanes);
             ConfigureLightingAndAmbient();
@@ -145,8 +148,11 @@ namespace VRRange.Editor
 
                 var weaponGo = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
                 weaponGo.transform.SetParent(root, false);
-                weaponGo.transform.position = attach.transform.position; weaponGo.transform.rotation = attach.transform.rotation;
+                weaponGo.transform.position = socketGo.transform.position; weaponGo.transform.rotation = socketGo.transform.rotation;
                 var grab = weaponGo.GetComponent<XRGrabInteractable>();
+                // The socket aligns the weapon's own attach transform to the socket attach; mirror that offset so the runtime
+                // resting pose equals the authored one (root on the socket, barrel level, muzzle downrange).
+                if (grab.attachTransform != null) { attach.transform.localPosition = grab.attachTransform.localPosition; attach.transform.localRotation = grab.attachTransform.localRotation; }
                 socket.startingSelectedInteractable = grab;
                 var home = weaponGo.GetComponent<WeaponHome>(); if (home != null) home.HomeSocket = socket;
                 weapons.Add(weaponGo.GetComponent<Weapon>());
@@ -156,7 +162,7 @@ namespace VRRange.Editor
             return weapons;
         }
 
-        static void BuildRig(Transform root)
+        static GameObject BuildRig(Transform root)
         {
             var rigPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(RangePaths.XrRigPrefab);
             GameObject rig;
@@ -188,16 +194,48 @@ namespace VRRange.Editor
             if (vignette != null && cameraTf != null && cameraTf.Find("TunnelingVignette") == null)
             {
                 var v = (GameObject)PrefabUtility.InstantiatePrefab(vignette); v.transform.SetParent(cameraTf, false);
+                // headset-only overlay: the spectator camera culls this layer so recordings never show the vignette mesh
+                int headsetOnly = LayerMask.NameToLayer(ProjectSettingsSetup.HeadsetOnlyLayer);
+                if (headsetOnly >= 0) foreach (var t in v.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = headsetOnly;
             }
+            return rig;
+        }
+
+        /// <summary>Desktop spectator cameras (PCVR recording) and the per-platform graphics switch (post volume, PCVR shadow lights).</summary>
+        static void BuildSpectatorAndGraphics(Transform root, GameObject rig)
+        {
+            var xrCamera = rig != null ? rig.GetComponentInChildren<Camera>(true) : null;
+            var specRoot = new GameObject("SpectatorRig"); specRoot.transform.SetParent(root, false);
+            var camGo = new GameObject("SpectatorCamera"); camGo.transform.SetParent(specRoot.transform, false);
+            var cam = camGo.AddComponent<Camera>();
+            var barsGo = new GameObject("LetterboxBars"); barsGo.transform.SetParent(specRoot.transform, false);
+            var bars = barsGo.AddComponent<Camera>();
+            var spectator = specRoot.AddComponent<SpectatorCamera>();
+            spectator.Configure(cam, bars, xrCamera != null ? xrCamera.transform : null);
+            int headsetOnly = LayerMask.NameToLayer(ProjectSettingsSetup.HeadsetOnlyLayer);
+            cam.cullingMask = headsetOnly >= 0 ? ~(1 << headsetOnly) : ~0;
+            var camData = cam.GetUniversalAdditionalCameraData(); if (camData != null) { camData.allowXRRendering = false; camData.renderPostProcessing = false; camData.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.None; }
+            var barsData = bars.GetUniversalAdditionalCameraData(); if (barsData != null) { barsData.allowXRRendering = false; barsData.renderPostProcessing = false; barsData.renderShadows = false; }
+
+            var managers = root.Find("Managers");
+            var volGo = new GameObject("PostProcessVolume (PCVR)"); volGo.transform.SetParent(managers != null ? managers : root, false);
+            var volume = volGo.AddComponent<UnityEngine.Rendering.Volume>();
+            volume.isGlobal = true; volume.priority = 0f;
+            volume.sharedProfile = AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.VolumeProfile>(RangePaths.PcvrPostProfile);
+            volume.enabled = false; // PlatformGraphicsSetup turns it on for PCVR at runtime
+            var gfx = (managers != null ? managers.gameObject : volGo).AddComponent<PlatformGraphicsSetup>();
+            gfx.Configure(volume, EnvironmentBuilder.PcvrShadowLights.ToArray(), new[] { xrCamera, cam });
+            SetupLog.Ok($"Spectator camera rig (desktop only, 16:9, F1-F6 hotkeys) and platform graphics switch added ({EnvironmentBuilder.PcvrShadowLights.Count} PCVR shadow lights)");
         }
 
         /// <summary>Adds visible, animated hands (XR Hands sample rig) under each controller of the rig.</summary>
         static void BuildHands(GameObject rig)
         {
-            var skin = MaterialLibrary.Pbr("skin", "HandSkin", 1f, 0.42f);
             int built = 0;
             foreach (var isLeft in new[] { true, false })
             {
+                // per-hand skin set baked by Tools/AssetGen/blender_process.py (albedo with AO-driven knuckle/crease tone, roughness, AO)
+                var skin = MaterialLibrary.PbrFromFolder(RangePaths.ArtHands, isLeft ? "skin_left" : "skin_right", isLeft ? "HandSkinLeft" : "HandSkinRight", 0.42f);
                 string controllerName = isLeft ? "Left Controller" : "Right Controller";
                 Transform controller = null;
                 foreach (var t in rig.GetComponentsInChildren<Transform>(true)) if (t.name == controllerName) { controller = t; break; }
@@ -225,9 +263,10 @@ namespace VRRange.Editor
         static void ConfigureLightingAndAmbient()
         {
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(0.62f, 0.64f, 0.68f);
-            RenderSettings.ambientEquatorColor = new Color(0.45f, 0.46f, 0.48f);
-            RenderSettings.ambientGroundColor = new Color(0.25f, 0.24f, 0.23f);
+            // interim ambient (brighter than a baked scene needs) so unbaked builds are readable; the bake tones it down via baked GI
+            RenderSettings.ambientSkyColor = new Color(0.66f, 0.68f, 0.72f);
+            RenderSettings.ambientEquatorColor = new Color(0.5f, 0.51f, 0.53f);
+            RenderSettings.ambientGroundColor = new Color(0.3f, 0.29f, 0.28f);
             RenderSettings.fog = false;
             RenderSettings.skybox = null;
             var ls = AssetDatabase.LoadAssetAtPath<LightingSettings>(RangePaths.LightingSettings);
@@ -239,12 +278,12 @@ namespace VRRange.Editor
             }
             ls.lightmapper = LightingSettings.Lightmapper.ProgressiveCPU; // works on every machine; switch to ProgressiveGPU locally for speed
             ls.realtimeGI = false; ls.bakedGI = true; ls.mixedBakeMode = MixedLightingMode.Subtractive;
-            ls.lightmapResolution = 6f; ls.lightmapMaxSize = 1024; ls.lightmapPadding = 2; ls.lightmapCompression = LightmapCompression.NormalQuality;
-            ls.directSampleCount = 16; ls.indirectSampleCount = 128; ls.environmentSampleCount = 64; ls.maxBounces = 2;
-            ls.ao = true; ls.aoMaxDistance = 1f; ls.filteringMode = LightingSettings.FilterMode.Auto;
+            // the cloud container bakes this in a few minutes on 4 CPU cores; local GPU bakes are faster still
+            ls.lightmapResolution = 16f; ls.lightmapMaxSize = 2048; ls.lightmapPadding = 2; ls.lightmapCompression = LightmapCompression.NormalQuality;
+            ls.directSampleCount = 32; ls.indirectSampleCount = 256; ls.environmentSampleCount = 128; ls.maxBounces = 3;
+            ls.ao = true; ls.aoMaxDistance = 0.8f; ls.aoExponentIndirect = 1.2f; ls.filteringMode = LightingSettings.FilterMode.Auto;
             EditorUtility.SetDirty(ls);
             Lightmapping.lightingSettings = ls;
-            Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
             SetupLog.Ok("Lighting settings assigned (baked GI, subtractive mixed lighting; bake via VR Range > Build > Bake Lighting)");
         }
 

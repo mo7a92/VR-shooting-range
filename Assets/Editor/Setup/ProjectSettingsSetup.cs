@@ -18,10 +18,16 @@ namespace VRRange.Editor
         public const string ProductName = "VR Shooting Range";
         public const string CompanyName = "UniversityProject";
         public const string PackageId = "com.universityproject.vrshootingrange";
-        public const string Version = "0.2.0";
+        public const string Version = "0.3.0";
         public const string OpenXRLoaderTypeName = "UnityEngine.XR.OpenXR.OpenXRLoader";
 
-        public static readonly string[] RequiredLayers = { "Weapon", "Projectile", "Target", "Environment" };
+        public static readonly string[] RequiredLayers = { "Weapon", "Projectile", "Target", "Environment", "HeadsetOnly" };
+        /// <summary>Objects only the headset should see (tunnelling vignette); the spectator camera culls this layer.</summary>
+        public const string HeadsetOnlyLayer = "HeadsetOnly";
+        public const string QuestQualityName = "Quest 2";
+        public const string PcvrQualityName = "PCVR";
+        public const int QuestQualityIndex = 0;
+        public const int PcvrQualityIndex = 1;
         public const string TeleportInteractionLayer = "Teleport";
         public const int TeleportInteractionLayerIndex = 31;
 
@@ -53,7 +59,7 @@ namespace VRRange.Editor
             PlayerSettings.Android.forceSDCardPermission = false;
             PlayerSettings.Android.androidTVCompatibility = false;
             PlayerSettings.Android.optimizedFramePacing = false; // XR runtime paces frames
-            PlayerSettings.Android.bundleVersionCode = Mathf.Max(2, PlayerSettings.Android.bundleVersionCode);
+            PlayerSettings.Android.bundleVersionCode = Mathf.Max(3, PlayerSettings.Android.bundleVersionCode);
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
             PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { GraphicsDeviceType.Vulkan });
             PlayerSettings.MTRendering = true;
@@ -62,6 +68,29 @@ namespace VRRange.Editor
             PlayerSettings.gpuSkinning = true;
             EditorUserBuildSettings.androidBuildSubtarget = MobileTextureSubtarget.ASTC;
             SetupLog.Ok("Player settings: Android ARM64, IL2CPP, Vulkan, Linear colour, ASTC, min API 29");
+            ApplyStandalonePlayerSettings();
+        }
+
+        /// <summary>Windows x64 PCVR player: Mono (buildable from any editor host), D3D11 (the OpenXR path every PC runtime supports),
+        /// windowed 1920x1080 desktop mirror for recording, keeps running while unfocused.</summary>
+        public static void ApplyStandalonePlayerSettings()
+        {
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Standalone, PackageId);
+            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
+            PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.Standalone, ManagedStrippingLevel.Minimal);
+            PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64, false);
+            PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64, new[] { GraphicsDeviceType.Direct3D11 });
+            PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
+            PlayerSettings.defaultScreenWidth = 1920; PlayerSettings.defaultScreenHeight = 1080;
+            PlayerSettings.defaultIsNativeResolution = false;
+            PlayerSettings.resizableWindow = true;
+            PlayerSettings.allowFullscreenSwitch = true;
+            PlayerSettings.runInBackground = true;
+            PlayerSettings.visibleInBackground = true;
+            PlayerSettings.forceSingleInstance = true;
+            PlayerSettings.usePlayerLog = true;
+            EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Player;
+            SetupLog.Ok("Player settings (Windows PCVR): x64, Mono, Direct3D11, windowed 1920x1080 desktop mirror, run in background");
         }
 
         /// <summary>Adds the physics layers the project uses (first free slots from 8 upward).</summary>
@@ -165,16 +194,58 @@ namespace VRRange.Editor
             EditorUtility.SetDirty(buildTargetSettings);
         }
 
+        /// <summary>
+        /// Two quality levels with their own URP assets: "Quest 2" (index 0, default for Android) and "PCVR" (index 1,
+        /// default for Standalone, excluded from Android builds so its shader variants never ship on the headset).
+        /// Written through the QualitySettings asset so the editor UI and builds agree.
+        /// </summary>
         public static void ApplyQuality()
         {
-            // Mobile VR: no soft particles, 4x MSAA via URP asset, VSync handled by the XR runtime.
-            QualitySettings.vSyncCount = 0;
-            QualitySettings.antiAliasing = 4;
-            QualitySettings.shadows = ShadowQuality.HardOnly;
-            QualitySettings.shadowDistance = 20f;
-            QualitySettings.lodBias = 1f;
-            QualitySettings.globalTextureMipmapLimit = 0;
-            SetupLog.Ok("Quality settings tuned for Quest 2");
+            var assets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/QualitySettings.asset");
+            if (assets == null || assets.Length == 0) { SetupLog.Warn("QualitySettings.asset not found"); return; }
+            var so = new SerializedObject(assets[0]);
+            var levels = so.FindProperty("m_QualitySettings");
+            if (levels == null || !levels.isArray) { SetupLog.Warn("m_QualitySettings not found"); return; }
+            if (levels.arraySize < 2) levels.arraySize = 2;
+            if (levels.arraySize > 2) levels.arraySize = 2;
+            ConfigureLevel(levels.GetArrayElementAtIndex(QuestQualityIndex), QuestQualityName, pixelLights: 2, shadows: 1 /*hard*/, shadowRes: 1 /*medium*/, shadowDistance: 18f, cascades: 1, aniso: 1 /*per texture*/, msaa: 4, lodBias: 1f, softParticles: false, realtimeProbes: false);
+            ConfigureLevel(levels.GetArrayElementAtIndex(PcvrQualityIndex), PcvrQualityName, pixelLights: 8, shadows: 2 /*all*/, shadowRes: 3 /*very high*/, shadowDistance: 45f, cascades: 4, aniso: 2 /*forced on*/, msaa: 4, lodBias: 2f, softParticles: true, realtimeProbes: true);
+            // per-platform defaults
+            var map = so.FindProperty("m_PerPlatformDefaultQuality");
+            if (map != null && map.isArray)
+            {
+                bool hasAndroid = false, hasStandalone = false;
+                for (int i = 0; i < map.arraySize; i++)
+                {
+                    var el = map.GetArrayElementAtIndex(i); var key = el.FindPropertyRelative("first"); var val = el.FindPropertyRelative("second");
+                    if (key == null || val == null) continue;
+                    if (key.stringValue == "Android") { val.intValue = QuestQualityIndex; hasAndroid = true; }
+                    else if (key.stringValue == "Standalone") { val.intValue = PcvrQualityIndex; hasStandalone = true; }
+                    else if (val.intValue > 1) val.intValue = QuestQualityIndex;
+                }
+                if (!hasAndroid) { map.arraySize++; var el = map.GetArrayElementAtIndex(map.arraySize - 1); el.FindPropertyRelative("first").stringValue = "Android"; el.FindPropertyRelative("second").intValue = QuestQualityIndex; }
+                if (!hasStandalone) { map.arraySize++; var el = map.GetArrayElementAtIndex(map.arraySize - 1); el.FindPropertyRelative("first").stringValue = "Standalone"; el.FindPropertyRelative("second").intValue = PcvrQualityIndex; }
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+            // Keep the PCVR level (and its URP asset) out of Android builds; the Quest level stays available everywhere for comparison.
+            if (!QualitySettings.TryExcludePlatformAt("Android", PcvrQualityIndex, out var err) && err != null && !(err is System.InvalidOperationException)) SetupLog.Warn($"Could not exclude Android from the PCVR quality level: {err.Message}");
+            QualitySettings.vSyncCount = 0; // the XR runtime paces frames
+            SetupLog.Ok($"Quality levels: [{QuestQualityIndex}] {QuestQualityName} (Android default), [{PcvrQualityIndex}] {PcvrQualityName} (Standalone default, excluded from Android)");
+        }
+
+        static void ConfigureLevel(SerializedProperty level, string name, int pixelLights, int shadows, int shadowRes, float shadowDistance, int cascades, int aniso, int msaa, float lodBias, bool softParticles, bool realtimeProbes)
+        {
+            void SetI(string n, int v) { var p = level.FindPropertyRelative(n); if (p != null) p.intValue = v; }
+            void SetF(string n, float v) { var p = level.FindPropertyRelative(n); if (p != null) p.floatValue = v; }
+            void SetB(string n, bool v) { var p = level.FindPropertyRelative(n); if (p != null) p.boolValue = v; }
+            var nameProp = level.FindPropertyRelative("name"); if (nameProp != null) nameProp.stringValue = name;
+            SetI("pixelLightCount", pixelLights); SetI("shadows", shadows); SetI("shadowResolution", shadowRes); SetI("shadowProjection", 1);
+            SetI("shadowCascades", cascades); SetF("shadowDistance", shadowDistance); SetF("shadowNearPlaneOffset", 3f); SetI("shadowmaskMode", 0);
+            SetI("skinWeights", 4); SetI("globalTextureMipmapLimit", 0); SetI("anisotropicTextures", aniso); SetI("antiAliasing", msaa);
+            SetB("softParticles", softParticles); SetB("softVegetation", true); SetB("realtimeReflectionProbes", realtimeProbes); SetB("billboardsFaceCameraPosition", true);
+            SetI("vSyncCount", 0); SetF("lodBias", lodBias); SetI("maximumLODLevel", 0); SetB("enableLODCrossFade", true);
+            SetB("streamingMipmapsActive", false); SetI("particleRaycastBudget", 256); SetI("asyncUploadTimeSlice", 2); SetI("asyncUploadBufferSize", 16);
+            var excluded = level.FindPropertyRelative("excludedTargetPlatforms"); if (excluded != null && excluded.isArray && name == QuestQualityName) excluded.arraySize = 0;
         }
     }
 }

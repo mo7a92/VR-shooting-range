@@ -1,0 +1,4 @@
+Source: Poly Haven model 'concrete_road_barrier' (https://polyhaven.com/a/concrete_road_barrier) by Amal Kumar
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [1545.3570485115051, 640.9457623958588, 835.279269143939]

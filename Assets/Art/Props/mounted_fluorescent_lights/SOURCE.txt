@@ -1,0 +1,4 @@
+Source: Poly Haven model 'mounted_fluorescent_lights' (https://polyhaven.com/a/mounted_fluorescent_lights) by Ulan Cabanilla
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [912.1809005737305, 645.4365849494934, 35.35318718786584]

@@ -17,17 +17,28 @@ namespace VRRange.Weapons
         {
             if (s_Initialized) return;
             s_Initialized = true;
-            s_ReloadLeft = Make("VRRange/ReloadLeft", "<XRController>{LeftHand}/primaryButton");
-            s_ReloadRight = Make("VRRange/ReloadRight", "<XRController>{RightHand}/primaryButton");
-            s_ModeLeft = Make("VRRange/FireModeLeft", "<XRController>{LeftHand}/secondaryButton");
-            s_ModeRight = Make("VRRange/FireModeRight", "<XRController>{RightHand}/secondaryButton");
+            // Touch / Index / Reverb G2: A/X = reload, B/Y = fire mode. Vive wands have no A/B: trackpad click = reload, menu = fire mode.
+            s_ReloadLeft = Make("VRRange/ReloadLeft", "<XRController>{LeftHand}/primaryButton", "<XRController>{LeftHand}/trackpadClicked");
+            s_ReloadRight = Make("VRRange/ReloadRight", "<XRController>{RightHand}/primaryButton", "<XRController>{RightHand}/trackpadClicked");
+            s_ModeLeft = Make("VRRange/FireModeLeft", "<XRController>{LeftHand}/secondaryButton", "<XRController>{LeftHand}/menu");
+            s_ModeRight = Make("VRRange/FireModeRight", "<XRController>{RightHand}/secondaryButton", "<XRController>{RightHand}/menu");
         }
 
-        static InputAction Make(string name, string binding)
+        static InputAction Make(string name, string binding, string fallbackBinding = null)
         {
             var a = new InputAction(name, InputActionType.Button, binding);
+            if (!string.IsNullOrEmpty(fallbackBinding)) a.AddBinding(fallbackBinding);
             a.Enable();
             return a;
+        }
+
+        /// <summary>Binding paths used (for validation/tests).</summary>
+        public static string[] BindingPaths()
+        {
+            EnsureInitialized();
+            var list = new System.Collections.Generic.List<string>();
+            foreach (var a in new[] { s_ReloadLeft, s_ReloadRight, s_ModeLeft, s_ModeRight }) foreach (var b in a.bindings) list.Add(b.path);
+            return list.ToArray();
         }
 
         public static bool ReloadPressedThisFrame(InteractorHandedness hand)

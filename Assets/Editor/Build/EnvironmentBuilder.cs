@@ -24,6 +24,8 @@ namespace VRRange.Editor
         public const float CounterZ = -3.2f;
 
         static int s_EnvLayer;
+        /// <summary>Fill lights near the firing line that cast soft shadows on PCVR only (set at runtime by PlatformGraphicsSetup).</summary>
+        public static readonly System.Collections.Generic.List<Light> PcvrShadowLights = new System.Collections.Generic.List<Light>();
         static Material s_Floor, s_FloorTiles, s_Carpet, s_Wall, s_WallRough, s_Rubber, s_MetalBrushed, s_MetalDark, s_Wood, s_Fabric, s_Dark, s_Yellow, s_Red, s_Glass, s_White, s_Screen;
 
         public static float LaneX(int lane) => (lane - (LaneCount - 1) * 0.5f) * LaneWidth;
@@ -31,6 +33,7 @@ namespace VRRange.Editor
         public static GameObject Build(Transform sceneRoot)
         {
             SetupLog.Section("Environment");
+            PcvrShadowLights.Clear(); PropLibrary.Reset();
             var root = new GameObject("Environment"); root.transform.SetParent(sceneRoot, false);
             s_EnvLayer = EditorRefs.Layer("Environment");
             s_Floor = MaterialLibrary.Pbr("pbr_floor_concrete", "FloorConcrete", 1f);
@@ -90,11 +93,13 @@ namespace VRRange.Editor
             Box(root, "WallBack", "WallEnd", new Vector3(RoomWidth + 0.4f, RoomHeight, 0.2f), s_Wall, new Vector3(0f, RoomHeight * 0.5f, BackWallZ - 0.1f), default, SurfaceType.Concrete, 0.5f);
             Box(root, "WallBackDado", "WallBackDado", new Vector3(RoomWidth, 1.1f, 0.04f), s_Wood, new Vector3(0f, 0.55f, BackWallZ + 0.02f), default, SurfaceType.Wood, 1f, false);
             // ventilation duct along the ceiling with hangers and a vent grille every 6 m
-            Cyl(root, "Duct", "Duct", 0.3f, depth - 1f, s_MetalBrushed, new Vector3(0f, RoomHeight - 0.45f, zc), default, true, SurfaceType.Metal, 14);
+            // ventilation duct along the right wall, above the acoustic panels and below the cable tray, clear of signs, HUD and scoreboards
+            const float ductX = 4.1f, ductY = 2.6f, ductR = 0.25f;
+            Cyl(root, "Duct", "Duct", ductR, depth - 1f, s_MetalBrushed, new Vector3(ductX, ductY, zc), default, true, SurfaceType.Metal, 14);
             for (float z = BackWallZ + 2f; z < BackstopZ - 1f; z += 6f)
             {
-                Box(root, $"DuctVent{z:0}", "DuctVent", new Vector3(0.5f, 0.06f, 0.5f), s_MetalDark, new Vector3(0f, RoomHeight - 0.78f, z), default, SurfaceType.Metal, 2f, false);
-                Box(root, $"DuctHanger{z:0}", "DuctHanger", new Vector3(0.03f, 0.3f, 0.03f), s_MetalDark, new Vector3(0f, RoomHeight - 0.15f, z), default, SurfaceType.Metal, 1f, false);
+                Box(root, $"DuctVent{z:0}", "DuctVent", new Vector3(0.42f, 0.06f, 0.42f), s_MetalDark, new Vector3(ductX, ductY - ductR - 0.03f, z), default, SurfaceType.Metal, 2f, false);
+                Box(root, $"DuctHanger{z:0}", "DuctHanger", new Vector3(0.03f, RoomHeight - ductY - ductR, 0.03f), s_MetalDark, new Vector3(ductX, (RoomHeight + ductY + ductR) * 0.5f, z), default, SurfaceType.Metal, 1f, false);
             }
         }
 
@@ -102,7 +107,7 @@ namespace VRRange.Editor
         {
             Box(root, "FiringLine", "FiringLine", new Vector3(RoomWidth, 0.01f, 0.12f), s_Yellow, new Vector3(0f, 0.005f, 0f), default, SurfaceType.Concrete, 1f, false);
             Box(root, "FiringLineText", "FiringLineInner", new Vector3(RoomWidth, 0.011f, 0.02f), s_Dark, new Vector3(0f, 0.005f, 0.07f), default, SurfaceType.Concrete, 1f, false);
-            Box(root, "CeilingBeam", "CeilingBeam", new Vector3(RoomWidth, 0.3f, 0.3f), s_MetalDark, new Vector3(0f, RoomHeight - 0.15f, 0.95f), default, SurfaceType.Metal, 1f);
+            Box(root, "CeilingBeam", "CeilingBeam", new Vector3(RoomWidth, 0.25f, 0.3f), s_MetalDark, new Vector3(0f, RoomHeight - 0.125f, 0.95f), default, SurfaceType.Metal, 1f);
             var frameMesh = EditorMeshUtil.Box("DividerFrame", new Vector3(0.06f, 2.3f, 0.08f), 1f);
             for (int i = 0; i <= LaneCount; i++)
             {
@@ -119,11 +124,19 @@ namespace VRRange.Editor
             {
                 float x = LaneX(lane);
                 var b = EditorRefs.Child(root, $"Booth{lane + 1}", new Vector3(x, 0f, 0f));
-                Box(b, "Shelf", "Shelf", new Vector3(LaneWidth - 0.14f, 0.05f, 0.5f), s_Wood, new Vector3(0f, 1.0f, 0.55f), default, SurfaceType.Wood, 1f);
-                Box(b, "ShelfLip", "ShelfLip", new Vector3(LaneWidth - 0.14f, 0.1f, 0.03f), s_Wood, new Vector3(0f, 1.055f, 0.79f), default, SurfaceType.Wood, 1f, false);
-                Box(b, "ShelfMat", "ShelfMat", new Vector3(LaneWidth - 0.3f, 0.01f, 0.4f), s_Rubber, new Vector3(0f, 1.03f, 0.55f), default, SurfaceType.Rubber, 2f, false);
-                Box(b, "ShelfBracketL", "ShelfBracket", new Vector3(0.04f, 0.3f, 0.4f), s_MetalDark, new Vector3(-(LaneWidth * 0.5f - 0.12f), 0.82f, 0.55f), default, SurfaceType.Metal, 1f, false);
-                Box(b, "ShelfBracketR", "ShelfBracket", new Vector3(0.04f, 0.3f, 0.4f), s_MetalDark, new Vector3(LaneWidth * 0.5f - 0.12f, 0.82f, 0.55f), default, SurfaceType.Metal, 1f, false);
+                // shooting table: laminate top on a welded steel frame, rubber mat, front lip, magazine shelf underneath
+                Box(b, "Shelf", "Shelf", new Vector3(LaneWidth - 0.14f, 0.04f, 0.55f), s_Wood, new Vector3(0f, 1.0f, 0.55f), default, SurfaceType.Wood, 1f);
+                Box(b, "ShelfLip", "ShelfLip", new Vector3(LaneWidth - 0.14f, 0.09f, 0.03f), s_MetalDark, new Vector3(0f, 1.045f, 0.815f), default, SurfaceType.Metal, 1f, false);
+                Box(b, "ShelfMat", "ShelfMat", new Vector3(LaneWidth - 0.3f, 0.008f, 0.42f), s_Rubber, new Vector3(0f, 1.024f, 0.55f), default, SurfaceType.Rubber, 2f, false);
+                Box(b, "ShelfFrameFront", "ShelfFrame", new Vector3(LaneWidth - 0.2f, 0.04f, 0.04f), s_MetalDark, new Vector3(0f, 0.96f, 0.8f), default, SurfaceType.Metal, 1f, false);
+                Box(b, "ShelfFrameBack", "ShelfFrame", new Vector3(LaneWidth - 0.2f, 0.04f, 0.04f), s_MetalDark, new Vector3(0f, 0.96f, 0.3f), default, SurfaceType.Metal, 1f, false);
+                Box(b, "UnderShelf", "UnderShelf", new Vector3(LaneWidth - 0.3f, 0.02f, 0.4f), s_MetalBrushed, new Vector3(0f, 0.62f, 0.55f), default, SurfaceType.Metal, 1f);
+                foreach (var sx in new[] { -1f, 1f })
+                {
+                    Box(b, $"ShelfLeg{(sx < 0 ? "L" : "R")}F", "ShelfLeg", new Vector3(0.04f, 0.98f, 0.04f), s_MetalDark, new Vector3(sx * (LaneWidth * 0.5f - 0.12f), 0.49f, 0.78f), default, SurfaceType.Metal, 1f, false);
+                    Box(b, $"ShelfLeg{(sx < 0 ? "L" : "R")}B", "ShelfLeg", new Vector3(0.04f, 0.98f, 0.04f), s_MetalDark, new Vector3(sx * (LaneWidth * 0.5f - 0.12f), 0.49f, 0.32f), default, SurfaceType.Metal, 1f, false);
+                }
+                PropLibrary.Place(b, "ammo_box", new Vector3(0.45f, 0.63f, 0.5f), new Vector3(0f, 95f + lane * 11f, 0f), 1f, 0.63f, SurfaceType.Metal, true, true, 0f, "AmmoBox");
                 // booth light strip + scoreboard housing above the booth
                 Box(b, "BoothLight", "BoothLight", new Vector3(LaneWidth - 0.4f, 0.04f, 0.1f), MaterialLibrary.Flat("BoothLightEmissive", Color.white, 0.2f, 0f, new Color(1.8f, 1.8f, 1.7f)), new Vector3(0f, 2.28f, 0.6f), default, SurfaceType.Metal, 1f, false);
                 var sb = Box(b, "ScoreboardHousing", "ScoreboardHousing", new Vector3(0.9f, 0.4f, 0.08f), s_MetalDark, new Vector3(0f, 2.62f, 0.95f), default, SurfaceType.Metal, 1f, false);
@@ -157,11 +170,14 @@ namespace VRRange.Editor
                 Box(root, $"Deflector{i}", "Deflector", new Vector3(RoomWidth, 0.9f, 0.06f), s_MetalDark, new Vector3(0f, 0.6f + i * 0.9f, BackstopZ - 0.35f - i * 0.1f), new Vector3(-35f, 0f, 0f), SurfaceType.Metal, 0.5f);
             Box(root, "BackstopBerm", "Berm", new Vector3(RoomWidth, 0.5f, 1.2f), s_Rubber, new Vector3(0f, 0.25f, BackstopZ - 0.8f), default, SurfaceType.Rubber, 0.5f);
             Box(root, "BackstopTrough", "Trough", new Vector3(RoomWidth, 0.2f, 0.5f), s_MetalDark, new Vector3(0f, 0.1f, BackstopZ - 1.6f), default, SurfaceType.Metal, 1f);
-            Box(root, "BackstopLightBar", "BackstopLightBar", new Vector3(RoomWidth - 1f, 0.08f, 0.2f), MaterialLibrary.Flat("BackstopLightEmissive", Color.white, 0.2f, 0f, new Color(1.5f, 1.5f, 1.4f)), new Vector3(0f, RoomHeight - 0.2f, BackstopZ - 1.5f), default, SurfaceType.Metal, 1f, false);
+            // steel ricochet protection along the side walls near the traps
+            foreach (var side in new[] { -1f, 1f })
+                Box(root, $"SteelGuard{(side < 0 ? "L" : "R")}", "SteelGuard", new Vector3(0.04f, 2.0f, 6.0f), s_MetalDark, new Vector3(side * (RoomWidth * 0.5f - 0.04f), 1.1f, BackstopZ - 4.5f), new Vector3(0f, 0f, side * -6f), SurfaceType.Metal, 1f, false);
         }
 
         static void BuildCounterAndWaitingArea(GameObject root)
         {
+            // ---- rental counter (laminate top, steel kick, foam mat for the weapons) ----
             var counter = EditorRefs.Child(root, "WeaponCounter", new Vector3(0f, 0f, CounterZ));
             Box(counter, "CounterTop", "CounterTop", new Vector3(3.2f, 0.06f, 0.8f), s_Wood, new Vector3(0f, 0.97f, 0f), default, SurfaceType.Wood, 1f);
             Box(counter, "CounterBase", "CounterBase", new Vector3(3.1f, 0.94f, 0.7f), s_Fabric, new Vector3(0f, 0.47f, 0f), default, SurfaceType.Wood, 1f);
@@ -176,40 +192,68 @@ namespace VRRange.Editor
                 Box(counter, $"Stand{i}", "WeaponStand", new Vector3(0.14f, 0.05f, 0.1f), s_MetalDark, new Vector3(-0.9f + i * 0.9f, 1.055f, 0f), default, SurfaceType.Metal, 2f, false);
                 Box(counter, $"StandLabel{i}", "StandLabel", new Vector3(0.18f, 0.001f, 0.06f), s_White, new Vector3(-0.9f + i * 0.9f, 1.031f, -0.22f), default, SurfaceType.Rubber, 1f, false);
             }
-            // range officer station with a monitor and a control console
-            var ro = EditorRefs.Child(root, "RangeOfficerStation", new Vector3(3.3f, 0f, -3.4f));
-            Box(ro, "Desk", "RODesk", new Vector3(1.2f, 0.75f, 0.7f), s_Wood, new Vector3(0f, 0.375f, 0f), default, SurfaceType.Wood, 1f);
-            Box(ro, "Monitor", "ROMonitor", new Vector3(0.55f, 0.35f, 0.03f), s_MetalDark, new Vector3(0f, 1.0f, 0.2f), new Vector3(-8f, 180f, 0f), SurfaceType.Metal, 1f, false);
-            Box(ro, "MonitorScreen", "ROMonitorScreen", new Vector3(0.5f, 0.3f, 0.005f), s_Screen, new Vector3(0f, 1.0f, 0.18f), new Vector3(-8f, 180f, 0f), SurfaceType.Metal, 1f, false);
-            Box(ro, "Console", "ROConsole", new Vector3(0.5f, 0.06f, 0.3f), s_MetalDark, new Vector3(0f, 0.78f, -0.1f), new Vector3(-10f, 0f, 0f), SurfaceType.Metal, 1f, false);
-            for (int i = 0; i < 5; i++) Box(ro, $"ConsoleButton{i}", "ConsoleButton", new Vector3(0.05f, 0.02f, 0.05f), i == 0 ? s_Red : (i == 1 ? MaterialLibrary.Flat("ConsoleGreen", new Color(0.1f, 0.7f, 0.2f), 0.4f, 0f, new Color(0.1f, 0.8f, 0.2f)) : s_White), new Vector3(-0.18f + i * 0.09f, 0.82f, -0.1f), new Vector3(-10f, 0f, 0f), SurfaceType.Metal, 1f, false);
-            Box(ro, "Chair", "ROChairSeat", new Vector3(0.5f, 0.08f, 0.5f), s_Fabric, new Vector3(0f, 0.45f, -0.7f), default, SurfaceType.Wood, 1f);
-            Box(ro, "ChairBack", "ROChairBack", new Vector3(0.5f, 0.5f, 0.06f), s_Fabric, new Vector3(0f, 0.74f, -0.92f), default, SurfaceType.Wood, 1f, false);
-            Cyl(ro, "ChairPost", "ROChairPost", 0.03f, 0.4f, s_MetalBrushed, new Vector3(0f, 0.2f, -0.7f), default, false, SurfaceType.Metal, 10);
-            // waiting area: benches, table, vending machine, bins, extinguisher, door, crates, posters
+            PropLibrary.Place(counter, "clipboard", new Vector3(1.35f, 1.031f, -0.15f), new Vector3(0f, 160f, 0f), 1f, 1.03f + CounterZ * 0f, SurfaceType.Wood, false, true, 0f, "Clipboard");
+            PropLibrary.Place(counter, "ammo_box", new Vector3(-1.42f, 1.03f, 0.18f), new Vector3(0f, 75f, 0f), 1f, null, SurfaceType.Metal, true, true, 0f, "AmmoBoxCounter");
+            foreach (var x in new[] { -1.0f, 0f, 1.0f })
+                PropLibrary.Place(counter, "caged_hanging_light", new Vector3(x, RoomHeight - 0.75f, 0f), Vector3.zero, 1f, null, SurfaceType.Metal, false, true, 0f, $"CounterLamp{x:0}");
+
+            // ---- staff area behind the counter: shelves with stock, gun rack with display rifles, officer desk ----
+            var staff = EditorRefs.Child(root, "StaffArea", new Vector3(0f, 0f, CounterZ - 1.1f));
+            foreach (var x in new[] { -1.35f, 1.35f }) // leave the centre open so the welcome sign stays visible from the counter
+                PropLibrary.Place(staff, "steel_frame_shelves_01", new Vector3(x, 0f, 0f), new Vector3(0f, 0f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, $"Shelves{x:0.0}");
+            PropLibrary.Place(staff, "plastic_crate_01", new Vector3(-1.25f, 0f, 0.45f), new Vector3(0f, 12f, 0f), 1f, 0f, SurfaceType.Rubber, true, true, 0f, "Crate1");
+            PropLibrary.Place(staff, "plastic_crate_01", new Vector3(-1.25f, 0.27f, 0.45f), new Vector3(0f, -8f, 0f), 1f, 0.265f, SurfaceType.Rubber, true, true, 0f, "Crate2");
+            PropLibrary.Place(staff, "wooden_military_crate", new Vector3(0.9f, 0f, 0.55f), new Vector3(0f, 90f, 0f), 1f, 0f, SurfaceType.Wood, true, true, 0f, "WoodCrate");
+            PropLibrary.Place(staff, "ammo_box", new Vector3(0.15f, 0f, 0.55f), new Vector3(0f, 20f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "AmmoBoxFloor1");
+            PropLibrary.Place(staff, "ammo_box", new Vector3(0.35f, 0f, 0.5f), new Vector3(0f, -30f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "AmmoBoxFloor2");
+            PropLibrary.Place(staff, "metal_toolbox", new Vector3(-2.35f, 0f, 0.45f), new Vector3(0f, 100f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "Toolbox");
+            var rack = PropLibrary.Place(staff, "worn_metal_rack", new Vector3(-2.4f, 0f, 0f), Vector3.zero, 1f, 0f, SurfaceType.Metal, true, true, 0f, "GunRack");
+            // display weapons on the rack (CC0 AKM + bolt-action rifle), barrels up
+            PropLibrary.Place(staff, "akm_decor", new Vector3(-2.6f, 1.05f, 0.18f), new Vector3(-90f, 0f, 8f), 1f, null, SurfaceType.Metal, false, true, 0f, "RackRifleAKM");
+            PropLibrary.Place(staff, "bolt_action_rifle_7_62", new Vector3(-2.2f, 1.1f, 0.18f), new Vector3(0f, 0f, 90f), 1f, null, SurfaceType.Metal, false, true, 0f, "RackRifleBolt");
+            PropLibrary.Place(staff, "cardboard_box_01", new Vector3(-3.3f, 0f, 0.3f), new Vector3(0f, 15f, 0f), 1f, 0f, SurfaceType.Wood, true, true, 0f, "Box1");
+            PropLibrary.Place(staff, "cardboard_box_01", new Vector3(-3.35f, 0.52f, 0.28f), new Vector3(0f, -20f, 0f), 1f, 0.515f, SurfaceType.Wood, true, true, 0f, "Box2");
+
+            // ---- range officer station ----
+            var ro = EditorRefs.Child(root, "RangeOfficerStation", new Vector3(3.2f, 0f, -3.5f));
+            PropLibrary.Place(ro, "metal_office_desk", Vector3.zero, new Vector3(0f, 180f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "Desk");
+            PropLibrary.Place(ro, "metal_stool_01", new Vector3(0.1f, 0f, -0.85f), new Vector3(0f, 20f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "Stool");
+            PropLibrary.Place(ro, "television_02", new Vector3(-0.4f, 0.79f, 0.1f), new Vector3(0f, 200f, 0f), 1f, 0.7875f, SurfaceType.Metal, true, true, 0f, "Monitor");
+            PropLibrary.Place(ro, "clipboard", new Vector3(0.45f, 0.79f, 0.05f), new Vector3(0f, 190f, 0f), 1f, 0.7875f, SurfaceType.Wood, false, true, 0f, "DeskClipboard");
+            Box(ro, "Console", "ROConsole", new Vector3(0.5f, 0.06f, 0.3f), s_MetalDark, new Vector3(0.3f, 0.82f, 0.05f), new Vector3(-10f, 0f, 0f), SurfaceType.Metal, 1f, false);
+            for (int i = 0; i < 5; i++) Box(ro, $"ConsoleButton{i}", "ConsoleButton", new Vector3(0.05f, 0.02f, 0.05f), i == 0 ? s_Red : (i == 1 ? MaterialLibrary.Flat("ConsoleGreen", new Color(0.1f, 0.7f, 0.2f), 0.4f, 0f, new Color(0.1f, 0.8f, 0.2f)) : s_White), new Vector3(0.12f + i * 0.09f, 0.86f, 0.05f), new Vector3(-10f, 0f, 0f), SurfaceType.Metal, 1f, false);
+            PropLibrary.Place(ro, "tool_cart", new Vector3(1.0f, 0f, -1.4f), new Vector3(0f, 90f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "ToolCart");
+
+            // ---- waiting area: benches, chairs, lockers, briefing screen, boxes, bins, door ----
             var wait = EditorRefs.Child(root, "WaitingArea", new Vector3(0f, 0f, BackWallZ));
-            foreach (var x in new[] { -3.0f, -1.2f })
-            {
-                Box(wait, $"Bench{x:0}", "BenchSeat", new Vector3(1.6f, 0.06f, 0.45f), s_Wood, new Vector3(x, 0.45f, 0.5f), default, SurfaceType.Wood, 1f);
-                Box(wait, $"BenchBack{x:0}", "BenchBack", new Vector3(1.6f, 0.45f, 0.05f), s_Wood, new Vector3(x, 0.72f, 0.3f), default, SurfaceType.Wood, 1f, false);
-                Box(wait, $"BenchLegL{x:0}", "BenchLeg", new Vector3(0.05f, 0.45f, 0.4f), s_MetalDark, new Vector3(x - 0.7f, 0.22f, 0.5f), default, SurfaceType.Metal, 1f, false);
-                Box(wait, $"BenchLegR{x:0}", "BenchLeg", new Vector3(0.05f, 0.45f, 0.4f), s_MetalDark, new Vector3(x + 0.7f, 0.22f, 0.5f), default, SurfaceType.Metal, 1f, false);
-            }
-            Box(wait, "Table", "WaitTable", new Vector3(0.9f, 0.04f, 0.6f), s_Wood, new Vector3(-2.1f, 0.5f, 1.4f), default, SurfaceType.Wood, 1f);
-            Cyl(wait, "TableLeg", "WaitTableLeg", 0.03f, 0.48f, s_MetalBrushed, new Vector3(-2.1f, 0.24f, 1.4f), default, false, SurfaceType.Metal, 10);
-            var vend = Box(wait, "VendingMachine", "Vending", new Vector3(0.9f, 1.9f, 0.7f), s_MetalDark, new Vector3(3.9f, 0.95f, 0.45f), default, SurfaceType.Metal, 1f);
-            Box(vend, "VendingFront", "VendingFront", new Vector3(0.7f, 1.3f, 0.01f), MaterialLibrary.Flat("VendingGlow", new Color(0.2f, 0.4f, 0.9f), 0.6f, 0f, new Color(0.4f, 0.8f, 2.0f)), new Vector3(0f, 0.15f, -0.355f), default, SurfaceType.Metal, 1f, false);
-            Cyl(wait, "Bin", "Bin", 0.22f, 0.7f, s_MetalDark, new Vector3(2.8f, 0.35f, 0.5f), default, false, SurfaceType.Metal, 16);
-            Cyl(root, "Extinguisher", "Extinguisher", 0.08f, 0.5f, s_Red, new Vector3(RoomWidth * 0.5f - 0.12f, 1.0f, -5.5f), default, false, SurfaceType.Metal, 12);
-            Box(root, "ExtinguisherBracket", "ExtBracket", new Vector3(0.1f, 0.06f, 0.2f), s_MetalDark, new Vector3(RoomWidth * 0.5f - 0.08f, 1.2f, -5.5f), default, SurfaceType.Metal, 1f, false);
+            foreach (var x in new[] { -3.1f, -1.6f })
+                PropLibrary.Place(wait, "painted_wooden_bench", new Vector3(x, 0f, 1.2f), new Vector3(0f, 180f, 0f), 1f, 0f, SurfaceType.Wood, true, true, 0f, $"Bench{x:0.0}");
+            for (int i = 0; i < 3; i++)
+                PropLibrary.Place(wait, "plastic_monobloc_chair_01", new Vector3(0.6f + i * 0.72f, 0f, 0.9f), new Vector3(0f, 180f + (i - 1) * 7f, 0f), 1f, 0f, SurfaceType.Rubber, true, true, 0f, $"Chair{i}");
+            PropLibrary.Place(wait, "projector_screen", new Vector3(-4.0f, 0f, 0.95f), new Vector3(0f, 150f, 0f), 1f, 0f, SurfaceType.Wood, true, true, 0f, "BriefingScreen");
+            PropLibrary.Place(wait, "wooden_military_crate", new Vector3(3.0f, 0f, 0.35f), new Vector3(0f, 90f, 0f), 1f, 0f, SurfaceType.Wood, true, true, 0f, "LobbyCrate");
+            PropLibrary.Place(wait, "cardboard_box_01", new Vector3(4.1f, 0f, 0.35f), new Vector3(0f, 25f, 0f), 1f, 0f, SurfaceType.Wood, true, true, 0f, "CornerBox");
+            PropLibrary.Place(wait, "hand_truck", new Vector3(4.15f, 0f, 1.4f), new Vector3(0f, 250f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "HandTruck");
+            PropLibrary.Place(wait, "metal_trash_can", new Vector3(-2.2f, 0f, 0.5f), new Vector3(0f, 180f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "Bins");
+            PropLibrary.Place(wait, "WetFloorSign_01", new Vector3(-2.3f, 0f, 2.4f), new Vector3(0f, 35f, 0f), 1f, 0f, SurfaceType.Rubber, true, true, 0f, "WetFloorSign");
+            PropLibrary.Place(wait, "wall_clock", new Vector3(1.0f, 2.45f, 0.04f), new Vector3(0f, 180f, 0f), 1f, null, SurfaceType.Metal, false, true, 0f, "WallClock");
+            PropLibrary.Place(wait, "fire_alarm", new Vector3(-2.5f, 1.4f, 0.03f), new Vector3(0f, 180f, 0f), 1f, null, SurfaceType.Metal, false, true, 0f, "FireAlarm");
             Box(wait, "DoorFrame", "DoorFrame", new Vector3(1.1f, 2.2f, 0.06f), s_MetalDark, new Vector3(-RoomWidth * 0.5f + 1.15f, 1.1f, 0.02f), default, SurfaceType.Metal, 1f);
             Box(wait, "Door", "Door", new Vector3(0.95f, 2.1f, 0.04f), MaterialLibrary.Flat("DoorGrey", new Color(0.35f, 0.37f, 0.4f), 0.5f, 0.3f), new Vector3(-RoomWidth * 0.5f + 1.15f, 1.05f, 0.04f), default, SurfaceType.Metal, 1f);
             Box(wait, "DoorHandle", "DoorHandle", new Vector3(0.03f, 0.03f, 0.15f), s_MetalBrushed, new Vector3(-RoomWidth * 0.5f + 1.5f, 1.05f, 0.1f), default, SurfaceType.Metal, 1f, false);
             Box(wait, "ExitSign", "ExitSign", new Vector3(0.4f, 0.15f, 0.04f), MaterialLibrary.Flat("ExitGreen", new Color(0.1f, 0.8f, 0.2f), 0.3f, 0f, new Color(0.2f, 2f, 0.4f)), new Vector3(-RoomWidth * 0.5f + 1.15f, 2.35f, 0.1f), default, SurfaceType.Metal, 1f, false);
-            for (int i = 0; i < 4; i++)
-                Box(root, $"AmmoCrate{i}", "AmmoCrate", new Vector3(0.4f, 0.22f, 0.28f), MaterialLibrary.Pbr("pbr_polymer", "CrateDark", 2f), new Vector3(2.0f + (i % 2) * 0.45f, 0.11f + (i / 2) * 0.23f, BackWallZ + 0.35f), new Vector3(0f, (i % 2) * 6f, 0f), SurfaceType.Wood, 2f);
-            Box(root, "LockerBank", "Lockers", new Vector3(1.6f, 1.9f, 0.45f), s_MetalBrushed, new Vector3(-RoomWidth * 0.5f + 3.2f, 0.95f, BackWallZ + 0.25f), default, SurfaceType.Metal, 1f);
-            for (int i = 0; i < 4; i++) Box(root, $"LockerDoorLine{i}", "LockerLine", new Vector3(0.01f, 1.8f, 0.01f), s_Dark, new Vector3(-RoomWidth * 0.5f + 3.2f - 0.6f + i * 0.4f, 0.95f, BackWallZ + 0.48f), default, SurfaceType.Metal, 1f, false);
+            // wall-mounted safety equipment along the range
+            foreach (var (side, z) in new[] { (-1f, -5.5f), (1f, -1.6f), (-1f, 6f), (1f, 14f) })
+            {
+                var ext = Cyl(root, $"Extinguisher{z:0}", "Extinguisher", 0.08f, 0.5f, s_Red, new Vector3(side * (RoomWidth * 0.5f - 0.12f), 1.0f, z), default, false, SurfaceType.Metal, 12);
+                Box(root, $"ExtinguisherBracket{z:0}", "ExtBracket", new Vector3(0.1f, 0.06f, 0.2f), s_MetalDark, new Vector3(side * (RoomWidth * 0.5f - 0.08f), 1.2f, z), default, SurfaceType.Metal, 1f, false);
+                Cyl(root, $"ExtinguisherNeck{z:0}", "ExtNeck", 0.025f, 0.08f, s_MetalBrushed, new Vector3(side * (RoomWidth * 0.5f - 0.12f), 1.29f, z), default, false, SurfaceType.Metal, 10);
+            }
+            PropLibrary.Place(root, "power_box_01", new Vector3(RoomWidth * 0.5f - 0.22f, 1.5f, -6.2f), new Vector3(0f, -90f, 0f), 1f, null, SurfaceType.Metal, true, true, 0f, "PowerBox");
+            foreach (var (x, z, yaw) in new[] { (-4.3f, -7.1f, 135f), (3.7f, -7.1f, -135f), (-4.3f, 1.2f, 45f), (3.7f, 1.2f, -45f), (0f, 27.5f, 180f) })
+                PropLibrary.Place(root, "security_camera_01", new Vector3(x, RoomHeight - 0.3f, z), new Vector3(0f, yaw, 0f), 1f, null, SurfaceType.Metal, false, true, 0f, $"Camera{z:0}{x:0}");
+            if (PropLibrary.Missing.Count > 0) SetupLog.Warn("Props missing (run Tools/AssetGen/fetch_polyhaven.py): " + string.Join(", ", PropLibrary.Missing));
+            SetupLog.Ok($"{PropLibrary.Placed} CC0 props placed (counter, staff area, officer station, waiting area, safety equipment)");
         }
 
         /// <summary>Quad signs face -Z at identity rotation (readable by a viewer at smaller z looking downrange); use Y=180 for signs behind the player.</summary>
@@ -220,7 +264,9 @@ namespace VRRange.Editor
             Sign(root, "SignRules", $"{RangePaths.ArtSigns}/sign_rules.png", new Vector3(2.7f, 2.0f, BackWallZ + 0.02f), new Vector3(0f, 180f, 0f), 1.8f, 0.9f);
             Sign(root, "SignSafetyLeft", $"{RangePaths.ArtSigns}/sign_safety.png", new Vector3(-RoomWidth * 0.5f + 0.01f, 2.0f, -3.5f), new Vector3(0f, -90f, 0f), 1.4f, 0.7f);
             Sign(root, "SignSafetyRight", $"{RangePaths.ArtSigns}/sign_safety.png", new Vector3(RoomWidth * 0.5f - 0.01f, 2.0f, -5.0f), new Vector3(0f, 90f, 0f), 1.4f, 0.7f);
-            Sign(root, "SignFiringLine", $"{RangePaths.ArtSigns}/sign_firing_line.png", new Vector3(0f, 2.75f, 0.77f), Vector3.zero, 2.0f, 1.0f);
+            // firing-line warning on both side walls (the centre lane is taken by the HUD, lane sign and scoreboard)
+            Sign(root, "SignFiringLineLeft", $"{RangePaths.ArtSigns}/sign_firing_line.png", new Vector3(-RoomWidth * 0.5f + 0.01f, 2.4f, 0.3f), new Vector3(0f, -90f, 0f), 1.6f, 0.8f);
+            Sign(root, "SignFiringLineRight", $"{RangePaths.ArtSigns}/sign_firing_line.png", new Vector3(RoomWidth * 0.5f - 0.01f, 2.4f, 0.3f), new Vector3(0f, 90f, 0f), 1.6f, 0.8f);
             Sign(root, "SignSafetyBackstop", $"{RangePaths.ArtSigns}/sign_safety.png", new Vector3(0f, 2.3f, BackstopZ - 0.05f), Vector3.zero, 2.8f, 1.4f);
         }
 
@@ -241,51 +287,70 @@ namespace VRRange.Editor
         static void BuildLights(GameObject root)
         {
             var lights = EditorRefs.Child(root, "Lights");
-            var panelTex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{RangePaths.ArtTextures}/light_panel_albedo.png");
-            var panelMat = MaterialLibrary.UnlitTexture("LightPanel", panelTex, false, true, new Color(1.6f, 1.6f, 1.5f));
-            var panelMesh = EditorMeshUtil.Quad("LightPanelQuad", 1.2f, 0.35f);
             int idx = 0;
-            for (float z = BackWallZ + 1.5f; z < BackstopZ - 1f; z += 3.5f)
+            // Ceiling-mounted twin fluorescent fixtures (CC0 prop with emissive tubes) + a baked rectangle light under each.
+            // Dense over the shooting area and the waiting room, two rows downrange so the lanes read as a lit corridor.
+            void Fixture(float x, float z, float intensity, float yaw = 0f)
             {
-                for (int col = -1; col <= 1; col++)
-                {
-                    float x = col * 3.0f;
-                    var panel = EditorRefs.MeshObject(lights, $"LightPanel{idx}", panelMesh, new[] { panelMat }, new Vector3(x, RoomHeight - 0.02f, z), new Vector3(-90f, 0f, 0f), s_EnvLayer, false, true);
-                    panel.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                    var lgo = EditorRefs.Child(lights, $"AreaLight{idx}", new Vector3(x, RoomHeight - 0.08f, z), new Vector3(90f, 0f, 0f));
-                    var l = EditorRefs.Ensure<Light>(lgo);
-                    l.type = LightType.Rectangle; l.areaSize = new Vector2(1.2f, 0.35f); l.intensity = 25f; l.color = new Color(1f, 0.97f, 0.9f); l.range = 12f;
-                    l.lightmapBakeType = LightmapBakeType.Baked;
-                    idx++;
-                }
+                var go = PropLibrary.Place(lights, "mounted_fluorescent_lights", new Vector3(x, RoomHeight - 0.02f, z), new Vector3(180f, yaw, 0f), 1f, null, SurfaceType.Metal, false, true, 2.6f, $"Fixture{idx}");
+                if (go != null) foreach (var r in go.GetComponentsInChildren<Renderer>(true)) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                var lgo = EditorRefs.Child(lights, $"AreaLight{idx}", new Vector3(x, RoomHeight - 0.1f, z), new Vector3(90f, yaw, 0f));
+                var l = EditorRefs.Ensure<Light>(lgo);
+                l.type = LightType.Rectangle; l.areaSize = new Vector2(0.9f, 0.6f); l.intensity = intensity; l.color = new Color(1f, 0.97f, 0.92f); l.range = 12f;
+                l.lightmapBakeType = LightmapBakeType.Baked;
+                idx++;
             }
+            for (float z = BackWallZ + 1.2f; z < -0.2f; z += 2.4f) foreach (var x in new[] { -3.1f, -0.9f, 1.3f, 3.5f }) Fixture(x, z, 30f);
+            for (float z = 2.4f; z < BackstopZ - 1.5f; z += 4f) foreach (var x in new[] { -2.0f, 2.0f }) Fixture(x, z, 24f);
+            // booth task lights: a strip over each shooting table
+            for (int lane = 0; lane < LaneCount; lane++)
+            {
+                var lgo = EditorRefs.Child(lights, $"BoothLight{lane}", new Vector3(LaneX(lane), 2.26f, 0.6f), new Vector3(90f, 0f, 0f));
+                var l = EditorRefs.Ensure<Light>(lgo);
+                l.type = LightType.Rectangle; l.areaSize = new Vector2(1.1f, 0.08f); l.intensity = 14f; l.color = new Color(1f, 0.98f, 0.95f); l.range = 6f; l.lightmapBakeType = LightmapBakeType.Baked;
+            }
+            // target illumination: baked spots aimed at the 10 m and 15 m target positions of every lane
+            foreach (var d in new[] { 10f, 15f })
+                for (int lane = 0; lane < LaneCount; lane++)
+                {
+                    var sgo = EditorRefs.Child(lights, $"TargetSpot{lane}_{d:0}", new Vector3(LaneX(lane), RoomHeight - 0.15f, d - 2.2f), new Vector3(58f, 0f, 0f));
+                    var sl = EditorRefs.Ensure<Light>(sgo);
+                    sl.type = LightType.Spot; sl.spotAngle = 42f; sl.innerSpotAngle = 25f; sl.range = 8f; sl.intensity = 18f; sl.color = new Color(1f, 0.98f, 0.9f);
+                    sl.lightmapBakeType = LightmapBakeType.Baked; sl.shadows = LightShadows.Soft;
+                }
+            // mixed fill lights keep dynamic objects (weapons, hands, targets, casings) lit; two of them cast soft shadows on PCVR
             int p = 0;
-            foreach (var z in new[] { -5.5f, -2.5f, 0.5f, 5f, 12f })
+            foreach (var z in new[] { -5.5f, -2.5f, 0.5f, 5f, 12f, 19f, 26f })
             {
                 foreach (var x in new[] { -2.4f, 2.4f })
                 {
                     var lgo = EditorRefs.Child(lights, $"FillLight{p++}", new Vector3(x, RoomHeight - 0.3f, z));
                     var l = EditorRefs.Ensure<Light>(lgo);
-                    l.type = LightType.Point; l.range = 9f; l.intensity = 1.5f; l.color = new Color(1f, 0.96f, 0.9f);
+                    l.type = LightType.Point; l.range = 11f; l.intensity = 1.6f; l.color = new Color(1f, 0.96f, 0.9f);
                     l.lightmapBakeType = LightmapBakeType.Mixed; l.shadows = LightShadows.None;
+                    if (Mathf.Approximately(z, 0.5f)) PcvrShadowLights.Add(l); // the pair above the firing line: soft shadows on PCVR
                 }
             }
             var dgo = EditorRefs.Child(lights, "FillDirectional", new Vector3(0f, 3f, 0f), new Vector3(60f, 30f, 0f));
-            var d = EditorRefs.Ensure<Light>(dgo); d.type = LightType.Directional; d.intensity = 0.35f; d.color = new Color(0.95f, 0.95f, 1f);
-            d.lightmapBakeType = LightmapBakeType.Mixed; d.shadows = LightShadows.Soft; d.shadowStrength = 0.6f;
+            var d2 = EditorRefs.Ensure<Light>(dgo); d2.type = LightType.Directional; d2.intensity = 0.45f; d2.color = new Color(0.95f, 0.95f, 1f);
+            d2.lightmapBakeType = LightmapBakeType.Mixed; d2.shadows = LightShadows.Soft; d2.shadowStrength = 0.55f;
 
             var lpg = EditorRefs.Child(lights, "LightProbes"); var group = EditorRefs.Ensure<LightProbeGroup>(lpg);
             var probes = new System.Collections.Generic.List<Vector3>();
-            for (float z = BackWallZ + 0.5f; z <= BackstopZ - 0.5f; z += (z < 2f ? 1.5f : 4f))
-                for (float x = -RoomWidth * 0.5f + 0.6f; x <= RoomWidth * 0.5f - 0.6f; x += 1.6f)
-                    foreach (var y in new[] { 0.3f, 1.4f, 2.6f }) probes.Add(new Vector3(x, y, z));
+            for (float z = BackWallZ + 0.5f; z <= BackstopZ - 0.5f; z += (z < 2f ? 1.2f : 3f))
+                for (float x = -RoomWidth * 0.5f + 0.6f; x <= RoomWidth * 0.5f - 0.6f; x += 1.3f)
+                    foreach (var y in new[] { 0.3f, 1.1f, 1.8f, 2.7f }) probes.Add(new Vector3(x, y, z));
             group.probePositions = probes.ToArray();
-            var rp = EditorRefs.Child(lights, "ReflectionProbe", new Vector3(0f, 1.6f, -2f));
-            var probe = EditorRefs.Ensure<ReflectionProbe>(rp);
-            probe.mode = UnityEngine.Rendering.ReflectionProbeMode.Baked; probe.size = new Vector3(RoomWidth, RoomHeight, 14f); probe.resolution = 128; probe.boxProjection = true;
+            foreach (var (name, pos, size) in new[] { ("ReflectionProbeFiring", new Vector3(0f, 1.6f, -1.5f), new Vector3(RoomWidth, RoomHeight, 7f)), ("ReflectionProbeWaiting", new Vector3(0f, 1.6f, -6f), new Vector3(RoomWidth, RoomHeight, 4f)), ("ReflectionProbeRange", new Vector3(0f, 1.6f, 14f), new Vector3(RoomWidth, RoomHeight, 30f)) })
+            {
+                var rp = EditorRefs.Child(lights, name, pos);
+                var probe = EditorRefs.Ensure<ReflectionProbe>(rp);
+                probe.mode = UnityEngine.Rendering.ReflectionProbeMode.Baked; probe.size = size; probe.resolution = 256; probe.boxProjection = true; probe.intensity = 1f;
+            }
             // indoor reverb for spatial audio
             var rz = EditorRefs.Child(root, "ReverbZone", new Vector3(0f, 1.5f, 8f));
             var zone = EditorRefs.Ensure<AudioReverbZone>(rz); zone.reverbPreset = AudioReverbPreset.Hangar; zone.minDistance = 20f; zone.maxDistance = 40f;
+            SetupLog.Ok($"Lighting: {idx} fluorescent fixtures with baked area lights, {LaneCount} booth strips, {LaneCount * 2} target spots, mixed fills, {probes.Count} light probes, 3 reflection probes");
         }
 
         static void BuildTeleportArea(GameObject root)

@@ -1,328 +1,579 @@
 {
-  "materials": {
-    "Gunmetal": "pbr_metal_dark",
-    "Polymer": "pbr_polymer",
-    "Rubber": "pbr_rubber",
-    "Metal": "pbr_metal_brushed",
-    "Dark": "flat",
-    "Grip": "pbr_polymer",
-    "White": "flat",
-    "Emissive": "flat"
-  },
-  "weapons": {
-    "pistol": {
-      "parts": [
-        {
-          "name": "body",
-          "file": "pistol_body.obj",
-          "pivot": [
-            0,
-            0,
-            0
-          ],
-          "role": "static"
-        },
-        {
-          "name": "slide",
-          "file": "pistol_slide.obj",
-          "pivot": [
-            0,
-            0,
-            0
-          ],
-          "role": "slide"
-        },
-        {
-          "name": "trigger",
-          "file": "pistol_trigger.obj",
-          "pivot": [
-            0,
-            -0.003,
-            0.04
-          ],
-          "role": "trigger"
-        },
-        {
-          "name": "magazine",
-          "file": "pistol_magazine.obj",
-          "pivot": [
-            0,
-            -0.012,
-            -0.012
-          ],
-          "role": "magazine"
-        }
-      ],
-      "muzzle": [
-        0,
-        0.04,
-        0.145
-      ],
-      "grip": [
-        0,
-        -0.045,
-        -0.02
-      ],
-      "gripPitchDegrees": 0,
-      "secondaryGrip": null,
-      "colliderCenter": [
-        0,
-        0.0,
-        0.03
-      ],
-      "colliderSize": [
-        0.035,
-        0.14,
-        0.2
-      ],
-      "mass": 0.9,
-      "primaryPalm": {
-        "pos": [
-          0.022,
-          -0.045,
-          -0.018
-        ],
-        "forward": [
-          -0.55,
-          -0.35,
-          0.76
-        ],
-        "up": [
-          0.83,
-          -0.1,
-          0.55
-        ],
-        "pose": "PistolGrip"
-      },
-      "ejectionPort": [
-        0.018,
-        0.05,
-        0.045
-      ]
+ "materials": {
+  "Gunmetal": "pbr_metal_dark",
+  "Polymer": "pbr_polymer",
+  "Rubber": "pbr_rubber",
+  "Metal": "pbr_metal_brushed",
+  "Dark": "flat",
+  "Grip": "pbr_polymer",
+  "White": "flat",
+  "Emissive": "flat"
+ },
+ "weapons": {
+  "pistol": {
+   "model": "Models/pistol/pistol.fbx",
+   "textureSet": "Models/pistol/pistol",
+   "parts": [
+    {
+     "name": "Body",
+     "role": "static"
     },
-    "rifle": {
-      "parts": [
-        {
-          "name": "body",
-          "file": "rifle_body.obj",
-          "pivot": [
-            0,
-            0,
-            0
-          ],
-          "role": "static"
-        },
-        {
-          "name": "charging_handle",
-          "file": "rifle_charging_handle.obj",
-          "pivot": [
-            0,
-            0.055,
-            -0.14
-          ],
-          "role": "slide"
-        },
-        {
-          "name": "trigger",
-          "file": "rifle_trigger.obj",
-          "pivot": [
-            0,
-            -0.025,
-            0.02
-          ],
-          "role": "trigger"
-        },
-        {
-          "name": "magazine",
-          "file": "rifle_magazine.obj",
-          "pivot": [
-            0,
-            -0.035,
-            0.03
-          ],
-          "role": "magazine"
-        }
-      ],
-      "muzzle": [
-        0,
-        0.03,
-        0.735
-      ],
-      "grip": [
-        0,
-        -0.06,
-        -0.05
-      ],
-      "gripPitchDegrees": 0,
-      "secondaryGrip": [
-        0,
-        0.0,
-        0.3
-      ],
-      "colliderCenter": [
-        0,
-        0.0,
-        0.15
-      ],
-      "colliderSize": [
-        0.06,
-        0.2,
-        0.95
-      ],
-      "mass": 3.2,
-      "primaryPalm": {
-        "pos": [
-          0.022,
-          -0.065,
-          -0.052
-        ],
-        "forward": [
-          -0.55,
-          -0.35,
-          0.76
-        ],
-        "up": [
-          0.83,
-          -0.1,
-          0.55
-        ],
-        "pose": "RiflePrimary"
-      },
-      "supportPalm": {
-        "pos": [
-          -0.012,
-          0.0,
-          0.3
-        ],
-        "forward": [
-          0.3,
-          0.95,
-          0.0
-        ],
-        "up": [
-          -0.95,
-          0.3,
-          0.0
-        ],
-        "pose": "RifleSupport"
-      },
-      "ejectionPort": [
-        0.03,
-        0.03,
-        0.02
-      ]
+    {
+     "name": "Slide",
+     "role": "slide"
     },
-    "smg": {
-      "parts": [
-        {
-          "name": "body",
-          "file": "smg_body.obj",
-          "pivot": [
-            0,
-            0,
-            0
-          ],
-          "role": "static"
-        },
-        {
-          "name": "charging_handle",
-          "file": "smg_charging_handle.obj",
-          "pivot": [
-            -0.03,
-            0.035,
-            0.1
-          ],
-          "role": "slide"
-        },
-        {
-          "name": "trigger",
-          "file": "smg_trigger.obj",
-          "pivot": [
-            0,
-            -0.03,
-            0.0
-          ],
-          "role": "trigger"
-        },
-        {
-          "name": "magazine",
-          "file": "smg_magazine.obj",
-          "pivot": [
-            0,
-            -0.045,
-            0.06
-          ],
-          "role": "magazine"
-        }
-      ],
-      "muzzle": [
-        0,
-        0.02,
-        0.42
-      ],
-      "grip": [
-        0,
-        -0.07,
-        -0.06
-      ],
-      "gripPitchDegrees": 0,
-      "secondaryGrip": [
-        0,
-        -0.05,
-        0.18
-      ],
-      "colliderCenter": [
-        0,
-        0.0,
-        0.05
-      ],
-      "colliderSize": [
-        0.06,
-        0.2,
-        0.75
-      ],
-      "mass": 2.4,
-      "primaryPalm": {
-        "pos": [
-          0.022,
-          -0.075,
-          -0.062
-        ],
-        "forward": [
-          -0.55,
-          -0.35,
-          0.76
-        ],
-        "up": [
-          0.83,
-          -0.1,
-          0.55
-        ],
-        "pose": "SmgGrip"
-      },
-      "supportPalm": {
-        "pos": [
-          0.02,
-          -0.055,
-          0.18
-        ],
-        "forward": [
-          -0.6,
-          -0.3,
-          0.74
-        ],
-        "up": [
-          0.8,
-          -0.2,
-          0.56
-        ],
-        "pose": "RifleSupport"
-      },
-      "ejectionPort": [
-        0.03,
-        0.03,
-        0.08
-      ]
+    {
+     "name": "Trigger",
+     "role": "trigger"
+    },
+    {
+     "name": "Magazine",
+     "role": "magazine"
+    },
+    {
+     "name": "Hammer",
+     "role": "static"
     }
+   ],
+   "muzzle": [
+    0,
+    0.036,
+    0.163
+   ],
+   "grip": [
+    0,
+    -0.016,
+    -0.005
+   ],
+   "gripPitchDegrees": 0,
+   "secondaryGrip": null,
+   "colliderCenter": [
+    0,
+    -0.01,
+    0.055
+   ],
+   "colliderSize": [
+    0.036,
+    0.135,
+    0.225
+   ],
+   "mass": 0.9,
+   "primaryPalm": {
+    "pos": [
+     0.022,
+     -0.018,
+     -0.008
+    ],
+    "forward": [
+     -0.55,
+     -0.35,
+     0.76
+    ],
+    "up": [
+     0.83,
+     -0.1,
+     0.55
+    ],
+    "pose": "PistolGrip"
+   },
+   "supportPalm": null,
+   "ejectionPort": [
+    0.016,
+    0.046,
+    0.02
+   ]
+  },
+  "rifle": {
+   "model": "Models/rifle/rifle.fbx",
+   "textureSet": "Models/rifle/rifle",
+   "parts": [
+    {
+     "name": "Body",
+     "role": "static"
+    },
+    {
+     "name": "Barrel",
+     "role": "static"
+    },
+    {
+     "name": "ChargingHandle",
+     "role": "static"
+    },
+    {
+     "name": "Trigger",
+     "role": "trigger"
+    },
+    {
+     "name": "Magazine",
+     "role": "magazine"
+    }
+   ],
+   "muzzle": [
+    0,
+    0.072,
+    0.598
+   ],
+   "grip": [
+    0,
+    -0.018,
+    -0.01
+   ],
+   "gripPitchDegrees": 0,
+   "secondaryGrip": [
+    0,
+    0.045,
+    0.3
+   ],
+   "colliderCenter": [
+    0,
+    0.0,
+    0.17
+   ],
+   "colliderSize": [
+    0.07,
+    0.27,
+    0.86
+   ],
+   "mass": 3.4,
+   "primaryPalm": {
+    "pos": [
+     0.022,
+     -0.02,
+     -0.012
+    ],
+    "forward": [
+     -0.55,
+     -0.35,
+     0.76
+    ],
+    "up": [
+     0.83,
+     -0.1,
+     0.55
+    ],
+    "pose": "RiflePrimary"
+   },
+   "supportPalm": {
+    "pos": [
+     -0.012,
+     0.04,
+     0.3
+    ],
+    "forward": [
+     0.3,
+     0.95,
+     0.0
+    ],
+    "up": [
+     -0.95,
+     0.3,
+     0.0
+    ],
+    "pose": "RifleSupport"
+   },
+   "ejectionPort": [
+    0.02,
+    0.072,
+    0.1
+   ]
+  },
+  "smg": {
+   "model": "Models/smg/smg.fbx",
+   "textureSet": "Models/smg/smg",
+   "parts": [
+    {
+     "name": "Body",
+     "role": "static"
+    },
+    {
+     "name": "Magazine",
+     "role": "magazine"
+    }
+   ],
+   "muzzle": [
+    0,
+    0.115,
+    0.146
+   ],
+   "grip": [
+    0,
+    0.045,
+    -0.005
+   ],
+   "gripPitchDegrees": 0,
+   "secondaryGrip": [
+    0,
+    0.06,
+    0.125
+   ],
+   "colliderCenter": [
+    0,
+    0.06,
+    0.02
+   ],
+   "colliderSize": [
+    0.04,
+    0.26,
+    0.26
+   ],
+   "mass": 2.4,
+   "primaryPalm": {
+    "pos": [
+     0.022,
+     0.04,
+     -0.009
+    ],
+    "forward": [
+     -0.55,
+     -0.35,
+     0.76
+    ],
+    "up": [
+     0.83,
+     -0.1,
+     0.55
+    ],
+    "pose": "SmgGrip"
+   },
+   "supportPalm": {
+    "pos": [
+     0.015,
+     0.05,
+     0.125
+    ],
+    "forward": [
+     -0.6,
+     -0.3,
+     0.74
+    ],
+    "up": [
+     0.8,
+     -0.2,
+     0.56
+    ],
+    "pose": "RifleSupport"
+   },
+   "ejectionPort": [
+    0.016,
+    0.12,
+    0.04
+   ]
   }
+ },
+ "legacy_procedural": {
+  "pistol": {
+   "parts": [
+    {
+     "name": "body",
+     "file": "pistol_body.obj",
+     "pivot": [
+      0,
+      0,
+      0
+     ],
+     "role": "static"
+    },
+    {
+     "name": "slide",
+     "file": "pistol_slide.obj",
+     "pivot": [
+      0,
+      0,
+      0
+     ],
+     "role": "slide"
+    },
+    {
+     "name": "trigger",
+     "file": "pistol_trigger.obj",
+     "pivot": [
+      0,
+      -0.003,
+      0.04
+     ],
+     "role": "trigger"
+    },
+    {
+     "name": "magazine",
+     "file": "pistol_magazine.obj",
+     "pivot": [
+      0,
+      -0.012,
+      -0.012
+     ],
+     "role": "magazine"
+    }
+   ],
+   "muzzle": [
+    0,
+    0.04,
+    0.145
+   ],
+   "grip": [
+    0,
+    -0.045,
+    -0.02
+   ],
+   "gripPitchDegrees": 0,
+   "secondaryGrip": null,
+   "colliderCenter": [
+    0,
+    0.0,
+    0.03
+   ],
+   "colliderSize": [
+    0.035,
+    0.14,
+    0.2
+   ],
+   "mass": 0.9,
+   "primaryPalm": {
+    "pos": [
+     0.022,
+     -0.045,
+     -0.018
+    ],
+    "forward": [
+     -0.55,
+     -0.35,
+     0.76
+    ],
+    "up": [
+     0.83,
+     -0.1,
+     0.55
+    ],
+    "pose": "PistolGrip"
+   },
+   "ejectionPort": [
+    0.018,
+    0.05,
+    0.045
+   ]
+  },
+  "rifle": {
+   "parts": [
+    {
+     "name": "body",
+     "file": "rifle_body.obj",
+     "pivot": [
+      0,
+      0,
+      0
+     ],
+     "role": "static"
+    },
+    {
+     "name": "charging_handle",
+     "file": "rifle_charging_handle.obj",
+     "pivot": [
+      0,
+      0.055,
+      -0.14
+     ],
+     "role": "slide"
+    },
+    {
+     "name": "trigger",
+     "file": "rifle_trigger.obj",
+     "pivot": [
+      0,
+      -0.025,
+      0.02
+     ],
+     "role": "trigger"
+    },
+    {
+     "name": "magazine",
+     "file": "rifle_magazine.obj",
+     "pivot": [
+      0,
+      -0.035,
+      0.03
+     ],
+     "role": "magazine"
+    }
+   ],
+   "muzzle": [
+    0,
+    0.03,
+    0.735
+   ],
+   "grip": [
+    0,
+    -0.06,
+    -0.05
+   ],
+   "gripPitchDegrees": 0,
+   "secondaryGrip": [
+    0,
+    0.0,
+    0.3
+   ],
+   "colliderCenter": [
+    0,
+    0.0,
+    0.15
+   ],
+   "colliderSize": [
+    0.06,
+    0.2,
+    0.95
+   ],
+   "mass": 3.2,
+   "primaryPalm": {
+    "pos": [
+     0.022,
+     -0.065,
+     -0.052
+    ],
+    "forward": [
+     -0.55,
+     -0.35,
+     0.76
+    ],
+    "up": [
+     0.83,
+     -0.1,
+     0.55
+    ],
+    "pose": "RiflePrimary"
+   },
+   "supportPalm": {
+    "pos": [
+     -0.012,
+     0.0,
+     0.3
+    ],
+    "forward": [
+     0.3,
+     0.95,
+     0.0
+    ],
+    "up": [
+     -0.95,
+     0.3,
+     0.0
+    ],
+    "pose": "RifleSupport"
+   },
+   "ejectionPort": [
+    0.03,
+    0.03,
+    0.02
+   ]
+  },
+  "smg": {
+   "parts": [
+    {
+     "name": "body",
+     "file": "smg_body.obj",
+     "pivot": [
+      0,
+      0,
+      0
+     ],
+     "role": "static"
+    },
+    {
+     "name": "charging_handle",
+     "file": "smg_charging_handle.obj",
+     "pivot": [
+      -0.03,
+      0.035,
+      0.1
+     ],
+     "role": "slide"
+    },
+    {
+     "name": "trigger",
+     "file": "smg_trigger.obj",
+     "pivot": [
+      0,
+      -0.03,
+      0.0
+     ],
+     "role": "trigger"
+    },
+    {
+     "name": "magazine",
+     "file": "smg_magazine.obj",
+     "pivot": [
+      0,
+      -0.045,
+      0.06
+     ],
+     "role": "magazine"
+    }
+   ],
+   "muzzle": [
+    0,
+    0.02,
+    0.42
+   ],
+   "grip": [
+    0,
+    -0.07,
+    -0.06
+   ],
+   "gripPitchDegrees": 0,
+   "secondaryGrip": [
+    0,
+    -0.05,
+    0.18
+   ],
+   "colliderCenter": [
+    0,
+    0.0,
+    0.05
+   ],
+   "colliderSize": [
+    0.06,
+    0.2,
+    0.75
+   ],
+   "mass": 2.4,
+   "primaryPalm": {
+    "pos": [
+     0.022,
+     -0.075,
+     -0.062
+    ],
+    "forward": [
+     -0.55,
+     -0.35,
+     0.76
+    ],
+    "up": [
+     0.83,
+     -0.1,
+     0.55
+    ],
+    "pose": "SmgGrip"
+   },
+   "supportPalm": {
+    "pos": [
+     0.02,
+     -0.055,
+     0.18
+    ],
+    "forward": [
+     -0.6,
+     -0.3,
+     0.74
+    ],
+    "up": [
+     0.8,
+     -0.2,
+     0.56
+    ],
+    "pose": "RifleSupport"
+   },
+   "ejectionPort": [
+    0.03,
+    0.03,
+    0.08
+   ]
+  }
+ }
 }

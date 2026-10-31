@@ -14,7 +14,7 @@ namespace VRRange.Editor
     {
         [System.Serializable] class Part { public string name; public string file; public float[] pivot; public string role; }
         [System.Serializable] class Palm { public float[] pos; public float[] forward; public float[] up; public string pose; }
-        [System.Serializable] class WeaponLayout { public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public float[] ejectionPort; }
+        [System.Serializable] class WeaponLayout { public string model; public string textureSet; public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public float[] ejectionPort; }
 
         public static readonly Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
 
@@ -70,6 +70,36 @@ namespace VRRange.Editor
 
             var model = EditorRefs.Child(root, "Model");
             Transform slide = null, trigger = null, magazine = null;
+            if (!string.IsNullOrEmpty(layout.model))
+            {
+                // V3: one FBX (CC0 download processed by Tools/AssetGen/blender_process.py) with named parts; one PBR texture set per weapon.
+                var modelPath = $"{RangePaths.ArtWeapons}/{layout.model}";
+                var asset = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+                if (asset == null) { SetupLog.Error($"Weapon model missing: {modelPath} (run Tools/AssetGen/fetch_polyhaven.py + blender_process.py)"); Object.DestroyImmediate(root); return null; }
+                var inst = (GameObject)PrefabUtility.InstantiatePrefab(asset);
+                PrefabUtility.UnpackPrefabInstance(inst, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                inst.name = "Mesh"; inst.transform.SetParent(model.transform, false);
+                inst.transform.localPosition = Vector3.zero; inst.transform.localRotation = Quaternion.identity; inst.transform.localScale = Vector3.one;
+                var texFolder = System.IO.Path.GetDirectoryName($"{RangePaths.ArtWeapons}/{layout.textureSet}").Replace('\\', '/');
+                var texBase = System.IO.Path.GetFileName(layout.textureSet);
+                var mat = MaterialLibrary.PbrFromFolder(texFolder, texBase, $"Weapon_{id}", 0.5f);
+                var roles = new Dictionary<string, string>();
+                if (layout.parts != null) foreach (var p in layout.parts) if (!string.IsNullOrEmpty(p.name)) roles[p.name] = p.role;
+                foreach (var t in inst.GetComponentsInChildren<Transform>(true))
+                {
+                    t.gameObject.layer = root.layer;
+                    var mr = t.GetComponent<MeshRenderer>();
+                    if (mr != null)
+                    {
+                        var mats = new Material[Mathf.Max(1, mr.sharedMaterials.Length)]; for (int i = 0; i < mats.Length; i++) mats[i] = mat;
+                        mr.sharedMaterials = mats; mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                    }
+                    if (roles.TryGetValue(t.name, out var role))
+                        switch (role) { case "slide": slide = t; break; case "trigger": trigger = t; break; case "magazine": magazine = t; break; }
+                }
+                if (inst.GetComponentsInChildren<MeshRenderer>(true).Length == 0) SetupLog.Warn($"{id}: model has no mesh renderers");
+            }
+            else
             foreach (var part in layout.parts)
             {
                 var objPath = $"{RangePaths.ArtWeapons}/{part.file}";
@@ -165,7 +195,7 @@ namespace VRRange.Editor
                     "Dark" => MaterialLibrary.Flat("WeaponDark", new Color(0.04f, 0.04f, 0.045f), 0.5f, 0.6f),
                     "White" => MaterialLibrary.Flat("SightWhite", new Color(0.95f, 0.95f, 0.9f), 0.3f, 0f, new Color(0.6f, 0.6f, 0.55f)),
                     "Emissive" => MaterialLibrary.Flat("ReticleRed", new Color(1f, 0.1f, 0.1f), 0.5f, 0f, new Color(4f, 0.2f, 0.2f)),
-                    _ => MaterialLibrary.Pbr("pbr_metal_dark", "WeaponGunmetal", 8f, 0.6f, new Color(0.7f, 0.72f, 0.75f)),
+                    _ => MaterialLibrary.Pbr("pbr_metal_dark", "WeaponGunmetal", 8f, 0.6f, new Color(0.92f, 0.94f, 0.97f)),
                 };
             }
             return mats;

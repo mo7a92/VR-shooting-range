@@ -1,0 +1,4 @@
+Source: Poly Haven model 'television_02' (https://polyhaven.com/a/television_02) by Benny Weimer
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [399.74847435951233, 350.19391775131226, 411.41476929375244]

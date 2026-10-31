@@ -14,8 +14,11 @@ namespace VRRange.Weapons
     /// tracked controllers and the camera are never touched, and lag is clamped so aiming stays possible.
     /// </summary>
     [DisallowMultipleComponent]
-    public class WeaponHandlingTransformer : XRBaseGrabTransformer
+    public class WeaponHandlingTransformer : XRBaseGrabTransformer, IXRDropTransformer
     {
+        /// <summary>No pose processing on drop; we only need the callback to clear grip state.</summary>
+        public bool canProcessOnDrop => false;
+
         [SerializeField] WeaponDefinition m_Definition;
         [SerializeField] Transform m_PrimaryGrip;   // weapon-local primary grip (the XRGrabInteractable attach transform)
         [SerializeField] Transform m_SupportGrip;   // weapon-local support grip (secondary attach), optional
@@ -181,7 +184,12 @@ namespace VRRange.Weapons
         public override void OnUnlink(XRGrabInteractable grabInteractable)
         {
             base.OnUnlink(grabInteractable);
-            m_Primary = null; m_Support = null; m_HasState = false; m_TwoHandBlend = 0f; m_TwoHandTarget = 0f;
+            ClearGripState();
         }
+
+        /// <summary>Last hand released: forget the interactors so IsTwoHanded/TwoHandBlend never report a stale grip.</summary>
+        public void OnDrop(XRGrabInteractable grabInteractable, DropEventArgs args) => ClearGripState();
+
+        void ClearGripState() { m_Primary = null; m_Support = null; m_HasState = false; m_TwoHandBlend = 0f; m_TwoHandTarget = 0f; m_Instability = 0f; }
     }
 }

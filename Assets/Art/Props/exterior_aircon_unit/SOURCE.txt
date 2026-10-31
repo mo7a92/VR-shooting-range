@@ -1,0 +1,4 @@
+Source: Poly Haven model 'exterior_aircon_unit' (https://polyhaven.com/a/exterior_aircon_unit) by Monsta3D
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [1799.971342086792, 374.15920197963715, 927.8970956802368]

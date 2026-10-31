@@ -59,6 +59,21 @@ behaviour is only confirmed once tested on a Quest 2 (see `TEST_RESULTS.md`).
   tunnelling vignette, floor-level tracking origin. Oculus Touch Controller Profile via OpenXR.
 - First-launch help on the HUD and a controls sign at the spawn point.
 
+## 7b. Windows PCVR and recording (V3)
+- Windows x64 player (OpenXR). Quest 2 via Virtual Desktop (VDXR runtime) or SteamVR; Index/Vive/G2/WMR controllers bound.
+- Floor-level tracking origin, real player height; same interactions, hands and weapons as the standalone build.
+- Separate graphics presets: `Quest 2` (mobile) and `PCVR` (RTX-class: HDR, 4-cascade soft shadows, SSAO, tonemapping, bloom, probe blending).
+- Spectator camera for OBS: desktop-only 16:9 view, first person (smoothed), third person (yaw-stabilised, presets), fixed tripod;
+  hotkeys F1–F6, [ ]; never affects the headset camera or tracking; optional half-rate rendering.
+- Targets: 90 FPS on PCVR when the headset runs at 90 Hz, 72 FPS on Quest 2 standalone — both only verifiable on hardware.
+
+## 7c. Visual quality bar (V3 overhaul)
+- Weapons: real CC0 models with PBR textures (pistol photoscan, M4A1, Micro Uzi), animatable slide/magazine/trigger parts, grip anchors authored per model.
+- Hands: smooth subdivided rig with baked skin textures; poses per weapon grip; trigger finger follows the trigger.
+- Environment: photoscanned CC0 props (fixtures, shelves, benches, crates, cameras, signage), steel-framed shooting tables, baked lightmaps and reflection probes.
+- UI: Rajdhani font, smoked-glass panels, amber accents; every label ≥ 16 px at 0.002 canvas scale.
+- Verification: in-container software-GL screenshots of weapons in hand, grips, counter, booths, waiting area, downrange and wide views (`Docs/Screenshots/final_v7`).
+
 ## 8. Deliverables
 - Reproducible Unity project (generators + committed assets), Windows build/install scripts,
   `LOCAL_HANDOFF.md`, honest `TEST_RESULTS.md`.

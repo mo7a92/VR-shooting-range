@@ -1,0 +1,4 @@
+Source: Poly Haven model 'service_pistol' (https://polyhaven.com/a/service_pistol) by Mateusz Sadek
+License: CC0 1.0 Universal
+Textures: 2k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [301.6076236963272, 31.82433918118477, 280.66837787628174]

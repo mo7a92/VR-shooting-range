@@ -1,0 +1,4 @@
+Source: Poly Haven model 'modular_airduct_rectangular_01' (https://polyhaven.com/a/modular_airduct_rectangular_01) by James Ray Cock
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [7663.504123687744, 2586.645245552063, 1256.1511993408203]

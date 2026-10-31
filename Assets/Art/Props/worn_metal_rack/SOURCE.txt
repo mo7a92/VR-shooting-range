@@ -1,0 +1,4 @@
+Source: Poly Haven model 'worn_metal_rack' (https://polyhaven.com/a/worn_metal_rack) by Luca B
+License: CC0 1.0 Universal
+Textures: 1k JPG set converted to URP inputs by Tools/AssetGen/fetch_polyhaven.py
+Dimensions (mm): [915.4166579246521, 600.0000238418579, 1899.9999766365256]

@@ -55,6 +55,7 @@ namespace VRRange.Hands
         Weapon m_HeldWeapon; WeaponGripAnchor m_Anchor; HandPose m_OverridePose; float m_OverrideUntil;
         readonly List<XRBaseInputInteractor> m_Interactors = new List<XRBaseInputInteractor>();
         Renderer[] m_ControllerRenderers;
+        float? m_GripOverride, m_TriggerOverride; // test hook (scripted input instead of a tracked controller)
 
         public bool IsLeft => m_IsLeft;
         public Weapon HeldWeapon => m_HeldWeapon;
@@ -205,11 +206,15 @@ namespace VRRange.Hands
         /// <summary>Temporarily force a pose (e.g. pinch while reloading).</summary>
         public void OverridePose(HandPose pose, float seconds) { m_OverridePose = pose; m_OverrideUntil = Time.time + seconds; }
 
+        /// <summary>Test hook: feed grip/trigger values without a device (null = read the real controller).</summary>
+        public void SetInputOverride(float? grip, float? trigger) { m_GripOverride = grip; m_TriggerOverride = trigger; }
+        public float TargetCurl(Finger f) => m_TargetCurl[(int)f];
+
         // ---------- per-frame ----------
         void LateUpdate()
         {
             float dt = Time.deltaTime;
-            float grip = HandInput.Grip(m_IsLeft), trigger = HandInput.Trigger(m_IsLeft);
+            float grip = m_GripOverride ?? HandInput.Grip(m_IsLeft), trigger = m_TriggerOverride ?? HandInput.Trigger(m_IsLeft);
             UpdateTargetPose();
             ComputeTargetCurls(grip, trigger);
             float k = 1f - Mathf.Exp(-m_CurlSpeed * dt);

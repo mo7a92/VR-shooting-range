@@ -101,7 +101,7 @@ namespace VRRange.Editor
             // Shooting-hand poses: thumb forward along the frame on the palm side (low curl, low spread), fingers pre-shaped
             // to half; the contact solve closes them onto the grip box.
             P("PistolGrip", 0.15f, 0.3f, 0.5f, 0.5f, 0.5f, 0.12f, true);
-            P("PistolSupport", 0.35f, 0.45f, 0.45f, 0.5f, 0.6f, 0.3f, false);
+            P("PistolSupport", 0.1f, 0.45f, 0.45f, 0.5f, 0.6f, 0.3f, false); // thumb nearly straight: it lies forward along the frame (thumbs-forward grip)
             P("RiflePrimary", 0.15f, 0.3f, 0.5f, 0.5f, 0.5f, 0.12f, true);
             P("RifleSupport", 0.35f, 0.45f, 0.45f, 0.45f, 0.45f, 0.3f, false);
             P("SmgGrip", 0.15f, 0.3f, 0.5f, 0.5f, 0.5f, 0.12f, true);

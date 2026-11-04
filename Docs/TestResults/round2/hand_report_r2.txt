@@ -1,104 +1,125 @@
 skin offsets: R palm 22.4 mm / back 16.7 mm, L palm 22.4 mm / back 16.7 mm
 right interactor attach anchor relative to the controller: (0, 0, 0) mm, rotation (0, 0, 0) deg; free-pose reference = [Right InteractionAttachController] Attach Child
 Pistol primary: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
-Pistol primary shooting(R): max depth 2.3 mm, 13/8651 vertices inside (0.15 %), de-penetration push 21.0 mm (pass1 19.5 mm along the palm normal (vertex at hand-local (-33, -36, -43) mm, 9.9 mm deep in Contact_frame))
-Pistol primary shooting(R):   inside by volume: Contact_guard: 13 verts, max 2.3 mm | regions: fingers 13
-Pistol primary shooting(R) Thumb tip: 10.3 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
-Pistol primary shooting(R) Thumb joints: meta 20.5mm@frame prox 11.0mm@frame distal 9.8mm@dustcover tip 10.3mm@dustcover
-Pistol primary shooting(R) Middle tip: 9.9 mm from the nearest contact surface (curl 0.35, tip extra 0.00)
-Pistol primary shooting(R) Middle joints: meta 38.7mm@grip prox 42.4mm@grip inter 29.5mm@guard distal 24.4mm@grip tip 10.0mm@grip
-Pistol primary shooting(R) Ring tip: 7.7 mm from the nearest contact surface (curl 0.30, tip extra 0.06)
-Pistol primary shooting(R) Ring joints: meta 48.9mm@grip prox 47.1mm@grip inter 41.3mm@grip distal 23.6mm@grip tip 7.7mm@grip
-Pistol primary shooting(R) Little tip: 8.5 mm from the nearest contact surface (curl 0.20, tip extra 0.25)
-Pistol primary shooting(R) Little joints: meta 49.8mm@grip prox 49.8mm@grip inter 47.9mm@grip distal 29.4mm@grip tip 8.5mm@grip
-Pistol primary shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 58 mm
-Pistol primary shooting(R): wrist 2.2 cm from the free hand's wrist (palm centre moved (20, 6, 4) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.39, 0.92), bore (0.00, -0.02, 1.00) in controller space, turned 1.4 deg)
-Pistol primary+support: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
-Pistol primary+support shooting(R): max depth 2.3 mm, 12/8651 vertices inside (0.14 %), de-penetration push 21.0 mm (pass1 19.5 mm along the palm normal (vertex at hand-local (-33, -36, -43) mm, 9.9 mm deep in Contact_frame))
-Pistol primary+support shooting(R):   inside by volume: Contact_guard: 12 verts, max 2.3 mm | regions: fingers 12
-Pistol primary+support shooting(R) Thumb tip: 10.3 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
-Pistol primary+support shooting(R) Thumb joints: meta 20.5mm@frame prox 11.0mm@frame distal 9.8mm@dustcover tip 10.3mm@dustcover
-Pistol primary+support shooting(R) Middle tip: 10.0 mm from the nearest contact surface (curl 0.35, tip extra 0.00)
-Pistol primary+support shooting(R) Middle joints: meta 38.7mm@grip prox 42.4mm@grip inter 29.5mm@guard distal 24.4mm@grip tip 10.0mm@grip
-Pistol primary+support shooting(R) Ring tip: 7.7 mm from the nearest contact surface (curl 0.30, tip extra 0.06)
-Pistol primary+support shooting(R) Ring joints: meta 48.9mm@grip prox 47.1mm@grip inter 41.3mm@grip distal 23.6mm@grip tip 7.7mm@grip
-Pistol primary+support shooting(R) Little tip: 8.5 mm from the nearest contact surface (curl 0.20, tip extra 0.25)
-Pistol primary+support shooting(R) Little joints: meta 49.8mm@grip prox 49.8mm@grip inter 47.9mm@grip distal 29.4mm@grip tip 8.5mm@grip
-Pistol primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 58 mm
-Pistol primary+support shooting(R): wrist 2.2 cm from the free hand's wrist (palm centre moved (20, 6, 4) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.38, 0.92), bore (0.00, -0.01, 1.00) in controller space, turned 0.5 deg)
-Pistol primary+support support(L): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 31.5 mm (pass1 30.0 mm along the palm normal (vertex at hand-local (11, -22, 14) mm, 12.1 mm deep in other:Seg12))
-Pistol primary+support support(L): support palm skin 45.9 mm from the shooting hand's Seg12
-Pistol primary+support support(L) Middle tip: 8.5 mm from the nearest contact surface (curl 0.25, tip extra 0.00)
-Pistol primary+support support(L) Middle joints: meta 74.9mm@grip prox 70.9mm@dustcover inter 51.8mm@guard distal 39.3mm@guard tip 39.8mm@guard
-Pistol primary+support support(L) Ring tip: 10.1 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
-Pistol primary+support support(L) Ring joints: meta 83.3mm@grip prox 78.7mm@grip inter 71.7mm@guard distal 54.9mm@grip tip 34.1mm@grip
-Pistol primary+support support(L) Little tip: 19.3 mm from the nearest contact surface (curl 0.40, tip extra 0.00)
-Pistol primary+support support(L) Little joints: meta 83.6mm@grip prox 76.7mm@grip inter 70.0mm@grip distal 49.8mm@grip tip 30.8mm@grip
-Pistol primary+support support(L): wrist pitch -18.4 deg (+ above / − below the bore), back-of-hand roll 9.5 deg from outward, palm x -90 mm
+Pistol primary shooting(R): max depth 2.0 mm, 19/8651 vertices inside (0.22 %), de-penetration push 13.3 mm (pass1 11.8 mm along the palm normal (vertex at hand-local (-25, -28, -9) mm, 6.1 mm deep after its 2.8 mm allowance in Contact_grip))
+Pistol primary shooting(R):   inside by volume: Contact_frame: 14 verts, max 2.0 mm; Contact_grip: 5 verts, max 1.7 mm | regions: thumb side 13, palm 6
+Pistol primary shooting(R): max depth outside the thenar/hypothenar compression zone 1.7 mm, inside the other hand 0.0 mm, vertices forward of the muzzle 0
+Pistol primary shooting(R): palm skin point 14.2 mm from the grip surface
+Pistol primary shooting(R) Thumb tip: 19.9 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
+Pistol primary shooting(R) Thumb joints: meta 13.4mm@frame prox 8.8mm@frame distal 13.7mm@dustcover tip 19.9mm@dustcover
+Pistol primary shooting(R) Middle tip: 7.9 mm from the nearest contact surface (curl 0.35, tip extra 0.10)
+Pistol primary shooting(R) Middle joints: meta 31.4mm@grip prox 35.8mm@grip inter 34.5mm@guard distal 22.7mm@grip tip 7.9mm@grip
+Pistol primary shooting(R) Ring tip: 7.6 mm from the nearest contact surface (curl 0.30, tip extra 0.07)
+Pistol primary shooting(R) Ring joints: meta 41.8mm@grip prox 40.0mm@grip inter 37.3mm@grip distal 23.6mm@grip tip 7.6mm@grip
+Pistol primary shooting(R) Little tip: 9.8 mm from the nearest contact surface (curl 0.20, tip extra 0.10)
+Pistol primary shooting(R) Little joints: meta 42.7mm@grip prox 42.7mm@grip inter 41.2mm@grip distal 25.2mm@grip tip 9.8mm@grip
+Pistol primary shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 51 mm
+Pistol primary shooting(R): wrist 1.4 cm from the free hand's wrist (palm centre moved (13, 4, 3) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.39, 0.92), bore (0.00, -0.03, 1.00) in controller space, turned 1.4 deg)
+Pistol primary+support: settled after 1.8 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
+Pistol primary+support shooting(R): max depth 2.0 mm, 19/8651 vertices inside (0.22 %), de-penetration push 13.3 mm (pass1 11.8 mm along the palm normal (vertex at hand-local (-25, -28, -9) mm, 6.1 mm deep after its 2.8 mm allowance in Contact_grip))
+Pistol primary+support shooting(R):   inside by volume: Contact_frame: 14 verts, max 2.0 mm; Contact_grip: 5 verts, max 1.7 mm | regions: thumb side 13, palm 6
+Pistol primary+support shooting(R): max depth outside the thenar/hypothenar compression zone 1.7 mm, inside the other hand 0.0 mm, vertices forward of the muzzle 0
+Pistol primary+support shooting(R): palm skin point 14.2 mm from the grip surface
+Pistol primary+support shooting(R) Thumb tip: 19.9 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
+Pistol primary+support shooting(R) Thumb joints: meta 13.4mm@frame prox 8.8mm@frame distal 13.7mm@dustcover tip 19.9mm@dustcover
+Pistol primary+support shooting(R) Middle tip: 7.9 mm from the nearest contact surface (curl 0.35, tip extra 0.10)
+Pistol primary+support shooting(R) Middle joints: meta 31.4mm@grip prox 35.8mm@grip inter 34.5mm@guard distal 22.7mm@grip tip 7.9mm@grip
+Pistol primary+support shooting(R) Ring tip: 7.6 mm from the nearest contact surface (curl 0.30, tip extra 0.07)
+Pistol primary+support shooting(R) Ring joints: meta 41.8mm@grip prox 40.0mm@grip inter 37.3mm@grip distal 23.6mm@grip tip 7.6mm@grip
+Pistol primary+support shooting(R) Little tip: 9.8 mm from the nearest contact surface (curl 0.20, tip extra 0.10)
+Pistol primary+support shooting(R) Little joints: meta 42.7mm@grip prox 42.7mm@grip inter 41.2mm@grip distal 25.2mm@grip tip 9.8mm@grip
+Pistol primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 51 mm
+Pistol primary+support shooting(R): wrist 1.4 cm from the free hand's wrist (palm centre moved (13, 4, 3) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.38, 0.92), bore (0.00, -0.01, 1.00) in controller space, turned 0.4 deg)
+Pistol primary+support support(L): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 8.3 mm (pass1 1.8 mm along the palm normal (vertex at hand-local (14, -22, 18) mm, 1.7 mm deep after its 0.0 mm allowance in other:Seg12))
+Pistol primary+support support(L): max depth outside the thenar/hypothenar compression zone 0.0 mm, inside the other hand 0.0 mm, vertices forward of the muzzle 0
+Pistol primary+support support(L): palm skin point 32.7 mm from the shooting hand surface
+Pistol primary+support support(L) Middle tip: 6.5 mm from the nearest contact surface (curl 0.25, tip extra 0.10)
+Pistol primary+support support(L) Middle joints: meta 64.4mm@grip prox 71.0mm@grip inter 55.6mm@guard distal 43.4mm@guard tip 42.6mm@guard
+Pistol primary+support support(L) Ring tip: 7.6 mm from the nearest contact surface (curl 0.34, tip extra 0.01)
+Pistol primary+support support(L) Ring joints: meta 71.4mm@grip prox 70.6mm@grip inter 68.3mm@grip distal 48.4mm@grip tip 28.0mm@grip
+Pistol primary+support support(L) Little tip: 18.9 mm from the nearest contact surface (curl 0.45, tip extra 0.00)
+Pistol primary+support support(L) Little joints: meta 70.7mm@grip prox 66.9mm@grip inter 60.8mm@grip distal 40.6mm@grip tip 22.6mm@grip
+Pistol primary+support support(L): wrist pitch -11.6 deg (+ above / − below the bore), back-of-hand roll 7.4 deg from outward, palm x -81 mm
 Rifle primary: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
-Rifle primary shooting(R): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 16.7 mm (pass1 15.2 mm along the palm normal (vertex at hand-local (-29, -37, -41) mm, 7.8 mm deep in Contact_grip))
-Rifle primary shooting(R) Thumb tip: 9.5 mm from the nearest contact surface (curl 0.08, tip extra 0.00)
-Rifle primary shooting(R) Thumb joints: meta 20.2mm@grip prox 16.0mm@triggerArea distal 17.6mm@magwell tip 9.6mm@magwell
-Rifle primary shooting(R) Middle tip: 8.5 mm from the nearest contact surface (curl 0.35, tip extra 0.08)
-Rifle primary shooting(R) Middle joints: meta 40.0mm@grip prox 42.8mm@magwell inter 21.2mm@magazine distal 19.5mm@grip tip 8.5mm@grip
-Rifle primary shooting(R) Ring tip: 10.1 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
-Rifle primary shooting(R) Ring joints: meta 50.4mm@grip prox 48.6mm@grip inter 39.1mm@magazine distal 24.0mm@grip tip 10.1mm@grip
-Rifle primary shooting(R) Little tip: 8.8 mm from the nearest contact surface (curl 0.25, tip extra 0.00)
-Rifle primary shooting(R) Little joints: meta 51.3mm@grip prox 51.3mm@grip inter 47.2mm@grip distal 29.8mm@grip tip 8.7mm@grip
-Rifle primary shooting(R): wrist pitch -21.8 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 54 mm
-Rifle primary shooting(R): wrist 3.0 cm from the free hand's wrist (palm centre moved (16, 4, 5) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.09, -0.68, 0.73), bore (-0.02, -0.36, 0.93) in controller space, turned 21.1 deg)
+Rifle primary shooting(R): max depth 3.0 mm, 23/8651 vertices inside (0.27 %), de-penetration push 8.0 mm (pass1 6.5 mm along the palm normal (vertex at hand-local (-30, -32, -12) mm, 3.2 mm deep after its 7.5 mm allowance in Contact_grip))
+Rifle primary shooting(R):   inside by volume: Contact_grip: 23 verts, max 3.0 mm | regions: thumb side 18, palm 5
+Rifle primary shooting(R): max depth outside the thenar/hypothenar compression zone 1.5 mm, inside the other hand 0.0 mm, vertices forward of the muzzle 0
+Rifle primary shooting(R): palm skin point 14.7 mm from the grip surface
+Rifle primary shooting(R) Thumb tip: 9.9 mm from the nearest contact surface (curl 0.02, tip extra 0.00)
+Rifle primary shooting(R) Thumb joints: meta 11.7mm@grip prox 11.3mm@grip distal 17.9mm@magwell tip 9.9mm@magwell
+Rifle primary shooting(R) Middle tip: 12.2 mm from the nearest contact surface (curl 0.20, tip extra 0.50)
+Rifle primary shooting(R) Middle joints: meta 31.9mm@grip prox 35.0mm@grip inter 15.7mm@magazine distal 25.9mm@magazine tip 12.3mm@grip
+Rifle primary shooting(R) Ring tip: 7.8 mm from the nearest contact surface (curl 0.30, tip extra 0.06)
+Rifle primary shooting(R) Ring joints: meta 42.3mm@grip prox 40.5mm@grip inter 35.1mm@magazine distal 23.1mm@grip tip 7.8mm@grip
+Rifle primary shooting(R) Little tip: 9.1 mm from the nearest contact surface (curl 0.20, tip extra 0.10)
+Rifle primary shooting(R) Little joints: meta 43.2mm@grip prox 43.2mm@grip inter 41.8mm@grip distal 26.0mm@grip tip 9.1mm@grip
+Rifle primary shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 46 mm
+Rifle primary shooting(R): wrist 2.4 cm from the free hand's wrist (palm centre moved (8, 2, 2) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.69, 0.72), bore (0.00, -0.37, 0.93) in controller space, turned 21.8 deg)
 Rifle primary+support: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
-Rifle primary+support shooting(R): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 16.7 mm (pass1 15.2 mm along the palm normal (vertex at hand-local (-29, -37, -41) mm, 7.8 mm deep in Contact_grip))
-Rifle primary+support shooting(R) Thumb tip: 9.5 mm from the nearest contact surface (curl 0.08, tip extra 0.00)
-Rifle primary+support shooting(R) Thumb joints: meta 20.2mm@grip prox 16.0mm@triggerArea distal 17.6mm@magwell tip 9.5mm@magwell
-Rifle primary+support shooting(R) Middle tip: 8.6 mm from the nearest contact surface (curl 0.35, tip extra 0.08)
-Rifle primary+support shooting(R) Middle joints: meta 40.0mm@grip prox 42.7mm@magwell inter 21.1mm@magazine distal 19.5mm@grip tip 8.6mm@grip
-Rifle primary+support shooting(R) Ring tip: 10.1 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
-Rifle primary+support shooting(R) Ring joints: meta 50.4mm@grip prox 48.6mm@grip inter 39.0mm@magazine distal 24.0mm@grip tip 10.1mm@grip
-Rifle primary+support shooting(R) Little tip: 8.8 mm from the nearest contact surface (curl 0.25, tip extra 0.00)
-Rifle primary+support shooting(R) Little joints: meta 51.3mm@grip prox 51.3mm@grip inter 47.2mm@grip distal 29.8mm@grip tip 8.8mm@grip
-Rifle primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 54 mm
-Rifle primary+support shooting(R): wrist 1.7 cm from the free hand's wrist (palm centre moved (16, 5, 3) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.35, 0.93), bore (0.00, 0.02, 1.00) in controller space, turned 1.4 deg)
-Rifle primary+support support(L): max depth 3.9 mm, 38/8651 vertices inside (0.44 %), de-penetration push 18.2 mm (pass1 16.7 mm along the palm normal (vertex at hand-local (49, -39, -4) mm, 8.4 mm deep in Contact_handguardRail))
-Rifle primary+support support(L):   inside by volume: Contact_handguardRail: 38 verts, max 3.9 mm | regions: thumb side 38
+Rifle primary+support shooting(R): max depth 3.1 mm, 24/8651 vertices inside (0.28 %), de-penetration push 8.0 mm (pass1 6.2 mm along the palm normal (vertex at hand-local (-30, -32, -12) mm, 3.1 mm deep after its 7.5 mm allowance in Contact_grip))
+Rifle primary+support shooting(R):   inside by volume: Contact_grip: 24 verts, max 3.1 mm | regions: thumb side 18, palm 6
+Rifle primary+support shooting(R): max depth outside the thenar/hypothenar compression zone 1.6 mm, inside the other hand 0.0 mm, vertices forward of the muzzle 0
+Rifle primary+support shooting(R): palm skin point 14.7 mm from the grip surface
+Rifle primary+support shooting(R) Thumb tip: 9.9 mm from the nearest contact surface (curl 0.02, tip extra 0.00)
+Rifle primary+support shooting(R) Thumb joints: meta 11.6mm@grip prox 11.3mm@grip distal 17.9mm@magwell tip 9.9mm@magwell
+Rifle primary+support shooting(R) Middle tip: 12.3 mm from the nearest contact surface (curl 0.20, tip extra 0.50)
+Rifle primary+support shooting(R) Middle joints: meta 31.9mm@grip prox 34.9mm@grip inter 15.7mm@magazine distal 25.9mm@magazine tip 12.3mm@grip
+Rifle primary+support shooting(R) Ring tip: 7.8 mm from the nearest contact surface (curl 0.30, tip extra 0.06)
+Rifle primary+support shooting(R) Ring joints: meta 42.3mm@grip prox 40.5mm@grip inter 35.1mm@magazine distal 23.1mm@grip tip 7.8mm@grip
+Rifle primary+support shooting(R) Little tip: 9.1 mm from the nearest contact surface (curl 0.20, tip extra 0.10)
+Rifle primary+support shooting(R) Little joints: meta 43.2mm@grip prox 43.2mm@grip inter 41.7mm@grip distal 26.0mm@grip tip 9.1mm@grip
+Rifle primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 46 mm
+Rifle primary+support shooting(R): wrist 0.8 cm from the free hand's wrist (palm centre moved (8, 3, 2) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.36, 0.93), bore (0.00, 0.01, 1.00) in controller space, turned 0.5 deg)
+Rifle primary+support support(L): max depth 4.5 mm, 52/8651 vertices inside (0.60 %), de-penetration push 17.5 mm (pass1 16.0 mm along the palm normal (vertex at hand-local (48, -36, -2) mm, 8.0 mm deep after its 12.0 mm allowance in Contact_handguardRail))
+Rifle primary+support support(L):   inside by volume: Contact_handguardRail: 45 verts, max 4.5 mm; Contact_handguardBand: 6 verts, max 0.9 mm; Contact_handguardCore: 1 verts, max 0.6 mm | regions: thumb side 46, palm 6
+Rifle primary+support support(L): max depth outside the thenar/hypothenar compression zone 0.9 mm, inside the other hand 0.0 mm, vertices forward of the muzzle 0
+Rifle primary+support support(L): palm skin point 18.5 mm from the grip surface
 Rifle primary+support support(L) Middle tip: 7.5 mm from the nearest contact surface (curl 0.30, tip extra 0.19)
-Rifle primary+support support(L) Middle joints: meta 42.5mm@handguardRail prox 52.6mm@handguardRail inter 40.0mm@handguardBand distal 25.1mm@handguardBand tip 7.4mm@handguardBand
-Rifle primary+support support(L) Ring tip: 9.8 mm from the nearest contact surface (curl 0.40, tip extra 0.10)
-Rifle primary+support support(L) Ring joints: meta 45.4mm@handguardRail prox 55.6mm@handguardBand inter 50.2mm@handguardBand distal 31.1mm@handguardBand tip 9.7mm@handguardBand
-Rifle primary+support support(L) Little tip: 15.0 mm from the nearest contact surface (curl 0.50, tip extra 0.00)
-Rifle primary+support support(L) Little joints: meta 43.6mm@handguardRail prox 54.1mm@handguardBand inter 53.2mm@handguardBand distal 34.9mm@handguardBand tip 15.0mm@handguardBand
+Rifle primary+support support(L) Middle joints: meta 41.9mm@handguardRail prox 52.1mm@handguardRail inter 39.8mm@handguardBand distal 25.2mm@handguardBand tip 7.6mm@handguardBand
+Rifle primary+support support(L) Ring tip: 9.6 mm from the nearest contact surface (curl 0.40, tip extra 0.10)
+Rifle primary+support support(L) Ring joints: meta 44.7mm@handguardRail prox 55.1mm@handguardBand inter 49.9mm@handguardBand distal 31.0mm@handguardBand tip 9.6mm@handguardBand
+Rifle primary+support support(L) Little tip: 14.5 mm from the nearest contact surface (curl 0.50, tip extra 0.00)
+Rifle primary+support support(L) Little joints: meta 42.9mm@handguardRail prox 53.6mm@handguardBand inter 52.9mm@handguardBand distal 34.6mm@handguardBand tip 14.6mm@handguardBand
 Rifle primary+support support(L): wrist pitch 25.8 deg (+ above / − below the bore), back-of-hand roll -72.6 deg from outward, palm x 24 mm
-Rifle primary+support support(L): palm skin 49 mm below the Contact_handguardRail centre
+Rifle primary+support support(L): palm skin 48 mm below the Contact_handguardRail centre
 SMG primary: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
-SMG primary shooting(R): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 21.9 mm (pass1 20.4 mm along the palm normal (vertex at hand-local (-56, -21, -21) mm, 11.1 mm deep in Contact_receiver))
-SMG primary shooting(R) Thumb tip: 13.6 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
-SMG primary shooting(R) Thumb joints: meta 19.1mm@receiver prox 10.1mm@receiver distal 9.2mm@receiver tip 13.6mm@receiver
-SMG primary shooting(R) Middle tip: 7.9 mm from the nearest contact surface (curl 0.35, tip extra 0.10)
-SMG primary shooting(R) Middle joints: meta 39.3mm@receiver prox 47.1mm@receiver inter 43.0mm@grip distal 25.7mm@grip tip 7.9mm@grip
-SMG primary shooting(R) Ring tip: 10.2 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
-SMG primary shooting(R) Ring joints: meta 51.7mm@receiver prox 54.6mm@grip inter 47.1mm@grip distal 26.4mm@grip tip 10.2mm@grip
-SMG primary shooting(R) Little tip: 10.9 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
-SMG primary shooting(R) Little joints: meta 55.2mm@receiver prox 56.9mm@grip inter 50.2mm@grip distal 30.8mm@grip tip 10.9mm@grip
-SMG primary shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 58 mm
-SMG primary shooting(R): wrist 2.7 cm from the free hand's wrist (palm centre moved (21, 6, 6) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.09, -0.51, 0.85), bore (-0.01, -0.16, 0.99) in controller space, turned 9.3 deg)
-SMG primary+support: settled after 1.6 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
-SMG primary+support shooting(R): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 21.9 mm (pass1 20.4 mm along the palm normal (vertex at hand-local (-56, -21, -21) mm, 11.1 mm deep in Contact_receiver))
-SMG primary+support shooting(R) Thumb tip: 13.6 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
-SMG primary+support shooting(R) Thumb joints: meta 19.0mm@receiver prox 10.1mm@receiver distal 9.2mm@receiver tip 13.6mm@receiver
-SMG primary+support shooting(R) Middle tip: 7.9 mm from the nearest contact surface (curl 0.35, tip extra 0.10)
-SMG primary+support shooting(R) Middle joints: meta 39.3mm@receiver prox 47.0mm@receiver inter 43.0mm@grip distal 25.7mm@grip tip 7.9mm@grip
-SMG primary+support shooting(R) Ring tip: 10.2 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
-SMG primary+support shooting(R) Ring joints: meta 51.7mm@receiver prox 54.6mm@grip inter 47.1mm@grip distal 26.4mm@grip tip 10.2mm@grip
-SMG primary+support shooting(R) Little tip: 10.9 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
-SMG primary+support shooting(R) Little joints: meta 55.2mm@receiver prox 56.9mm@grip inter 50.2mm@grip distal 30.8mm@grip tip 10.9mm@grip
-SMG primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 58 mm
-SMG primary+support shooting(R): wrist 2.5 cm from the free hand's wrist (palm centre moved (21, 5, 3) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.12, -0.11, 0.99), bore (0.00, 0.25, 0.97) in controller space, turned 15.4 deg)
-SMG primary+support support(L): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 17.1 mm (pass1 15.7 mm along the palm normal (vertex at hand-local (-23, -10, -89) mm, 8.1 mm deep in other:Seg12))
-SMG primary+support support(L) Middle tip: 8.2 mm from the nearest contact surface (curl 0.40, tip extra 0.10)
-SMG primary+support support(L) Middle joints: meta 43.6mm@receiver prox 48.8mm@receiver inter 51.3mm@receiver distal 31.3mm@receiver tip 8.2mm@receiver
-SMG primary+support support(L) Ring tip: 10.3 mm from the nearest contact surface (curl 0.56, tip extra 0.00)
-SMG primary+support support(L) Ring joints: meta 45.7mm@receiver prox 51.1mm@receiver inter 52.4mm@receiver distal 30.6mm@receiver tip 10.3mm@receiver
-SMG primary+support support(L) Little tip: 18.1 mm from the nearest contact surface (curl 0.65, tip extra 0.00)
-SMG primary+support support(L) Little joints: meta 43.1mm@receiver prox 50.9mm@receiver inter 55.5mm@receiver distal 36.4mm@receiver tip 21.4mm@receiver
-SMG primary+support support(L): wrist pitch 25.8 deg (+ above / − below the bore), back-of-hand roll -72.6 deg from outward, palm x 20 mm
-SMG primary+support support(L): palm skin 55 mm below the Contact_receiver centre
+SMG primary shooting(R): max depth 3.6 mm, 50/8651 vertices inside (0.58 %), de-penetration push 4.7 mm (pass1 3.2 mm along the palm normal (vertex at hand-local (-25, -26, -6) mm, 2.0 mm deep after its 0.2 mm allowance in Contact_grip))
+SMG primary shooting(R):   inside by volume: Contact_receiver: 30 verts, max 3.6 mm; Contact_grip: 20 verts, max 2.5 mm | regions: thumb side 45, palm 5
+SMG primary shooting(R): max depth outside the thenar/hypothenar compression zone 1.7 mm, inside the other hand 0.0 mm, vertices forward of the muzzle 0
+SMG primary shooting(R): palm skin point 12.3 mm from the grip surface
+SMG primary shooting(R) Thumb tip: 38.1 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
+SMG primary shooting(R) Thumb joints: meta 3.1mm@receiver prox 8.5mm@receiver distal 25.0mm@receiver tip 38.0mm@receiver
+SMG primary shooting(R) Middle tip: 8.8 mm from the nearest contact surface (curl 0.10, tip extra 1.00)
+SMG primary shooting(R) Middle joints: meta 29.5mm@grip prox 36.1mm@grip inter 48.0mm@grip distal 31.1mm@grip tip 8.8mm@grip
+SMG primary shooting(R) Ring tip: 10.1 mm from the nearest contact surface (curl 0.25, tip extra 0.10)
+SMG primary shooting(R) Ring joints: meta 39.9mm@grip prox 38.2mm@grip inter 36.4mm@grip distal 23.6mm@grip tip 10.1mm@grip
+SMG primary shooting(R) Little tip: 7.8 mm from the nearest contact surface (curl 0.20, tip extra 0.07)
+SMG primary shooting(R) Little joints: meta 40.8mm@grip prox 40.8mm@grip inter 37.9mm@grip distal 20.9mm@grip tip 7.7mm@grip
+SMG primary shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 42 mm
+SMG primary shooting(R): wrist 1.1 cm from the free hand's wrist (palm centre moved (5, 1, 1) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.51, 0.86), bore (0.00, -0.16, 0.99) in controller space, turned 9.0 deg)
+SMG primary+support: settled after 3.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
+SMG primary+support shooting(R): max depth 4.0 mm, 68/8651 vertices inside (0.79 %), de-penetration push 8.3 mm (pass1 7.3 mm along the palm normal (vertex at hand-local (-25, -28, -9) mm, 3.7 mm deep after its 2.8 mm allowance in Contact_grip))
+SMG primary+support shooting(R):   inside by volume: otherHand/Palm: 35 verts, max 4.0 mm; Contact_receiver: 26 verts, max 3.4 mm; Contact_grip: 7 verts, max 1.2 mm | regions: fingers 35, thumb side 33
+SMG primary+support shooting(R): max depth outside the thenar/hypothenar compression zone 4.0 mm, inside the other hand 4.0 mm, vertices forward of the muzzle 0
+SMG primary+support shooting(R): palm skin point 13.7 mm from the grip surface
+SMG primary+support shooting(R) Thumb tip: 38.7 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
+SMG primary+support shooting(R) Thumb joints: meta 4.3mm@receiver prox 9.6mm@receiver distal 25.8mm@receiver tip 38.7mm@receiver
+SMG primary+support shooting(R) Middle tip: 8.9 mm from the nearest contact surface (curl 0.10, tip extra 0.99)
+SMG primary+support shooting(R) Middle joints: meta 30.6mm@receiver prox 37.4mm@grip inter 48.5mm@grip distal 31.3mm@grip tip 9.0mm@grip
+SMG primary+support shooting(R) Ring tip: 10.2 mm from the nearest contact surface (curl 0.25, tip extra 0.10)
+SMG primary+support shooting(R) Ring joints: meta 41.2mm@grip prox 39.6mm@grip inter 37.4mm@grip distal 23.8mm@grip tip 10.2mm@grip
+SMG primary+support shooting(R) Little tip: 7.4 mm from the nearest contact surface (curl 0.20, tip extra 0.07)
+SMG primary+support shooting(R) Little joints: meta 42.2mm@grip prox 42.2mm@grip inter 39.3mm@grip distal 22.1mm@grip tip 7.4mm@grip
+SMG primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 43 mm
+SMG primary+support shooting(R): wrist 0.9 cm from the free hand's wrist (palm centre moved (6, 2, 1) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (0.01, -0.48, 0.88), bore (0.07, -0.12, 0.99) in controller space, turned 8.7 deg)
+SMG primary+support support(L): max depth 8.4 mm, 204/8651 vertices inside (2.36 %), de-penetration push 33.5 mm (pass1 21.6 mm along the palm normal (vertex at hand-local (30, -38, -24) mm, 11.8 mm deep after its 12.0 mm allowance in Contact_receiver), pass2 15.9 mm radially out of other:Seg11)
+SMG primary+support support(L):   inside by volume: otherHand/Seg12: 96 verts, max 8.4 mm; otherHand/Seg11: 39 verts, max 4.0 mm; otherHand/Seg10: 28 verts, max 7.6 mm; otherHand/Seg21: 21 verts, max 3.9 mm; otherHand/Seg20: 20 verts, max 4.1 mm | regions: wrist/forearm 93, palm 59, little side 52
+SMG primary+support support(L): max depth outside the thenar/hypothenar compression zone 8.4 mm, inside the other hand 8.4 mm, vertices forward of the muzzle 424
+SMG primary+support support(L): palm skin point 23.8 mm from the shooting hand surface
+SMG primary+support support(L) Middle tip: 8.3 mm from the nearest contact surface (curl 0.45, tip extra 0.18)
+SMG primary+support support(L) Middle joints: meta 47.5mm@receiver prox 58.4mm@receiver inter 51.6mm@receiver distal 31.3mm@receiver tip 8.3mm@receiver
+SMG primary+support support(L) Ring tip: 13.4 mm from the nearest contact surface (curl 0.50, tip extra 0.03)
+SMG primary+support support(L) Ring joints: meta 52.7mm@receiver prox 59.1mm@receiver inter 58.7mm@receiver distal 37.0mm@receiver tip 13.4mm@receiver
+SMG primary+support support(L) Little tip: 8.0 mm from the nearest contact surface (curl 0.20, tip extra 0.08)
+SMG primary+support support(L) Little joints: meta 50.9mm@receiver prox 54.9mm@receiver inter 70.0mm@receiver distal 64.4mm@receiver tip 56.1mm@receiver
+SMG primary+support support(L): wrist pitch 7.5 deg (+ above / − below the bore), back-of-hand roll -88.4 deg from outward, palm x 5 mm

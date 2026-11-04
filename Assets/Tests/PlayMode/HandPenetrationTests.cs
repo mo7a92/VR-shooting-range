@@ -59,7 +59,16 @@ namespace VRRange.Tests
         void Release(NearFarInteractor nf, Weapon w) { if (w.Grab.interactorsSelecting.Contains(nf)) XrTestRig.Manager.SelectExit((IXRSelectInteractor)nf, (IXRSelectInteractable)w.Grab); }
         static HandPresence Hand(bool left) => Object.FindObjectsByType<HandPresence>(FindObjectsSortMode.None).First(h => h.IsLeft == left);
 
-        struct Depths { public float max; public int inside, total; public float Fraction => total > 0 ? (float)inside / total : 0f; }
+        struct Depths { public float max, maxOutsideBulges, maxCrossHand; public int inside, total, forwardOfMuzzle; public float Fraction => total > 0 ? (float)inside / total : 0f; }
+
+        /// <summary>Thenar / hypothenar compression zone: palm vertices (not fingers, not wrist) more than 30 % of the hand length off the palm centre line; HandPresence lets these squash into a grip by their excess thickness (≤ 12 mm).</summary>
+        static bool InBulgeZone(HandPresence h, Vector3 v)
+        {
+            var palm = h.PalmWorldPosition; var fwd = (h.MiddleKnuckleWorldPosition - palm).normalized; var across = Vector3.Cross(h.PalmInwardWorld, fwd);
+            float handLen = Vector3.Distance(h.WristWorldPosition, h.MiddleKnuckleWorldPosition);
+            var d = v - palm; float f = Vector3.Dot(d, fwd), a = Mathf.Abs(Vector3.Dot(d, across));
+            return f <= handLen * 0.55f && f >= -handLen * 0.45f && a > handLen * 0.3f;
+        }
 
         static string Breakdown(HandPresence h, WeaponContactVolumes weapon, HandPresence other)
         {
@@ -96,13 +105,20 @@ namespace VRRange.Tests
             Assert.That(b.size.magnitude, Is.InRange(0.5f * smr.bounds.size.magnitude, 1.05f * smr.bounds.size.magnitude), $"baked vertices span {b.size.magnitude:0.000} m vs renderer bounds {smr.bounds.size.magnitude:0.000} m");
             var d = new Depths { total = verts.Count };
             var shapes = weapon != null ? weapon.Shapes() : new List<HandPresence.ContactShape>();
+            int weaponCount = shapes.Count;
             if (other != null) { other.RefreshOwnShapes(); shapes.AddRange(other.OwnShapes); }
+            var wt = weapon != null ? weapon.GetComponent<Weapon>() : null;
+            float muzzleZ = wt != null ? weapon.transform.InverseTransformPoint(wt.Muzzle.position).z : float.PositiveInfinity;
             foreach (var v in verts)
             {
-                float depth = 0f;
-                foreach (var sh in shapes) { float sd = -HandPresence.SignedDistance(sh, v); if (sd > depth) depth = sd; }
+                float depth = 0f, cross = 0f;
+                for (int k = 0; k < shapes.Count; k++) { float sd = -HandPresence.SignedDistance(shapes[k], v); if (sd > depth) depth = sd; if (k >= weaponCount && sd > cross) cross = sd; }
                 if (depth > 0.0005f) d.inside++;
                 if (depth > d.max) d.max = depth;
+                if (cross > d.maxCrossHand) d.maxCrossHand = cross;
+                if (depth > d.maxOutsideBulges && !InBulgeZone(h, v)) d.maxOutsideBulges = depth;
+                // nothing of a hand may be in front of the muzzle (5 mm tolerance for the barrel nut)
+                if (weapon != null && weapon.transform.InverseTransformPoint(v).z > muzzleZ + 0.005f) d.forwardOfMuzzle++;
             }
             return d;
         }
@@ -119,7 +135,7 @@ namespace VRRange.Tests
         {
             bool canRender = SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null;
             var shotDir = Path.Combine(Application.dataPath, "..", "Logs", "shots"); Directory.CreateDirectory(shotDir);
-            var supportOffset = new Dictionary<WeaponClass, Vector3> { { WeaponClass.Pistol, new Vector3(-0.05f, -0.01f, 0f) }, { WeaponClass.Rifle, new Vector3(-0.06f, 0.05f, 0.32f) }, { WeaponClass.SubmachineGun, new Vector3(-0.05f, 0.04f, 0.12f) } };
+            var supportOffset = new Dictionary<WeaponClass, Vector3> { { WeaponClass.Pistol, new Vector3(-0.05f, -0.01f, 0f) }, { WeaponClass.Rifle, new Vector3(-0.06f, 0.05f, 0.32f) }, { WeaponClass.SubmachineGun, new Vector3(-0.05f, -0.01f, 0.12f) } };
             var right = Hand(false); var left = Hand(true);
             right.DebugThumb = System.Environment.GetEnvironmentVariable("VRRANGE_DEBUG_THUMB") == "1";
             var report = new System.Text.StringBuilder(); var failures = new List<string>();
@@ -132,6 +148,9 @@ namespace VRRange.Tests
             {
                 var w = XrTestRig.Find(cls); var wcv = w.GetComponent<WeaponContactVolumes>();
                 string cfg = $"{w.DisplayName} {(withSupport ? "primary+support" : "primary")}";
+                // the support hand cups the shooting hand on the pistol and on the Micro Uzi (its 10 cm of free receiver between the
+                // trigger finger and the muzzle cannot take a 9 cm wide hand); it goes under the handguard on the rifle
+                bool cups = cls != WeaponClass.Rifle;
                 Debug.Log($"[VRRange][Test] hand penetration: {cfg} start");
                 Assert.IsNotNull(wcv, $"{w.DisplayName}: contact volumes"); Assert.GreaterOrEqual(wcv.volumes.Count, 3, $"{w.DisplayName}: fitted contact volumes");
                 m_RightController.SetPositionAndRotation(new Vector3(0.2f, 1.3f, -1.0f), Quaternion.identity);
@@ -161,17 +180,23 @@ namespace VRRange.Tests
                     // 1. skin depth inside the weapon and inside the other hand
                     var depth = MeasureDepths(h, wcv, other);
                     report.AppendLine($"{tag}: max depth {depth.max * 1000f:0.0} mm, {depth.inside}/{depth.total} vertices inside ({depth.Fraction * 100f:0.00} %), de-penetration push {h.DepenetrationOffset.magnitude * 1000f:0.0} mm ({h.DepenetrationInfo})");
-                    if (h.IsLeft && cls == WeaponClass.Pistol)
-                    {
-                        // the support palm must rest on the shooting hand: skin point gap to the shooting hand's own (uninflated) shapes
-                        var shooter = hands.First(x => !x.IsLeft); shooter.RefreshOwnShapes();
-                        float gapSkin = float.MaxValue; string gapName = "-"; int gi = 0;
-                        foreach (var sh in shooter.OwnShapes) { float sd = HandPresence.SignedDistance(sh, h.PalmSkinWorldPosition); if (sd < gapSkin) { gapSkin = sd; gapName = shooter.OwnShapeNames[gi]; } gi++; }
-                        report.AppendLine($"{tag}: support palm skin {gapSkin * 1000f:0.0} mm from the shooting hand's {gapName}");
-                    }
                     if (depth.inside > 0) report.AppendLine($"{tag}:   inside by volume: {Breakdown(h, wcv, other)}");
-                    if (depth.max > 0.004f) failures.Add($"{tag}: skin {depth.max * 1000f:0.0} mm inside (max 4 mm)");
-                    if (depth.Fraction >= 0.02f) failures.Add($"{tag}: {depth.Fraction * 100f:0.0} % of vertices inside (max 2 %)");
+                    report.AppendLine($"{tag}: max depth outside the thenar/hypothenar compression zone {depth.maxOutsideBulges * 1000f:0.0} mm, inside the other hand {depth.maxCrossHand * 1000f:0.0} mm, vertices forward of the muzzle {depth.forwardOfMuzzle}");
+                    // bulges may compress into the grip by up to 12 mm (rigid mesh standing in for squashed flesh); everything else ≤ 4 mm
+                    if (depth.maxOutsideBulges > 0.004f) failures.Add($"{tag}: skin {depth.maxOutsideBulges * 1000f:0.0} mm inside outside the compression zone (max 4 mm)");
+                    if (depth.max > 0.012f) failures.Add($"{tag}: skin {depth.max * 1000f:0.0} mm inside (max 12 mm in the compression zone)");
+                    if (depth.maxCrossHand > 0.004f) failures.Add($"{tag}: skin {depth.maxCrossHand * 1000f:0.0} mm inside the other hand (max 4 mm)");
+                    if (depth.forwardOfMuzzle > 0) failures.Add($"{tag}: {depth.forwardOfMuzzle} hand vertices in front of the muzzle");
+                    if (depth.Fraction >= 0.05f) failures.Add($"{tag}: {depth.Fraction * 100f:0.0} % of vertices inside (max 5 % with the compression zone)");
+                    // the palm itself must be ON the grip: its skin point within 4 mm of a weapon volume (shooting hand) or of the shooting hand's
+                    // own shapes (pistol support hand, which holds the other hand, not the pistol)
+                    float palmGap;
+                    if (h.IsLeft && cups) { other.RefreshOwnShapes(); palmGap = NearestSurface(h.PalmSkinWorldPosition, other.OwnShapes); }
+                    else palmGap = NearestSurface(h.PalmSkinWorldPosition, wcv.Shapes());
+                    report.AppendLine($"{tag}: palm skin point {palmGap * 1000f:0.0} mm from the {(h.IsLeft && cups ? "shooting hand" : "grip")} surface");
+                    // the palm is concave: on this mesh the pads around the centre stand up to 7 mm proud of the centre point, so the
+                    // centre point itself may hover up to 8 mm while the pads touch
+                    if (palmGap > 0.008f) failures.Add($"{tag}: palm floats {palmGap * 1000f:0.0} mm off the {(h.IsLeft && cups ? "shooting hand" : "grip")} (max 8 mm)");
                     // 2. wrapping fingertips touch (within 12 mm of a contact surface)
                     var fingers = h.IsLeft ? new[] { HandPresence.Finger.Middle, HandPresence.Finger.Ring, HandPresence.Finger.Little } : new[] { HandPresence.Finger.Thumb, HandPresence.Finger.Middle, HandPresence.Finger.Ring, HandPresence.Finger.Little };
                     int farTips = 0;
@@ -226,7 +251,7 @@ namespace VRRange.Tests
                     else
                     {
                         if (pitch < -30f) failures.Add($"{tag}: support wrist pitch {pitch:0.0} deg is more than 30 deg below the bore");
-                        if (cls != WeaponClass.Pistol)
+                        if (!cups)
                         {
                             // support hand under the handguard: palm skin below the handguard volume, thumb forward
                             var guard = wcv.volumes.OrderBy(c => Vector3.Distance(c.transform.position, h.PalmSkinWorldPosition)).First();

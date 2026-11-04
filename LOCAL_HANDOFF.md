@@ -153,7 +153,8 @@ Headset round 1 fixes (2026-11-04; verified only by the automated suite and cont
 - [ ] **Floor calibration:** controller on the floor + both thumbsticks 1 s (or PageUp/PageDown/Home) gives a correct eye height;
       `Player.log` prints the in-game eye height 5 s after start.
 
-Headset round 2 (hands on grips, verified by `HandPenetrationTests` and container screenshots in `Docs/Screenshots/round2_fixes/`):
+Headset round 2 (hands on grips; **partly done**: `HandPenetrationTests` still fails on palm contact, thumbs and the two-handed cups, see
+`TEST_RESULTS.md` Stage 7; container screenshots in `Docs/Screenshots/round2_fixes/`):
 - [ ] **No sinking:** the palm skin rests on the grip panel / under the handguard, fingers wrap and stop at the surface, the two
       pistol hands touch without overlapping. If a hand still sinks somewhere, note which part: the contact volumes are the
       `contactVolumes` seeds in `weapons_layout.json` (shrink-wrapped to the mesh on rebuild) and the per-hand skin thickness

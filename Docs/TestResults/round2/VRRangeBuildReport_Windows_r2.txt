@@ -1,8 +1,8 @@
 Result: Succeeded
 Output: /project/Builds/Windows/VRShootingRange.exe
 Size: 296 MB
-Time: 00:00:30.7553330
+Time: 00:00:37.4206100
 Errors: 0  Warnings: 2
 Unity: 6000.3.27f1
 Target: StandaloneWindows64 (Mono, D3D11, OpenXR)
-Date: 2026-11-04T21:59:04
+Date: 2026-11-04T23:06:12

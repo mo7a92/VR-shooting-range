@@ -51,11 +51,10 @@ Cloud session: no Unity editor available; code validated with the Roslyn referen
 - [x] Polish: on-weapon ammo counter, how-to-play counter sign (runtime-placed, scene untouched); target hit ding already existed
 - [x] Prefab/settings-only rebuild entry (`VR Range > Setup > Rebuild Prefabs + Settings Only`, batch `RunPrefabsBatch`) keeps the scene and lightmaps
 
-## Done (headset feedback round 2, PCVR only, 2026-11-04)
-- [x] Hands no longer sink into the weapons or each other: mesh-fitted contact volumes per weapon part, per-hand skin and finger thickness from the baked mesh, palm de-penetration on the real skin, finger closing to the fingertip, joint thumb opposition/curl search
-- [x] High grip: wrist-to-knuckle line 21.7° below the bore, back of the hand 17.9° above outward, held wrist within 1.7–3.1 cm of the free hand's wrist (free pose = OpenXR grip-pose fist, weapon held by the palm centroid, mirrored for a left shooting hand)
-- [x] Measured: max skin depth inside a weapon / the other hand 0.0–3.8 mm, ≤ 0.43 % of vertices, fingertips 7.5–10.9 mm (bone) from the surface except the justified SMG thumb (13.6 mm) and free support little fingers; version 0.3.2, Windows PCVR build rebuilt
-- [x] `HandPenetrationTests`: baked-vertex depth, fingertip contact, wrist pitch/roll/placement for pistol, rifle, SMG, primary and primary+support, through the rig's NearFarInteractors; numbers in `TEST_RESULTS.md` Stage 7; screenshots in `Docs/Screenshots/round2_fixes`
+## Headset feedback round 2 (PCVR only, 2026-11-04) — partly done, NOT accepted
+- [x] Per-weapon contact volumes, per-hand measured skin / finger thickness, palm de-penetration with flesh-compression allowances, finger closing to the fingertip, nearest-approach fallback, knuckle spheres; wrists at the grip-pose fist (knuckle line 21.7° below the bore, wrist within 2.4 cm of the empty hand's)
+- [x] `HandPenetrationTests` with palm-contact and muzzle checks; 48 screenshots; numbers in `TEST_RESULTS.md` Stage 7
+- [ ] **Open:** palms hover 12–15 mm off the grips (fitted frame / receiver boxes cut into the web of the hand), pistol / SMG shooting thumbs off the frame, two-handed pistol / SMG cups loose, SMG cup overlaps the index knuckle; the acceptance test fails on these. Next step: convex contact volumes around the beavertail / receiver underside (or a hand mesh with a thinner web, ~10 % smaller), then re-run the test
 
 ## Next actionable tasks (local PC, see LOCAL_HANDOFF.md)
 1. Open in Unity 6.3 LTS (6000.3.27f1 preferred): the scene, prefabs and settings are already generated and committed, so no setup dialog is expected. Run **VR Range → Validate Project** once.

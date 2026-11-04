@@ -5,55 +5,64 @@ Honest record of what was verified and how. Two stages so far: a cloud *static* 
 through Unity's command-line activation and returned afterwards). Stage 5 adds the first PCVR headset sessions
 (Quest 2 via Virtual Desktop); stages 6 and 7 are the headset-feedback rounds (PCVR only); the standalone Quest APK has still not run on a headset.
 
-## Stage 7: headset feedback round 2 — hands on grips, real Unity editor in the cloud (2026-11-04, PCVR only)
+## Stage 7: headset feedback round 2 — hands on grips, real Unity editor in the cloud (2026-11-04, PCVR only) — **NOT ACCEPTED**
 Starting point: commit `36d343b` (round 1). The owner's round-1 screenshots showed hands sinking into the weapons and pistol wrists
 tilted too far down. Same rules as round 1: Unity 6000.3.27f1, packages unchanged, no scene rebuild / re-bake (prefab + settings
-rebuild only), every interaction through the rig's own `NearFarInteractor`s, time-based waits. Nothing in this stage ran on a headset;
-the owner's checklist is in `LOCAL_HANDOFF.md` §7 ("Headset round 2").
+rebuild only), every interaction through the rig's own `NearFarInteractor`s, time-based waits. Nothing in this stage ran on a headset.
 
-**Method.** `HandPenetrationTests.HandsRestOnTheWeaponsWithoutSinkingInAndWristsSitLikeAHighGrip` (one PlayMode test, 6 configurations:
-pistol / rifle / SMG × shooting hand alone / shooting + support hand). Per configuration: controllers at a fixed pose, 0.5 s free so the
-empty hands settle, grab through the right `NearFarInteractor`, support grab through the left one, ≥ 0.9 s (1.6 s with support) plus a
-quiet-state wait (weapon and both palms moving < 1 mm per 0.2 s), then both hand meshes are baked (`SkinnedMeshRenderer.BakeMesh`,
-8,651 vertices each) and every vertex is tested against the weapon's fitted contact volumes and the other hand's palm box / finger
-capsules. Reported per hand: max depth, share of vertices inside, the deepest volume and hand region, each wrapping fingertip's bone
-distance to the nearest contact surface (flesh radius 9.5 mm measured on the mesh, so ≈ 10 mm means the pad touches), wrist pitch
-(wrist → middle-knuckle line vs the bore, projected on the weapon's side plane), back-of-hand roll (0° = straight outward, + = up),
-and the distance between the held wrist and where the empty hand's wrist sits for the same controller pose. Software-rendered
-screenshots (xvfb + llvmpipe, 960×640) of every configuration from the round-1 angles plus a support-hand close-up:
-`Docs/Screenshots/round2_fixes/round2_{pistol,rifle,smg}_{primary,both}_{shooter,front,palmside,fingerside,top}.png`,
-`round2_*_both_support_{shooter,front,palmside,fingerside,top,contact}.png` (48 files, all inspected). Full report: `Docs/TestResults/round2/hand_report_r2.txt` (suite XMLs and the build report next to it).
+**Status in one sentence:** nothing sinks into a weapon any more and the wrists sit like a grip-pose fist, but the palms still hover
+12–15 mm off the grip panels, the shooting thumbs do not rest on the frames, and the two-handed pistol / SMG holds are loose cups,
+so the acceptance test `HandPenetrationTests` **fails** and the PlayMode suite is **71 / 72 with 1 failure**. The first version of this
+stage (commit `7b093c8`) reported a pass; its criteria did not require the palm to touch anything and I had looked at screenshots of
+floating guns and called them acceptable. That was wrong, and this section replaces it.
 
-Pass criteria (from the round-2 brief): max depth ≤ 4 mm and < 2 % of vertices inside; wrapping fingertips within 12 mm (bone) of the
-surface (SMG shooting thumb 16 mm, SMG shooting little finger 20 mm — the Micro Uzi grip is 3 cm wide and 9 cm long with the receiver
-directly above it; a support hand's little finger may hang free); shooting-hand wrist ≤ 25° below the bore, support ≤ 30° below; held wrist
-within 4 cm of the free hand's wrist; rifle / SMG support palm under the handguard.
+**Method.** `HandPenetrationTests.HandsRestOnTheWeaponsWithoutSinkingInAndWristsSitLikeAHighGrip` (6 configurations: pistol / rifle / SMG
+× shooting hand alone / shooting + support hand). Per configuration: controllers at a fixed pose, 0.5 s free, grab through the right
+`NearFarInteractor`, support grab through the left one, ≥ 0.9 s (1.6 s with support) plus a quiet-state wait, then both hand meshes are
+baked (`SkinnedMeshRenderer.BakeMesh`, 8,651 vertices each) and every vertex is tested against the weapon's fitted contact volumes and
+the other hand's palm box / finger capsules / knuckle spheres. Reported per hand: max depth (overall, outside the thenar/hypothenar
+compression zone, inside the other hand), share of vertices inside, vertices in front of the muzzle, the palm centre's skin point
+distance to the grip (or, for a cupping support hand, to the shooting hand), each wrapping fingertip's bone distance to the nearest
+surface (flesh radius 9.5 mm, so ≈ 10 mm means the pad touches), wrist pitch, back-of-hand roll, held wrist vs the empty hand's wrist.
+Screenshots (software GL, 960×640): `Docs/Screenshots/round2_fixes/` (48 files, all looked at). Full report:
+`Docs/TestResults/round2/hand_report_r2.txt`; suite XMLs and the build report next to it.
 
-| Check | Measured (right = shooting hand, left = support hand) | Result |
+Criteria: max depth ≤ 4 mm outside the compression zone (the thenar / hypothenar / side ridges of this rigid mesh may squash into a grip
+panel or under a frame overhang by up to 12 mm, a stand-in for flesh), ≤ 4 mm inside the other hand, no vertex in front of the muzzle,
+palm centre skin ≤ 8 mm from the grip (the palm is concave, its pads stand up to 7 mm proud of the centre), wrapping fingertips ≤ 12 mm
+(SMG thumb 16 mm), shooting wrist ≤ 25° below the bore, support ≤ 30°, held wrist within 4 cm of the empty hand's wrist.
+
+| Check | Measured (R = shooting hand, L = support hand) | Result |
 |---|---|---|
-| Compile (6000.3.27f1, packages unchanged) | `Logs/prefabs_r1.log`, prefab + settings rebuild (`RunPrefabsBatch`, now also applies the `HandContact` physics layer) | **0 errors, 0 compiler warnings** |
-| Skin thickness measured per hand | median of the baked rest-pose mesh in a 1.4 cm column through the palm centre: palm 22.4 mm, back of hand 16.7 mm from the bone line; finger flesh radius 9.5 mm (middle finger, middle segment); de-penetration cloud 2,693 palm / thenar / knuckle / wrist vertices | measured, not assumed |
-| Max skin depth inside a weapon or the other hand | pistol R 2.3 mm (12 / 8,651 = 0.14 %, trigger finger on the trigger-guard volume), pistol L 0.0 mm (0 %); rifle R 0.0 mm (0 %), rifle L 3.8 mm (37 = 0.43 %, thumb-side thenar against the bottom rail of the handguard); SMG R 0.0 mm (0 %), SMG L 0.0 mm (0 %); with the pistol support hand on, the shooting hand's vertices inside the support hand's capsules: 0 | **all ≤ 4 mm, all < 2 %** |
-| Fingertips on the surface (bone → nearest contact surface, mm) | pistol R thumb 10.3 / middle 10.0 / ring 7.7 / little 8.5; pistol L middle 8.6 / ring 10.2 / little 19.3 (free, cups below the shooting fingers); rifle R thumb 9.5 / middle 8.6 / ring 10.1 / little 8.8; rifle L middle 7.5 / ring 9.8 / little 15.0 (free); SMG R thumb 13.6 (bound 16) / middle 7.8 / ring 10.2 / little 10.9; SMG L middle 8.9 / ring 9.9 / little 18.5 (free) | **all within bounds** |
-| Wrist pitch (wrist → middle knuckle vs bore) | shooting hand −21.7° (pistol, rifle, SMG: the same fist as the empty hand); pistol support −18.4°; rifle / SMG support +25.8° (the under-guard hand points up along the handguard) | **≤ 25° below (shooting), ≤ 30° below (support)** |
-| Wrist roll (back of the shooting hand) | 17.9° above straight outward on all three weapons, the thumb along the frame on the palm side, nothing over the slide / receiver; pistol support 9.5° above outward; rifle / SMG support −72.6° (back of the hand facing down and outward under the handguard, fingers up the far side, thumb along the near side). Justification: the OpenXR grip pose is a fist with the back of the hand outward and slightly up; the shooting-hand anchors use exactly that orientation, so the held wrist is the real wrist | reported, justified |
-| Wrist placement vs the empty hand (same controller pose) | pistol 2.2 cm; rifle 3.1 cm alone (one-handed sag turns the knuckle line 21°) / 1.7 cm supported; SMG 2.6 cm / 2.5 cm; the palm centroid of a held hand sits 16–21 mm further out along the controller's palm normal than the empty hand's (thenar bulge resting on the grip panel) | **all < 4 cm** |
-| Rifle / SMG support palm under the handguard | rifle support palm skin 49 mm below the bottom-rail volume centre, SMG 48 mm below the receiver centre; fingers up one side (fingertips 7.5–9.9 mm from the band / receiver volumes), thumb along the other | **passed** |
-| Pistol support hand on the shooting hand | the support palm's bulges rest on the shooting hand's finger capsules (inflated 7 mm; de-penetration push 31.5 mm); the palm centre's skin point stays 46 mm from the nearest shooting-hand capsule, i.e. the cup is loose (see "Known limits") | passes the overlap rule; visually a loose cup |
-| Round-1 tests under the new geometry | `PistolSecondHandSupportsAndTakesOverWhenTheShootingHandLetsGo`: palm-centre distance bound widened from 14 to 19 cm (centres are now bone-line points one skin thickness outside the contact, +4.5 cm) and the hand-over check reads the mirrored grip point; `HandsSnapToWeaponGripAnchorsAndTransitionBetweenOneAndTwoHands`: "fingers wrap" now checks the contact solve found the grip and the middle fingertip is within 12 mm (curl alone no longer says "wrapped"); palm-anchor checks use the palm skin point | adapted, documented in the test comments |
-| Full PlayMode suite | `Docs/TestResults/round2/playmode-results.xml`: 73 tests = 72 round-1 + `HandPenetrationTests` | **72 / 72 passed** (1 screenshot test skipped headless), 190 s; the SMG two-handed configuration needed the full 3 s quiet-state wait (the two-handed sway never falls under 1 mm / 0.2 s) and then passed with the same numbers as the solo run |
-| Full EditMode suite | `Docs/TestResults/round2/editmode-results.xml` | **34 / 34 passed** |
-| Windows x64 PCVR build 0.3.2 | `PcvrBuildScript.BuildWindowsBatch` in the container (Windows Mono module mounted), `Docs/TestResults/round2/VRRangeBuildReport_Windows_r2.txt`: 0 errors, 2 warnings (the OpenXR package's project-validation notes, not compiler warnings) | **passed** — `VRShootingRange.exe` 296 MB unpacked, 186 files, no `DoNotShip` folders; zip `VRShootingRange_PCVR_Windows.zip` 143,344,456 bytes (137 MiB), sha256 `1f92644ee1077a9b68ed2b5c37733c8fd3f557801095dbfab91a6cd081a8e3dc`; handed over as a session file, not committed. **Not run on Windows or a headset here** |
-| Quest 2 APK | not built (PCVR only, owner's instruction) | skipped |
+| Compile (6000.3.27f1, packages unchanged) | prefab + settings rebuild, `Logs/prefabs_r1.log` | 0 errors, 0 compiler warnings |
+| Skin thickness per hand | palm 22.4 mm, back of hand 16.7 mm from the bone line; finger flesh radius 9.5 mm; wrist→middle knuckle 96 mm (an adult male is ≈ 85–90 mm, so the hand model is roughly 10 % large; not scaled this round) | measured |
+| Max depth outside the compression zone (≤ 4 mm) | pistol R 1.7 mm, L 0.0; rifle R 1.6, L 0.9; SMG R 1.7 alone / 4.0 with support (support palm box), L 8.4 (shooting hand's index knuckle) | **SMG support fails** |
+| Depth in the compression zone (≤ 12 mm) | pistol 2.0 mm, rifle 3.1, SMG 4.0; rifle support 4.5 (bottom rail) | met |
+| Hand in front of the muzzle | 0 vertices on every configuration in the headless run; 424 vertices of the SMG support hand in the rendered run (the cupping hand's fingertips reach past the 15 cm Micro Uzi) | **not reliably met on the SMG** |
+| Palm on the grip (centre skin ≤ 8 mm) | pistol R **14.2 mm**, rifle R **14.7 mm**, SMG R **12.3 / 13.7 mm**; rifle L **18.4 mm** below the handguard; pistol L **27.9–32.7 mm** off the shooting hand, SMG L **23.8–26.1 mm** | **not met anywhere** (was 19–28 mm at `7b093c8`, 15–20 mm hidden behind the "no penetration" pass) |
+| Fingertips | pistol R thumb **19.9**, middle 7.9, ring 7.6, little 9.8; rifle R thumb 9.9, middle **12.2**, ring 7.8, little 9.1; SMG R thumb **38.1**, middle 8.8, ring 10.1, little 7.8; pistol L 6.5 / 7.6 / 18.9 (free), rifle L 7.5 / 9.6 / 14.5 (free), SMG L 8.3 / 13.4 / 8.0 | **pistol and SMG thumbs, rifle middle finger not met** |
+| Wrist pitch | shooting −21.7° (all); pistol L −11.6°; rifle L +25.8°; SMG L +7.5° | met |
+| Back-of-hand roll | shooting +17.9° above outward (OpenXR grip-pose fist); pistol L +7.4°; rifle L −72.6° (under the guard); SMG L −88° | reported |
+| Held wrist vs empty hand | pistol 1.4 cm; rifle 2.4 / 0.8 cm; SMG 1.1 / 0.9 cm | met |
+| Full PlayMode suite | `Docs/TestResults/round2/playmode-results.xml`, 73 tests | **71 passed, 1 failed (`HandPenetrationTests`), 1 skipped** |
+| Full EditMode suite | `Docs/TestResults/round2/editmode-results.xml` | 34 / 34 passed |
+| Windows x64 PCVR build 0.3.2 | `Docs/TestResults/round2/VRRangeBuildReport_Windows_r2.txt`: 0 errors, 2 OpenXR validation notes; 296 MB unpacked; zip 143,345,179 bytes, sha256 `e1b0e73346faeecfe94a7436ea4ce22d2c78097ccaefcb342358f51cb1380362`, handed over as a session file, not committed | built, **not run on Windows or a headset**; hands as described above |
+| Quest 2 APK | not built (PCVR only) | skipped |
 
-Rejected on the way (kept out of the code, see `DECISIONS.md`): a "heel lift" that rotated the hand about its knuckle line so the thenar bulge
-could back out without moving the knuckles — the bulge sits mid-palm, so the lift hit its 14° cap, moved the wrist 4–5 cm and pitched the
-knuckle line to −27° without reducing the push; knuckle spheres + a 3–4 mm cross-hand inflation — the support palm sank 6.5–9 mm into the
-shooting hand's index knuckle (the meshes are rounder than their capsules), so the 7 mm inflation stays.
+Why the palms still float (measured, not guessed): the de-penetration backs the whole rigid hand out along its palm normal until the
+deepest vertex clears. With the skin and bulge allowances in, the remaining driver is the upper thumb-side palm (hand-local
+(−25, −28, −9) mm on the pistol, 11.7 mm inside the fitted *frame* box; (−25, −26, −6) mm inside the SMG receiver box): the fitted boxes
+of the frame / receiver are as wide as the grip and cut into the web of the hand where a real frame is narrower and the web is thin.
+Lowering the anchors 8–16 mm brought the gap from 19–28 mm to 12–15 mm; closing it needs either tighter contact volumes around the
+beavertail / receiver underside (convex hulls per part instead of boxes) or a hand mesh with a thinner web, both outside this round.
+The shooting thumbs float because the lowered hand no longer brings the thumb to the frame within the opposition range the thumb solve
+searches. The SMG support hold was moved from "under the receiver" (it stood in front of the muzzle) to a pistol-style cup, because the
+Micro Uzi's 10 cm of free receiver between the trigger finger and the muzzle cannot take a 9 cm wide hand; the cup overlaps the
+shooting hand's index knuckle by 8.4 mm and still reaches past the muzzle in one of two runs.
 
-Known limits: the hand mesh is rigid, so the thenar / hypothenar bulges (33–39 mm from the bone line vs 22 mm at the palm centre) hold the
-palm centre 15–20 mm off a flat grip panel; a finger that cannot reach the grip at any curl now closes to its nearest approach (rifle little
-finger 12.9 → 8.8 mm) instead of hanging at the pose curl. Screenshots are software-rendered without the PCVR post-processing.
+What did get fixed and holds: no hand part sinks into a weapon beyond the allowed compression, the shooting-hand wrists sit like the
+empty hand's fist (knuckle line 21.7° below the bore, wrist within 2.4 cm), a hand in front of the muzzle is now a test failure, the
+pistol support thumb lies forward along the frame, and the de-penetration push dropped from 17–22 mm to 5–13 mm.
 
 ## Stage 6: headset feedback round 1 fixes, real Unity editor in the cloud (2026-11-04, PCVR only)
 Starting point: the owner's local fixes merged (`local/headset-fixes-2026-11-04`). Every new interaction test grabs through the

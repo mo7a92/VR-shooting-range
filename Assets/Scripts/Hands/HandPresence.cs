@@ -98,12 +98,11 @@ namespace VRRange.Hands
         /// <summary>Names parallel to <see cref="ContactShapes"/> (weapon volume collider names, then "other:" + the other hand's shape names).</summary>
         public IReadOnlyList<string> ContactShapeNames => m_ShapeNames;
         /// <summary>
-        /// The other hand's capsules and palm box are inflated by 7 mm: both meshes are rounder than their shapes (knuckles,
-        /// finger pads) and skin-on-skin contact must not read as overlap. Measured on the pistol: 3-4 mm let the support palm
-        /// sink 6.5-9 mm into the shooting hand's index knuckle; 7 mm keeps every cross-hand overlap under 4 mm at the cost of
-        /// a ~1 cm air gap under the support palm's centre (its bulges rest on the fingers).
+        /// The other hand's capsules, knuckle spheres and palm box are inflated by 3 mm (skin-on-skin contact must not read as
+        /// overlap). 7 mm held the pistol support palm 3-4 cm off the shooting hand's fingers; 3 mm without knuckle spheres let
+        /// it sink 6.5 mm into the index knuckle, hence the spheres.
         /// </summary>
-        const float kOtherHandInflate = 0.007f;
+        const float kOtherHandInflate = 0.003f;
         void RefreshShapes()
         {
             m_Shapes.Clear(); m_ShapeNames.Clear(); m_OtherHandShapeStart = -1;
@@ -540,6 +539,14 @@ namespace VRRange.Hands
                     m_OwnShapes.Add(new ContactShape { kind = 1, scale = 1f, a = a.position, b = b.position, radius = f == 0 ? m_FingerRadius * 1.1f : m_FingerRadius });
                     m_OwnShapeNames.Add($"Seg{f}{i}");
                 }
+                // the knuckles (middle and end joints) are thicker than the segments between them: a sphere of 1.3 finger radii
+                // at each, so the other hand's palm does not sink into them (the capsules alone under-read them by ~6 mm)
+                for (int i = 1; i < 3; i++)
+                {
+                    var j = pts[i]; if (j == null) continue;
+                    m_OwnShapes.Add(new ContactShape { kind = 2, scale = 1f, center = j.position, radius = m_FingerRadius * (f == 0 ? 1.4f : 1.3f) });
+                    m_OwnShapeNames.Add($"Knu{f}{i}");
+                }
             }
         }
 
@@ -566,10 +573,19 @@ namespace VRRange.Hands
         // Palm / thenar / knuckle-row / wrist vertices (hand-root space), baked once in the rest pose: that region is rigid with
         // respect to the hand root, so no skinned-mesh bake is needed at runtime (a BakeMesh inside LateUpdate stalled the editor).
         readonly List<Vector3> m_PalmCloudLocal = new List<Vector3>();
+        /// <summary>
+        /// Per cloud vertex: how far it may sink into a contact shape (metres). The thenar and hypothenar bulges stand 10-17 mm
+        /// proud of the palm centre on this rigid mesh and the side ridges of the palm squash under a frame or receiver overhang; a real
+        /// hand squashes them against the grip instead of holding the whole palm off the panel, so a vertex may compress by its
+        /// thickness beyond the palm-centre skin (plus 8 mm on the side ridges), up to <see cref="kMaxBulgeCompression"/>
+        /// (and only <see cref="kMaxCrossHandCompression"/> into the other hand, where the overlap would show).
+        /// </summary>
+        readonly List<float> m_PalmCloudExcess = new List<float>();
+        const float kMaxBulgeCompression = 0.012f, kMaxCrossHandCompression = 0.003f;
         readonly List<Vector3> m_BakeBuffer = new List<Vector3>();
         void CachePalmCloud()
         {
-            m_PalmCloudLocal.Clear();
+            m_PalmCloudLocal.Clear(); m_PalmCloudExcess.Clear();
             var smr = m_HandRoot.GetComponentInChildren<SkinnedMeshRenderer>(true);
             if (smr == null || !BakeWorldVertices(smr, m_BakeBuffer)) return;
             RefreshOwnShapes();
@@ -577,12 +593,26 @@ namespace VRRange.Hands
             // to the curl / opposition solve; everything else (palm, thenar, knuckle row, wrist) is cached here.
             var digitShapes = new List<ContactShape>();
             for (int k = 0; k < m_OwnShapes.Count; k++) if (m_OwnShapeNames[k].StartsWith("Seg") && !m_OwnShapeNames[k].EndsWith("0")) digitShapes.Add(m_OwnShapes[k]);
+            float handLen = m_MiddleProx != null ? Vector3.Distance(WristWorldPosition, m_MiddleProx.position) : 0.09f;
+            var fingerDirRest = m_MiddleProx != null ? (m_MiddleProx.position - WristWorldPosition).normalized : m_HandRoot.forward;
             for (int i = 0; i < m_BakeBuffer.Count; i += 2)
             {
                 var v = m_BakeBuffer[i];
                 bool digit = false;
                 for (int k = 0; k < digitShapes.Count && !digit; k++) if (SignedDistance(digitShapes[k], v) < 0.004f) digit = true;
-                if (!digit) m_PalmCloudLocal.Add(m_HandRoot.InverseTransformPoint(v));
+                if (digit) continue;
+                m_PalmCloudLocal.Add(m_HandRoot.InverseTransformPoint(v));
+                float thickness = Vector3.Dot(v - PalmWorldPosition, PalmInwardWorld); // below the bone plane, towards the palm skin
+                // the thumb-side and little-side ridges of the palm (web of the hand, thenar, hypothenar: more than 30 % of the hand
+                // length off the palm centre line) are soft and squash under a frame / receiver overhang; they get 8 mm on top of
+                // their bulge excess. The palm centre strip gets its bulge excess only (none at the palm centre itself).
+                float across = Mathf.Abs(Vector3.Dot(v - PalmWorldPosition, Vector3.Cross(PalmInwardWorld, (m_MiddleProx != null ? m_MiddleProx.position : PalmWorldPosition + m_HandRoot.forward) - PalmWorldPosition).normalized));
+                float ridge = across > handLen * 0.3f ? 0.008f : 0f;
+                // only the palm proper may compress: the knuckle row / proximal finger segments (beyond 55 % of the hand length)
+                // and the wrist (behind 45 %) hang below the palm plane in the rest pose and must not inherit a "bulge" allowance
+                float along = Vector3.Dot(v - PalmWorldPosition, fingerDirRest);
+                bool palmProper = along <= handLen * 0.55f && along >= -handLen * 0.45f;
+                m_PalmCloudExcess.Add(palmProper ? Mathf.Clamp(Mathf.Max(0f, thickness - m_PalmSkinOffset) + ridge, 0f, kMaxBulgeCompression) : 0f);
             }
             Debug.Log($"[VRRange] Hand {(m_IsLeft ? "L" : "R")} palm cloud: {m_PalmCloudLocal.Count} vertices cached for de-penetration");
         }
@@ -599,12 +629,16 @@ namespace VRRange.Hands
             // (normal within ~70 deg): wrap-around contact at a grip's front or side is the finger solve's job, and pushing the
             // hand out by a side face's full exit distance would lift the palm off the grip. The travel for a counted vertex
             // is depth / cos(angle), capped so one stray vertex cannot throw the hand.
-            float Travel(Vector3 v, out int shape, out float depthOut)
+            float Travel(Vector3 v, float excess, out int shape, out float depthOut)
             {
                 float best = 0f; shape = -1; depthOut = 0f;
                 for (int si = 0; si < m_Shapes.Count; si++)
                 {
                     float depth = DepthAndNormal(m_Shapes[si], v, out var n);
+                    // a bulge vertex may compress by its excess thickness (less into the other hand)
+                    // (a support hand presses on rails and handguard edges, not on a panel under an overhang: 3 mm there too)
+                    bool crossHand = si >= m_OtherHandShapeStart && m_OtherHandShapeStart >= 0;
+                    depth -= crossHand || (m_Anchor != null && m_Anchor.role != GripRole.Primary) ? Mathf.Min(excess, kMaxCrossHandCompression) : excess;
                     if (depth <= 0f) continue;
                     float align = Vector3.Dot(n, outward);
                     float e = align >= 0.35f ? Mathf.Min(depth / align, 0.03f) : Mathf.Min(ExitDistance(m_Shapes[si], v, outward), depth * 2f, 0.03f);
@@ -612,16 +646,16 @@ namespace VRRange.Hands
                 }
                 return best;
             }
-            float exit = 0f; int exitShape = -1; float exitDepth = 0f; Vector3 exitVertexLocal = Vector3.zero;
+            float exit = 0f; int exitShape = -1; float exitDepth = 0f, exitExcess = 0f; Vector3 exitVertexLocal = Vector3.zero;
             for (int i = 0; i < m_BakeBuffer.Count; i++)
             {
-                float e = Travel(m_BakeBuffer[i], out int sh, out float d);
-                if (e > exit) { exit = e; exitShape = sh; exitDepth = d; exitVertexLocal = m_PalmCloudLocal[i]; }
+                float e = Travel(m_BakeBuffer[i], m_PalmCloudExcess[i], out int sh, out float d);
+                if (e > exit) { exit = e; exitShape = sh; exitDepth = d; exitVertexLocal = m_PalmCloudLocal[i]; exitExcess = m_PalmCloudExcess[i]; }
             }
             // 1.5 mm clearance: the cached palm cloud is rigid, the live thenar moves a little with the thumb opposition
             var push = outward * Mathf.Min(exit > 0f ? exit + 0.0015f : 0f, 0.06f);
             string info = exitShape >= 0
-                ? $"pass1 {exit * 1000f:0.0} mm along the palm normal (vertex at hand-local {exitVertexLocal * 1000f:0} mm, {exitDepth * 1000f:0.0} mm deep in {(exitShape < m_ShapeNames.Count ? m_ShapeNames[exitShape] : exitShape.ToString())})"
+                ? $"pass1 {exit * 1000f:0.0} mm along the palm normal (vertex at hand-local {exitVertexLocal * 1000f:0} mm, {exitDepth * 1000f:0.0} mm deep after its {exitExcess * 1000f:0.0} mm allowance in {(exitShape < m_ShapeNames.Count ? m_ShapeNames[exitShape] : exitShape.ToString())})"
                 : "pass1 0 mm";
             float pass2 = 0f; string pass2Shape = "";
             // Second pass for the other hand only (support hand cupping the shooting hand): its finger capsules are round, so
@@ -636,7 +670,7 @@ namespace VRRange.Hands
                         var v = m_BakeBuffer[i] + push;
                         for (int si = m_OtherHandShapeStart; si < m_Shapes.Count; si++)
                         {
-                            float depth = DepthAndNormal(m_Shapes[si], v, out var n);
+                            float depth = DepthAndNormal(m_Shapes[si], v, out var n) - Mathf.Min(m_PalmCloudExcess[i], kMaxCrossHandCompression);
                             if (depth > deepest) { deepest = depth; normal = n; deepestShape = si; }
                         }
                     }
@@ -880,9 +914,13 @@ namespace VRRange.Hands
                     // after the first contact the end joints keep closing until the fingertip itself touches
                     // (the shooting-hand thumb already optimises its tip distance in the opposition/curl search; its end joint bends away from the frame)
                     if (m_ContactCurl[f] >= 0f && !(f == 0 && shootingHand)) m_ContactTipExtra[f] = SolveTipExtra(f, m_ContactCurl[f], 0f, grip);
-                    // a finger that cannot reach the grip at any curl (little finger below a short grip, knuckle line held off by
-                    // the thenar bulge) closes to the pose that brings its tip nearest to the surface instead of hanging at the pose curl
-                    else if (m_ContactCurl[f] < 0f && f >= 2) SolveNearestApproach(f, m_TargetCurl[f], grip, out m_ContactCurl[f], out m_ContactTipExtra[f]);
+                    // a finger whose tip still does not touch (no contact at any curl, or a first contact on the proximal segment that
+                    // leaves the tip hanging) closes to the pose that brings its tip nearest to the surface
+                    if (f >= 2 && !TipTouches(f, m_ContactCurl[f] >= 0f ? m_ContactCurl[f] : m_TargetCurl[f], m_ContactTipExtra[f], grip))
+                    {
+                        SolveNearestApproach(f, m_TargetCurl[f], grip, out float nc, out float ne);
+                        if (nc >= 0f) { m_ContactCurl[f] = nc; m_ContactTipExtra[f] = ne; }
+                    }
                 }
                 if (!shootingHand) m_ContactThumbOpposition = 0f;
                 // the solve posed the joints; ApplyCurls below restores the smoothed state
@@ -928,6 +966,15 @@ namespace VRRange.Hands
 
         int TipState(JointChain c, Collider grip) => Sample(c.tip.position, grip); // the fingertip itself must touch
 
+        bool TipTouches(int f, float curl, float tipExtra, Collider grip)
+        {
+            var c = m_Fingers[f]; if (c == null || c.tip == null) return true;
+            ApplyFingerCurl(f, curl, m_TargetSpread, 0f, tipExtra);
+            float d = float.MaxValue;
+            if (m_Shapes.Count == 0) d = SignedDistance(grip, c.tip.position); else for (int i = 0; i < m_Shapes.Count; i++) { float sd = SignedDistance(m_Shapes[i], c.tip.position); if (sd < d) d = sd; }
+            return d < m_FingerRadius + 0.002f;
+        }
+
         /// <summary>
         /// For a finger that never touches: the (curl, tipExtra) pose, searched from the pose curl to a full curl, whose tip
         /// bone comes nearest to a contact surface without any sample going too deep. Leaves curl = -1 when nothing beats the
@@ -939,7 +986,7 @@ namespace VRRange.Hands
             var c = m_Fingers[f]; if (c == null || c.tip == null) return;
             float spread = m_TargetSpread;
             float Gap() { float d = float.MaxValue; if (m_Shapes.Count == 0) return SignedDistance(grip, c.tip.position); for (int i = 0; i < m_Shapes.Count; i++) { float sd = SignedDistance(m_Shapes[i], c.tip.position); if (sd < d) d = sd; } return d; }
-            ApplyFingerCurl(f, minCurl, spread, 0f, 0f);
+            ApplyFingerCurl(f, m_ContactCurl[f] >= 0f ? m_ContactCurl[f] : minCurl, spread, 0f, m_ContactTipExtra[f]);
             float best = Gap() - 0.0005f, bestCurl = -1f, bestExtra = 0f;
             // from half a curl more open than the pose (a short grip may be reached by a straighter finger) to fully closed
             for (float cu = Mathf.Max(0f, minCurl - 0.5f); cu <= 1f + 1e-4f; cu += 0.05f)

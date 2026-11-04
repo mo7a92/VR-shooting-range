@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a0e2a5c9e7171edf94ce16f7a225941, type: 3}
   m_Name: SmgGrip
   m_EditorClassIdentifier: VRRange.Runtime::VRRange.Hands.HandPose
-  thumb: 0.55
-  index: 0.35
-  middle: 0.9
-  ring: 0.92
-  little: 0.94
-  thumbSpread: 0.25
+  thumb: 0.15
+  index: 0.3
+  middle: 0.5
+  ring: 0.5
+  little: 0.5
+  thumbSpread: 0.12
   indexFollowsTrigger: 1

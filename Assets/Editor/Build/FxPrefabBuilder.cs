@@ -45,7 +45,8 @@ namespace VRRange.Editor
             var vis = EditorRefs.MeshObject(go, "Visual", mesh, new[] { mat }, Vector3.zero);
             vis.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             var trail = go.AddComponent<TrailRenderer>();
-            trail.time = 0.09f; trail.startWidth = 0.012f; trail.endWidth = 0.0f; trail.minVertexDistance = 0.05f;
+            // At real muzzle velocities (350-885 m/s) the flight is near-instant; a short, faint streak keeps shots readable.
+            trail.time = 0.035f; trail.startWidth = 0.01f; trail.endWidth = 0.0f; trail.minVertexDistance = 0.05f;
             trail.sharedMaterial = MaterialLibrary.ParticleAdditive("TracerTrail", AssetDatabase.LoadAssetAtPath<Texture2D>($"{RangePaths.ArtFx}/particle_soft.png"));
             trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; trail.receiveShadows = false; trail.autodestruct = false;
             var proj = go.AddComponent<Projectile>();

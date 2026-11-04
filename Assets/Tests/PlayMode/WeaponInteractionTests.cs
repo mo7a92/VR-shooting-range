@@ -43,16 +43,23 @@ namespace VRRange.Tests
         }
 
         [UnityTest]
-        public IEnumerator HandSwapTransfersPrimaryHand()
+        public IEnumerator SecondHandSupportsThePistolAndTakesOverWhenTheFirstLetsGo()
         {
+            // Headset round 1 (owner's decision): the second hand never steals the pistol; it supports the shooting hand,
+            // and when the shooting hand lets go the pistol passes to the support hand instead of dropping.
             var pistol = XrTestRig.Find(WeaponClass.Pistol);
             var right = XrTestRig.MakeHand("R", HandPos, Quaternion.identity, InteractorHandedness.Right);
-            var left = XrTestRig.MakeHand("L", HandPos + Vector3.left * 0.3f, Quaternion.identity, InteractorHandedness.Left);
+            var left = XrTestRig.MakeHand("L", HandPos + Vector3.left * 0.05f, Quaternion.identity, InteractorHandedness.Left);
             yield return XrTestRig.Grab(right, pistol);
-            yield return XrTestRig.Grab(left, pistol); // pistol is single-select: the left hand takes over
-            Assert.AreEqual(1, pistol.HandCount, "pistol is one-handed");
-            Assert.AreSame(left, pistol.PrimaryHandInteractor, "the newest hand owns a single-select weapon");
-            Assert.IsFalse(right.hasSelection);
+            yield return XrTestRig.Grab(left, pistol);
+            Assert.AreEqual(2, pistol.HandCount, "support hand added");
+            Assert.AreSame(right, pistol.PrimaryHandInteractor, "the first hand keeps the pistol");
+            Assert.IsTrue(right.hasSelection && left.hasSelection);
+            XrTestRig.Release(right, pistol);
+            yield return null;
+            Assert.IsTrue(pistol.IsHeld, "pistol handed over, not dropped");
+            Assert.AreEqual(1, pistol.HandCount);
+            Assert.AreSame(left, pistol.PrimaryHandInteractor, "the support hand is now the shooting hand");
         }
 
         [UnityTest]
@@ -266,9 +273,10 @@ namespace VRRange.Tests
             yield return XrTestRig.Grab(hand, rifle);
             int shots = ScoreManager.Instance.Stats.shotsFired;
             Assert.IsTrue(rifle.TryFire());
+            // at 885 m/s the round crosses the whole room within one frame, so check the pooled projectile before yielding
+            Assert.GreaterOrEqual(XrTestRig.ActiveProjectiles(), 1, "a projectile is in flight");
             yield return null;
             Assert.AreEqual(shots + 1, ScoreManager.Instance.Stats.shotsFired);
-            Assert.GreaterOrEqual(XrTestRig.ActiveProjectiles(), 1, "a projectile is in flight");
             Assert.IsNotNull(ProjectilePool.Instance);
         }
     }

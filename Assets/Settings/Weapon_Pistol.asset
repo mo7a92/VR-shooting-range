@@ -16,41 +16,44 @@ MonoBehaviour:
   displayName: Pistol
   weaponClass: 0
   twoHanded: 0
+  allowsSupportHand: 1
   supportedFireModes: 1
   defaultFireMode: 1
   roundsPerMinute: 360
   magazineSize: 12
   reloadSeconds: 1.5
-  muzzleVelocity: 90
+  muzzleVelocity: 360
   spreadDegrees: 0.35
-  gravityMultiplier: 3
+  gravityMultiplier: 1
   projectileLifetime: 3
-  kickBackMetres: 0.035
-  kickUpDegrees: 6
-  kickSideDegrees: 0.8
-  recoverySpeed: 16
+  kickBackMetres: 0.045
+  kickUpDegrees: 9
+  kickSideDegrees: 1
+  recoverySpeed: 14
   slideTravel: 0.03
   virtualMassKg: 0.9
   balanceForwardMetres: 0.04
-  oneHandResponseSeconds: 0.035
-  twoHandResponseSeconds: 0.03
-  oneHandSagDegrees: 0.6
-  twoHandSagDegrees: 0.2
-  oneHandSwayDegrees: 0.18
-  twoHandSwayDegrees: 0.08
+  oneHandResponseSeconds: 0.06
+  twoHandResponseSeconds: 0.04
+  oneHandSagDegrees: 1.5
+  twoHandSagDegrees: 0.5
+  oneHandSwayDegrees: 0.3
+  twoHandSwayDegrees: 0.12
   swayFrequencyHz: 0.7
-  maxPositionLagMetres: 0.012
-  maxRotationLagDegrees: 4
-  supportHandInfluence: 0.85
-  gripTransitionSeconds: 0.18
-  recoilUnsupportedMultiplier: 1.1
-  recoilSupportedMultiplier: 0.8
-  recoveryUnsupported: 14
-  recoverySupported: 18
-  instabilityPerShot: 0.15
-  instabilityDecayPerSecond: 2.5
-  hapticAmplitude: 0.65
-  hapticDuration: 0.07
+  maxPositionLagMetres: 0.015
+  maxRotationLagDegrees: 5
+  supportHandInfluence: 0
+  gripTransitionSeconds: 0.2
+  recoilUnsupportedMultiplier: 1.3
+  recoilSupportedMultiplier: 0.75
+  recoveryUnsupported: 9
+  recoverySupported: 14
+  instabilityPerShot: 0.18
+  instabilityDecayPerSecond: 3
+  maxRecoilPitchDegrees: 25
+  maxRecoilYawDegrees: 10
+  hapticAmplitude: 0.9
+  hapticDuration: 0.05
   secondaryHandHapticScale: 0.5
   fireClip: {fileID: 8300000, guid: 5cc6e8a1dafd25fba931fdea8a83bdf4, type: 3}
   dryFireClip: {fileID: 8300000, guid: a7342e2ed45e7329fbdbccb417e51288, type: 3}

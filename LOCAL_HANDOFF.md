@@ -55,7 +55,8 @@ The committed scene ships with lightmaps baked in the cloud (`Assets/Scenes/Shoo
 afterwards (Progressive CPU, a few minutes; switch the lightmapper to GPU in the Lighting window for speed).
 
 ## 5. Build the APK
-A cloud-built APK already exists (V3, 0.3.0, 114 MiB with the new assets and lightmaps, see `TEST_RESULTS.md`); it was
+A cloud-built APK exists from V3 (0.3.0, 114 MiB with the new assets and lightmaps, see `TEST_RESULTS.md`); headset round 1
+(0.3.1) was PCVR-only and did not rebuild the APK, so rebuild it locally to get the round-1 fixes on a standalone Quest 2. It was
 handed over as a file in the session and is not stored in git. To rebuild locally:
 - Menu **VR Range → Build → Build Quest 2 APK** → `Builds/VRShootingRange.apk`, or
 - `powershell -ExecutionPolicy Bypass -File Tools\Windows\build_apk.ps1` (add `-BakeLighting` to bake first,
@@ -63,7 +64,8 @@ handed over as a file in the session and is not stored in git. To rebuild locall
 - Build log: Unity Console / `Logs/build_apk.log`, summary in `Logs/VRRangeBuildReport.txt`.
 
 ## 5b. Windows PCVR build and Virtual Desktop (VDXR / SteamVR)
-The cloud produced `VRShootingRange_PCVR_Windows.zip` (Windows x64, Mono, Direct3D11, OpenXR; see `TEST_RESULTS.md`).
+The cloud produced `VRShootingRange_PCVR_Windows.zip` (Windows x64, Mono, Direct3D11, OpenXR; 0.3.1 after headset round 1; sizes
+and sha256 in `TEST_RESULTS.md` Stage 6).
 It is not stored in git. To rebuild locally the editor needs the **Windows Build Support (Mono)** module
 (Unity Hub → Installs → Add modules), then:
 - Menu **VR Range → Build → Build Windows PCVR (x64)** → `Builds/Windows/VRShootingRange.exe`, or
@@ -129,6 +131,27 @@ Supersampling is best set in Virtual Desktop / SteamVR (per-app resolution) rath
 - [ ] **Hands**: both hands visible at all times, fingers close with grip, index follows trigger; no controller model shown.
 - [ ] **Weight**: rifle one-handed sags and lags visibly; adding the second hand on the handguard steadies it and reduces recoil;
       pistol stays snappy; SMG in between. If a weapon sits wrongly in the hand, see section 8.
+
+Headset round 1 fixes (2026-11-04; verified only by the automated suite and container screenshots, so check on the headset):
+- [ ] **Bullet speed (issue 1):** shots at 25 m land practically instantly with a short faint streak; the pistol still shows a
+      ~2 cm drop at 25 m, the rifle none you can see. Nothing passes through the target face or the thin plates.
+- [ ] **Rifle one-handed (issue 2):** held in one hand the M4A1 leans down ~20°, trails a quick move and sways; a `[VRRange][Handling]`
+      line per second in `Player.log` shows `hands=1 via Near-Far Interactor ... sag=22.0deg` while you hold it. Add the support
+      hand on the handguard: it levels out and steadies. SMG: in between. Pistol: light but with a little lag and droop after a
+      fast move. Nothing enters your body or the floor when you lower the weapon.
+- [ ] **Recoil (issue 3):** every shot kicks the weapon visibly (pistol muzzle flip ~10°, rifle ~4° plus a push back, SMG fast and
+      jittery); rapid or automatic fire makes the muzzle climb and wander (one-handed rifle: mostly off target after 5–8 rounds),
+      and it settles back onto your aim once you release the trigger. Two hands (or the support hand on the pistol) cut it
+      clearly. Haptics are sharper. The camera never moves.
+- [ ] **Pistol support hand (issue 4):** grip near the shooting hand with the other hand: it wraps around it instead of taking the
+      pistol; only the shooting hand's trigger fires. Let go with the shooting hand: the pistol passes to the support hand
+      smoothly (no drop, no snap) and that hand now fires and reloads. Letting go of the support hand returns to one-handed.
+- [ ] **Hands on grips (issue 5):** fingers close onto the grip and stop at its surface (no fingers inside the grip, both hands),
+      thumb on the opposite side from the fingers, trigger finger outside the guard until you pull the trigger, rifle support hand
+      under the handguard. Compare with `Docs/Screenshots/round1_fixes/`. If the palm itself sits inside a grip, see section 8
+      (`primaryPalm` / `supportPalm` and the `*GripCollider` boxes in `weapons_layout.json`).
+- [ ] **Floor calibration:** controller on the floor + both thumbsticks 1 s (or PageUp/PageDown/Home) gives a correct eye height;
+      `Player.log` prints the in-game eye height 5 s after start.
 - [ ] Shell casings eject and tinkle; lane scoreboard above the booth updates; combo text appears after 3 hits in a row.
 - [ ] Performance: enable the OVR Metrics Tool (Meta Quest Developer Hub) or read `adb logcat -s VrApi`
       for FPS. Target 72 FPS. If low: bake lighting, reduce `renderScale` in `URP-Quest2.asset`, or lower MSAA to 2x.

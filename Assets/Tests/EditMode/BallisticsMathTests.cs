@@ -9,10 +9,13 @@ namespace VRRange.Tests
         [Test]
         public void DropGrowsWithDistance()
         {
-            float near = BallisticsMath.DropAtDistance(5f, 90f, 9.81f * 3f);
-            float far = BallisticsMath.DropAtDistance(25f, 90f, 9.81f * 3f);
+            float near = BallisticsMath.DropAtDistance(5f, 360f, 9.81f);
+            float far = BallisticsMath.DropAtDistance(25f, 360f, 9.81f);
             Assert.Greater(far, near);
             Assert.Greater(far / near, 20f, "drop scales with the square of distance");
+            // real-world sanity: a 9 mm pistol round drops ~2.4 cm over 25 m, a 5.56 mm carbine round ~4 mm
+            Assert.AreEqual(0.0237f, far, 0.002f);
+            Assert.AreEqual(0.0039f, BallisticsMath.DropAtDistance(25f, 885f, 9.81f), 0.001f);
         }
 
         [Test]
@@ -47,9 +50,9 @@ namespace VRRange.Tests
         [Test]
         public void CompensationAngleIsSmallAndPositive()
         {
-            float a = BallisticsMath.CompensationAngleDegrees(25f, 90f, 9.81f * 3f);
+            float a = BallisticsMath.CompensationAngleDegrees(25f, 360f, 9.81f);
             Assert.Greater(a, 0f);
-            Assert.Less(a, 10f);
+            Assert.Less(a, 0.1f, "at real velocities the hold-over at 25 m is a fraction of a degree");
             Assert.AreEqual(0f, BallisticsMath.CompensationAngleDegrees(0f, 90f, 9.81f));
         }
     }

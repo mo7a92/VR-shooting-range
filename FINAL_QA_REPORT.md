@@ -104,6 +104,16 @@ spectator/OpenXR configuration is covered by the EditMode build-configuration te
 | R9 | Low | In-container frame-time spike (~0.9 s) on the first automatic burst is shader/asset warm-up in the editor | Build players warm shaders at load; verify on device |
 | R10 | Info | Props use one PBR material each (Poly Haven single-set assets only); multi-material assets (e.g. the fire extinguisher) were replaced by procedural stand-ins | — |
 
+Headset round 1 (2026-11-04, see `TEST_RESULTS.md` Stage 5–6): the owner's first PCVR session found that weapons could not be
+grabbed (fixed locally), the thumb folded into the palm (fixed locally), the player was too short (floor calibration added), and
+then: bullets too slow, no weight on the one-handed rifle, weak recoil, the second hand stealing the pistol, hands inside the
+grips. All five were addressed in this round (real ballistics, retuned weight under the rig's real interactor, accumulating recoil,
+pistol support hand with hand-over, grip colliders + finger contact solve). R2 is therefore reduced to "thumb/finger placement
+judged on screenshots only"; new rows:
+
+| R11 | Medium (unverified) | Round-1 handling, recoil, pistol hand-over and finger wrap are verified by automated tests and container screenshots, not yet on the headset | Owner's on-headset checklist in `LOCAL_HANDOFF.md` §7 |
+| R12 | Low | The pistol support hand sits beside the shooting hand rather than wrapping its fingers; the SMG support hand cradles the narrow receiver loosely | Palm poses in `weapons_layout.json` (`supportPalm`), re-author with headset feedback |
+
 No known **critical** issues. No known reproducible functional bug remains in the automated scope.
 
 ## 9. Release readiness assessment

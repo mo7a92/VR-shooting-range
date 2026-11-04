@@ -16,40 +16,43 @@ MonoBehaviour:
   displayName: Rifle
   weaponClass: 1
   twoHanded: 1
+  allowsSupportHand: 1
   supportedFireModes: 3
   defaultFireMode: 1
-  roundsPerMinute: 600
+  roundsPerMinute: 800
   magazineSize: 30
   reloadSeconds: 2.2
-  muzzleVelocity: 180
+  muzzleVelocity: 885
   spreadDegrees: 0.2
-  gravityMultiplier: 2
+  gravityMultiplier: 1
   projectileLifetime: 3
-  kickBackMetres: 0.02
-  kickUpDegrees: 2.5
-  kickSideDegrees: 0.5
-  recoverySpeed: 20
+  kickBackMetres: 0.03
+  kickUpDegrees: 4
+  kickSideDegrees: 0.8
+  recoverySpeed: 16
   slideTravel: 0.04
   virtualMassKg: 3.4
   balanceForwardMetres: 0.28
-  oneHandResponseSeconds: 0.14
-  twoHandResponseSeconds: 0.035
-  oneHandSagDegrees: 4.5
-  twoHandSagDegrees: 0.35
-  oneHandSwayDegrees: 0.7
-  twoHandSwayDegrees: 0.1
+  oneHandResponseSeconds: 0.3
+  twoHandResponseSeconds: 0.04
+  oneHandSagDegrees: 22
+  twoHandSagDegrees: 0.6
+  oneHandSwayDegrees: 1.6
+  twoHandSwayDegrees: 0.15
   swayFrequencyHz: 0.7
-  maxPositionLagMetres: 0.03
-  maxRotationLagDegrees: 9
+  maxPositionLagMetres: 0.04
+  maxRotationLagDegrees: 14
   supportHandInfluence: 0.85
-  gripTransitionSeconds: 0.18
-  recoilUnsupportedMultiplier: 1.6
-  recoilSupportedMultiplier: 0.55
-  recoveryUnsupported: 6
-  recoverySupported: 16
-  instabilityPerShot: 0.3
-  instabilityDecayPerSecond: 2.5
-  hapticAmplitude: 0.8
+  gripTransitionSeconds: 0.2
+  recoilUnsupportedMultiplier: 2.8
+  recoilSupportedMultiplier: 0.6
+  recoveryUnsupported: 4.5
+  recoverySupported: 12
+  instabilityPerShot: 0.35
+  instabilityDecayPerSecond: 2
+  maxRecoilPitchDegrees: 30
+  maxRecoilYawDegrees: 14
+  hapticAmplitude: 1
   hapticDuration: 0.06
   secondaryHandHapticScale: 0.5
   fireClip: {fileID: 8300000, guid: 2dd9a5623018cdf01a009c9584d614fc, type: 3}

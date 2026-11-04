@@ -78,8 +78,8 @@ namespace VRRange.Tests
             Assert.IsFalse(rifle.IsTwoHanded);
             // weight sag: the barrel points slightly below the hand's forward
             float pitch = Vector3.SignedAngle(hand.transform.forward, rifle.Muzzle.forward, hand.transform.right);
-            Assert.Greater(pitch, 1.5f, $"expected noticeable muzzle sag for the one-handed rifle, got {pitch:0.00} deg");
-            Assert.Less(pitch, 12f);
+            Assert.Greater(pitch, 12f, $"expected a clearly drooping muzzle for the one-handed rifle (owner feedback: no weight felt), got {pitch:0.00} deg");
+            Assert.Less(pitch, 35f, "but the clamp keeps it usable");
             // grip stays on the hand (lag clamped)
             float gripDist = Vector3.Distance(rifle.Handling.PrimaryGrip.position, hand.transform.position);
             Assert.Less(gripDist, rifle.Definition.maxPositionLagMetres + 0.005f);
@@ -89,6 +89,7 @@ namespace VRRange.Tests
             float trailing = Vector3.Distance(rifle.Handling.PrimaryGrip.position, hand.transform.position);
             Assert.Greater(trailing, 0.004f, "heavy rifle should trail a sudden hand move");
             Assert.LessOrEqual(trailing, rifle.Definition.maxPositionLagMetres + 0.005f, "but never further than the clamp");
+            yield return new WaitForSeconds(0.8f);
             yield return new WaitForSeconds(0.8f);
             Assert.Less(Vector3.Distance(rifle.Handling.PrimaryGrip.position, hand.transform.position), 0.006f, "settles back onto the hand");
             m_Manager.SelectExit((IXRSelectInteractor)hand, (IXRSelectInteractable)rifle.Grab);

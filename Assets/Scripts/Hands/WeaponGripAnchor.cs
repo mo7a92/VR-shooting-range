@@ -15,6 +15,8 @@ namespace VRRange.Hands
         public HandPose pose;
         [Tooltip("Mirror the palm pose across the weapon's local X axis for the other hand (default anchor is authored for the right hand).")]
         public bool authoredForRightHand = true;
+        [Tooltip("Convex collider of the part the hand wraps (grip, handguard, or the shooting hand on a supported pistol). HandPresence closes each finger until it touches this collider.")]
+        public Collider gripCollider;
 
         /// <summary>World palm pose for the given hand. Left hands get a mirrored anchor unless the anchor was authored for them.</summary>
         public Pose GetPalmPose(bool isLeftHand)

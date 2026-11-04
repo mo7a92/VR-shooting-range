@@ -14,7 +14,8 @@ namespace VRRange.Editor
     {
         [System.Serializable] class Part { public string name; public string file; public float[] pivot; public string role; }
         [System.Serializable] class Palm { public float[] pos; public float[] forward; public float[] up; public string pose; }
-        [System.Serializable] class WeaponLayout { public string model; public string textureSet; public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public float[] ejectionPort; }
+        [System.Serializable] class GripBox { public float[] center; public float[] size; public float[] euler; }
+        [System.Serializable] class WeaponLayout { public string model; public string textureSet; public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public GripBox primaryGripCollider; public GripBox supportGripCollider; public float[] ejectionPort; public float[] ammoDisplay; public float[] ammoDisplayEuler; }
 
         public static readonly Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
 
@@ -134,7 +135,9 @@ namespace VRRange.Editor
             grab.useDynamicAttach = false;
             grab.attachTransform = attach.transform;
             if (secondary != null) grab.secondaryAttachTransform = secondary.transform;
-            grab.selectMode = def != null && def.twoHanded ? InteractableSelectMode.Multiple : InteractableSelectMode.Single;
+            // Two-grip weapons (rifle, SMG) and every weapon that accepts a support hand (the pistol: second hand cups the
+            // shooting hand and takes the weapon over when it lets go) accept two interactors.
+            grab.selectMode = def != null && (def.twoHanded || def.allowsSupportHand) ? InteractableSelectMode.Multiple : InteractableSelectMode.Single;
             grab.throwOnDetach = true; grab.retainTransformParent = true; grab.attachEaseInTime = 0f; grab.trackScale = false;
             grab.addDefaultGrabTransformers = false; // WeaponHandlingTransformer replaces XRI's general transformer
 
@@ -149,17 +152,53 @@ namespace VRRange.Editor
             handling.Configure(def, attach.transform, secondary != null ? secondary.transform : null);
             var primaryAnchor = BuildAnchor(root, "PrimaryGrip", layout.primaryPalm, GripRole.Primary, V(layout.grip));
             var supportAnchor = layout.supportPalm != null && layout.supportPalm.pos != null ? BuildAnchor(root, "SupportGrip", layout.supportPalm, GripRole.Support, V(layout.secondaryGrip)) : null;
+            // Convex grip volumes the fingers close onto (HandPresence contact solve): the pistol grip / handguard, and on the
+            // pistol's support grip the whole shooting hand. Solid (non-trigger) so Collider.ClosestPoint is exact; they sit
+            // inside the weapon's main collider and are on the Weapon layer, which projectiles ignore.
+            primaryAnchor.gripCollider = BuildGripBox(root, "PrimaryGripCollider", layout.primaryGripCollider, V(layout.grip) + new Vector3(0f, -0.035f, 0f), new Vector3(0.03f, 0.07f, 0.05f));
+            if (supportAnchor != null) supportAnchor.gripCollider = BuildGripBox(root, "SupportGripCollider", layout.supportGripCollider, V(layout.secondaryGrip), new Vector3(0.05f, 0.05f, 0.12f));
             weapon.SetHandling(handling, primaryAnchor, supportAnchor);
             if (layout.ejectionPort != null && layout.ejectionPort.Length >= 3)
             {
                 var port = EditorRefs.Child(root, "EjectionPort", V(layout.ejectionPort));
                 weapon.SetEjectionPort(port.transform);
             }
+            BuildAmmoDisplay(root, weapon, layout);
 
             var path = $"{RangePaths.Prefabs}/Weapon_{display}.prefab";
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
             Object.DestroyImmediate(root);
             return prefab;
+        }
+
+        /// <summary>Small 3D ammo counter at the rear of the receiver, readable by the shooter looking down the weapon.</summary>
+        static void BuildAmmoDisplay(GameObject root, Weapon weapon, WeaponLayout layout)
+        {
+            var pos = layout.ammoDisplay != null && layout.ammoDisplay.Length >= 3 ? V(layout.ammoDisplay) : V(layout.grip) + new Vector3(0f, 0.08f, -0.04f);
+            var euler = layout.ammoDisplayEuler != null && layout.ammoDisplayEuler.Length >= 3 ? V(layout.ammoDisplayEuler) : new Vector3(-35f, 0f, 0f);
+            var go = EditorRefs.Child(root, "AmmoDisplay", pos, euler);
+            go.layer = root.layer;
+            var tmp = EditorRefs.Ensure<TMPro.TextMeshPro>(go);
+            tmp.text = "12 / 12  SEMI"; tmp.fontSize = 1.6f; tmp.alignment = TMPro.TextAlignmentOptions.Center; tmp.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+            tmp.rectTransform.sizeDelta = new Vector2(1.2f, 0.3f);
+            tmp.transform.localScale = Vector3.one * 0.1f; // 1.6 pt at 0.1 scale ~ 9 mm glyphs
+            tmp.fontStyle = TMPro.FontStyles.Bold; tmp.characterSpacing = 2f;
+            var font = UiBuilder.GetFont(); if (font != null) tmp.font = font;
+            var mr = go.GetComponent<MeshRenderer>(); if (mr != null) { mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false; }
+            var display = EditorRefs.Ensure<WeaponAmmoDisplay>(go);
+            display.Configure(weapon, tmp);
+        }
+
+        static BoxCollider BuildGripBox(GameObject root, string name, GripBox box, Vector3 fallbackCenter, Vector3 fallbackSize)
+        {
+            var go = EditorRefs.Child(root, name);
+            go.layer = root.layer;
+            go.transform.localPosition = box != null && box.center != null ? V(box.center) : fallbackCenter;
+            go.transform.localRotation = box != null && box.euler != null ? Quaternion.Euler(V(box.euler)) : Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+            var col = EditorRefs.Ensure<BoxCollider>(go);
+            col.center = Vector3.zero; col.size = box != null && box.size != null ? V(box.size) : fallbackSize; col.isTrigger = false;
+            return col;
         }
 
         static WeaponGripAnchor BuildAnchor(GameObject root, string name, Palm palm, GripRole role, Vector3 fallbackPos)
@@ -173,6 +212,7 @@ namespace VRRange.Editor
             var anchor = EditorRefs.Ensure<WeaponGripAnchor>(go);
             anchor.role = role; anchor.authoredForRightHand = true;
             anchor.pose = SettingsAssetBuilder.Pose(palm != null ? palm.pose : (role == GripRole.Primary ? "PistolGrip" : "RifleSupport"));
+            anchor.gripCollider = null;
             return anchor;
         }
 

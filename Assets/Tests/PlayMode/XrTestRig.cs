@@ -71,7 +71,9 @@ namespace VRRange.Tests
         {
             var rb = weapon.GetComponent<Rigidbody>(); if (rb != null) rb.isKinematic = true;
             var dir = (target - origin).normalized;
-            weapon.transform.SetPositionAndRotation(origin - weapon.Muzzle.localPosition.z * dir, Quaternion.LookRotation(dir));
+            var rot = Quaternion.LookRotation(dir);
+            // place the weapon so the muzzle (which sits above and in front of the weapon origin) is exactly at `origin`
+            weapon.transform.SetPositionAndRotation(origin - rot * weapon.Muzzle.localPosition, rot);
         }
 
         /// <summary>Aims a free weapon at a target face with drop compensation and fires until a hit registers (moving targets).</summary>

@@ -37,6 +37,7 @@ namespace VRRange.Weapons
         bool m_TriggerHeld, m_Reloading, m_Warned;
         float m_NextFireTime;
         Coroutine m_ReloadRoutine;
+        XRBaseInputInteractor m_LastPrimary;
 
         public event Action<Weapon> Fired;
         public event Action<Weapon> DryFired;
@@ -131,6 +132,7 @@ namespace VRRange.Weapons
 
         void OnSelectEntered(SelectEnterEventArgs args)
         {
+            m_LastPrimary = PrimaryHandInteractor;
             if (args.interactorObject is XRBaseInputInteractor)
             {
                 AmmoChanged?.Invoke(this, m_Rounds, MagazineSize);
@@ -141,13 +143,17 @@ namespace VRRange.Weapons
 
         void OnSelectExited(SelectExitEventArgs args)
         {
-            if (PrimaryHandInteractor == null) { m_TriggerHeld = false; m_Animator?.SetTriggerPulled(false); }
+            // the shooting hand released (weapon dropped or handed over to the support hand): its trigger state is gone
+            if (PrimaryHandInteractor == null || ReferenceEquals(args.interactorObject, m_LastPrimary)) { m_TriggerHeld = false; m_Animator?.SetTriggerPulled(false); }
+            m_LastPrimary = PrimaryHandInteractor;
             if (args.interactorObject is XRBaseInputInteractor) GripChanged?.Invoke(this);
         }
 
         void OnActivated(ActivateEventArgs args)
         {
             if (!(args.interactorObject is XRBaseInputInteractor)) return;
+            // Only the shooting hand (first hand on the weapon) fires; a support hand's trigger does nothing.
+            if (!ReferenceEquals(args.interactorObject, PrimaryHandInteractor)) return;
             m_TriggerHeld = true;
             m_Animator?.SetTriggerPulled(true);
             TryFire(); // semi-auto: one shot per trigger pull
@@ -155,6 +161,7 @@ namespace VRRange.Weapons
 
         void OnDeactivated(DeactivateEventArgs args)
         {
+            if (PrimaryHandInteractor != null && !ReferenceEquals(args.interactorObject, PrimaryHandInteractor)) return;
             m_TriggerHeld = false;
             m_Animator?.SetTriggerPulled(false);
         }

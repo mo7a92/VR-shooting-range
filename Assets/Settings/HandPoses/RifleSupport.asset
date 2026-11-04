@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a0e2a5c9e7171edf94ce16f7a225941, type: 3}
   m_Name: RifleSupport
   m_EditorClassIdentifier: VRRange.Runtime::VRRange.Hands.HandPose
-  thumb: 0.7
-  index: 0.75
-  middle: 0.8
-  ring: 0.82
-  little: 0.85
-  thumbSpread: 0.15
+  thumb: 0.35
+  index: 0.45
+  middle: 0.45
+  ring: 0.45
+  little: 0.45
+  thumbSpread: 0.3
   indexFollowsTrigger: 0

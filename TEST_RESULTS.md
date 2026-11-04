@@ -5,6 +5,28 @@ Honest record of what was verified and how. Two stages so far: a cloud *static* 
 through Unity's command-line activation and returned afterwards). Stage 5 adds the first PCVR headset sessions
 (Quest 2 via Virtual Desktop); the standalone Quest APK has still not run on a headset.
 
+## Stage 6: headset feedback round 1 fixes, real Unity editor in the cloud (2026-11-04, PCVR only)
+Starting point: the owner's local fixes merged (`local/headset-fixes-2026-11-04`). Every new interaction test grabs through the
+rig's own `NearFarInteractor`s and waits on time, not frames. Nothing in this stage ran on a headset; see the on-headset checklist in
+`LOCAL_HANDOFF.md` §7 ("Headset round 1 fixes").
+
+| Check | Method / evidence | Result |
+|---|---|---|
+| Compile (Unity 6000.3.27f1, packages unchanged: XRI 3.3.2, Input System 1.14.2, OpenXR 1.16.1) | prefab/settings-only rebuild (`RunPrefabsBatch`, scene and lightmaps untouched), `Logs/prefabs_r1.log` | **0 errors, 0 compiler warnings** |
+| 1. Bullet speed | `Weapon_*.asset`: pistol 360 m/s, rifle 885 m/s / 800 rpm, SMG 350 m/s / 1,200 rpm, gravity ×1; exact constant-gravity integrator; tracer 35 ms. `HeadsetRound1Tests.RealMuzzleVelocitiesHitAOneCentimetreTargetAt25MetresWithoutTunnelling`: 3 shots per weapon into a 1 cm plate at 25 m, every shot must hit; drop ≤ 3 cm | **passed** (container frame steps of up to ~30 m per frame at 885 m/s, no tunnelling); `GravityDropsTheProjectileOverDistance` now asserts the real 3.8 mm drop at 10 m within 3 mm |
+| 2. Weight under the real interactor | `RifleHeldByTheRigsNearFarInteractorSagsLagsAndSwaysOneHanded`: the rig's right NearFarInteractor grabs the rifle; `Handling.PrimaryInteractor` is that interactor; sag 15–35° (profile 22°), sway range > 0.3°, a 30 cm jump of the XR Origin leaves the grip trailing the controller (peak 4 cm = clamp) and it settles within 2 s; SMG and pistol sag ordered rifle > SMG > pistol (pistol 0.5–5°), pistol trails less. A `[VRRange][Handling]` line per second while held (`hands=1 via Near-Far Interactor ... sag=22.0deg lag=4.0cm`). Note: moving the controller transform directly is unreliable in a multi-test session (the rig's tracked pose driver writes it back), so the test moves the origin | **passed**; far grabs now use `farAttachMode = Near` |
+| 3. Recoil | `RapidRifleFireAccumulatesMuzzleClimbAndTheSupportHandReducesIt`: one shot ≈ 6°, 10 rapid one-handed shots ≈ 30° peak (clamp), recovers to < 1° within 3 s, 10 supported shots ≈ 3° | **passed** (log: "burst of 1: 6.0 deg, burst of 10: 29.9 deg, supported: 3.2 deg") |
+| 4. Pistol support hand + hand-over | `PistolSecondHandSupportsAndTakesOverWhenTheShootingHandLetsGo` (rig interactors): second hand adds (HandCount 2, primary unchanged, blend > 0.9, support anchor), support trigger does nothing, shooting trigger fires; releasing the shooting hand keeps the pistol held by the support hand at every frame of the 0.8 s hand-over with peak speed < 2.5 m/s (no snap), new hand fires; `WeaponInteractionTests.SecondHandSupportsThePistolAndTakesOverWhenTheFirstLetsGo` (direct interactors) | **passed** |
+| 5. Hands on grips | `FingersWrapEveryGripWithoutPenetratingItAndTheThumbOpposesTheFingers`: both hands on each weapon via the rig interactors; palm centre outside the grip box (10–16 mm), fingertips (thumb, middle, ring, little) ≤ 5 mm inside the grip collider (measured: 0–4 mm outside, one support little finger 0.7 mm inside), ≥ 2 fingers in contact per hand, shooting-hand thumb on the palm side with the fingers on the other side, support thumb pointing forward, rifle support palm below the handguard. Screenshots (software GL): `Docs/Screenshots/round1_fixes/round1_{pistol,rifle,smg}_{primary,support}_{palmside,fingerside,front,shooter}.png`, inspected | **passed**; the hands were re-posed 5 times from the screenshots (fingers pointing forward along the grip, thumb opposition solve) before this |
+| Full PlayMode suite | `Builds/playmode-results.xml`: 72 tests = 67 existing (4 adapted to the new ballistics/support semantics) + 5 round-1 tests | **71 / 71 passed** (1 screenshot test skipped headless), 166 s |
+| Full EditMode suite | `Builds/editmode-results.xml` (ballistics with real numbers, prefab integrity incl. grip colliders and Multiple select, build configuration) | **34 / 34 passed** |
+| Windows x64 PCVR build 0.3.1 | `PcvrBuildScript.BuildWindowsBatch` in the container (Windows Mono module mounted), `Builds/VRRangeBuildReport_Windows_r1.txt`: 0 errors, 2 warnings (OpenXR project-validation notes logged by the package, not compiler warnings) | **passed** — `VRShootingRange.exe` 296 MB unpacked, 205 files, no `DoNotShip` folders; zip `VRShootingRange_PCVR_Windows.zip` 143,331,173 bytes (137 MiB), sha256 `f2a276815c0e27fc63cd0d260890ce15404dcf640c1e961d9e3f7c7f99904fea`; handed over as a session file, not committed. **Not run on Windows or a headset here** |
+| Quest 2 APK | not built this round (owner's instruction: PCVR only; the Quest configuration is unchanged and still validated by `BuildConfigurationTests`) | skipped |
+
+Bugs found by the suite in this stage (all fixed): the test aim helper ignored the muzzle's vertical offset (hidden by the old slow
+rounds); semi-implicit Euler over-estimated the drop by the frame time squared (now exact); a prefab integrity check rejected the
+ammo counter's SDF font material; the first finger-contact version treated a knuckle lying on the grip surface as penetration.
+
 ## Stage 5: local Windows PC + Quest 2 via Virtual Desktop (VDXR), first headset sessions (2026-11-04)
 | Check | Method / evidence | Result |
 |---|---|---|

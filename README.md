@@ -43,6 +43,18 @@ Tools/Windows      PowerShell: run_setup, build_apk, install_apk, logcat
 Tools/CloudCompileCheck  Roslyn-based compile validation used in the cloud (no Unity needed)
 ```
 
-## Controls (Quest 2 Touch)
+## Controls (Quest 2 Touch, also through Virtual Desktop / SteamVR on PC)
 Grip = grab/drop weapon · Trigger = fire / press UI buttons · A/X = reload · B/Y = semi/auto ·
 Left stick = teleport · Right stick = snap turn.
+
+- **Support hand:** grip the rifle's handguard or the front of the SMG with your other hand to steady it (two-point aim,
+  less recoil). On the **pistol** the second hand cups the shooting hand; it steadies the gun and, if the shooting hand lets
+  go, the pistol passes to it instead of dropping. Only the shooting hand's trigger fires.
+- **Weight:** every weapon has it. One-handed, the rifle leans down, trails fast moves and climbs hard under auto fire;
+  the SMG less so; the pistol stays quick with a little inertia. Two hands make each of them steady.
+- **Floor height (PC runtimes):** rest a controller on the floor and click both thumbsticks for 1 s, or press
+  PageUp / PageDown (±2 cm) and Home (reset) on the keyboard. The offset is remembered.
+
+**Ballistics (real-world figures for the modelled guns):** pistol 9×19 mm 360 m/s · M4A1 5.56 mm 885 m/s, 800 rpm ·
+Micro Uzi 9 mm 350 m/s, 1,200 rpm; gravity ×1 (drop at 25 m: ~2.4 cm pistol, ~4 mm rifle). Tunable on the assets in
+`Assets/Settings/`.

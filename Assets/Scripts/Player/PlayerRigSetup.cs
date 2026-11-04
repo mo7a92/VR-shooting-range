@@ -2,6 +2,7 @@ using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit.Attachment;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Interactors.Casters;
 
@@ -53,6 +54,9 @@ namespace VRRange.Player
                 if (extraMask == 0) continue;
                 if (nf.nearInteractionCaster is SphereInteractionCaster near) near.physicsLayerMask |= extraMask;
                 if (nf.farInteractionCaster is CurveInteractionCaster far) far.raycastMask |= extraMask;
+                // A distance grab pulls the weapon into the hand (Near) instead of holding it at the ray's end (the Starter
+                // Assets default, Far), so WeaponHandlingTransformer always works relative to the controller's attach point.
+                nf.farAttachMode = InteractorFarAttachMode.Near;
                 Debug.Log($"[VRRange] {nf.name}: grab casters now include the Weapon layer (near {(nf.nearInteractionCaster as SphereInteractionCaster)?.physicsLayerMask.value}, far {(nf.farInteractionCaster as CurveInteractionCaster)?.raycastMask.value})");
             }
             if (!XRSettings.enabled) Debug.LogWarning("[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.");

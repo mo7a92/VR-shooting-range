@@ -47,6 +47,34 @@ namespace VRRange.Editor
                 RunFullSetup(true);
         }
 
+        [MenuItem("VR Range/Setup/Rebuild Prefabs + Settings Only (keeps scene and lightmaps)", priority = 2)]
+        public static void RebuildPrefabsMenu() => RunPrefabsAndSettings();
+
+        /// <summary>
+        /// Batch entry point that regenerates settings assets (weapon definitions, hand poses), FX/target/weapon prefabs and
+        /// runs the validator without touching the scene, so baked lightmaps survive:
+        /// Unity.exe -batchmode -projectPath . -executeMethod VRRange.Editor.RangeProjectBootstrap.RunPrefabsBatch -quit
+        /// </summary>
+        public static void RunPrefabsBatch()
+        {
+            RunPrefabsAndSettings();
+            if (SetupLog.ProblemCount > 0) Debug.LogWarning($"[VRRange] Prefab rebuild finished with {SetupLog.ProblemCount} warning(s)/error(s); see {RangePaths.ReportFile}");
+        }
+
+        public static void RunPrefabsAndSettings()
+        {
+            SetupLog.Begin("VR Range prefabs + settings rebuild (scene untouched)");
+            MaterialLibrary.ResetCache(); EditorMeshUtil.ResetCache();
+            Step("Settings assets", () => SettingsAssetBuilder.Build(true));
+            Step("FX prefabs", () => FxPrefabBuilder.Build());
+            Step("Target prefab", () => TargetPrefabBuilder.Build());
+            Step("Weapon prefabs", () => WeaponPrefabBuilder.Build());
+            Step("How-to-play sign", () => SignPrefabBuilder.Build());
+            Step("Validation", () => ProjectValidator.Run());
+            AssetDatabase.SaveAssets();
+            Finish(false);
+        }
+
         [MenuItem("VR Range/Setup/Apply Project Settings Only", priority = 20)]
         public static void ApplySettingsOnly()
         {
@@ -124,6 +152,7 @@ namespace VRRange.Editor
             Step("FX prefabs", () => FxPrefabBuilder.Build());
             Step("Target prefab", () => TargetPrefabBuilder.Build());
             Step("Weapon prefabs", () => WeaponPrefabBuilder.Build());
+            Step("How-to-play sign", () => SignPrefabBuilder.Build());
             Step("Scene", () => RangeSceneBuilder.Build(force));
             Step("Validation", () => ProjectValidator.Run());
             AssetDatabase.SaveAssets();

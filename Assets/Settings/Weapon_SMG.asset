@@ -16,41 +16,44 @@ MonoBehaviour:
   displayName: SMG
   weaponClass: 2
   twoHanded: 1
+  allowsSupportHand: 1
   supportedFireModes: 3
   defaultFireMode: 2
-  roundsPerMinute: 850
+  roundsPerMinute: 1200
   magazineSize: 32
   reloadSeconds: 1.9
-  muzzleVelocity: 110
+  muzzleVelocity: 350
   spreadDegrees: 0.9
-  gravityMultiplier: 3
+  gravityMultiplier: 1
   projectileLifetime: 3
-  kickBackMetres: 0.015
-  kickUpDegrees: 1.8
-  kickSideDegrees: 1.2
-  recoverySpeed: 24
+  kickBackMetres: 0.02
+  kickUpDegrees: 2.6
+  kickSideDegrees: 1.6
+  recoverySpeed: 20
   slideTravel: 0.025
   virtualMassKg: 2.4
   balanceForwardMetres: 0.14
-  oneHandResponseSeconds: 0.08
-  twoHandResponseSeconds: 0.035
-  oneHandSagDegrees: 2.2
-  twoHandSagDegrees: 0.3
-  oneHandSwayDegrees: 0.4
-  twoHandSwayDegrees: 0.1
+  oneHandResponseSeconds: 0.16
+  twoHandResponseSeconds: 0.04
+  oneHandSagDegrees: 9
+  twoHandSagDegrees: 0.5
+  oneHandSwayDegrees: 0.9
+  twoHandSwayDegrees: 0.15
   swayFrequencyHz: 0.7
-  maxPositionLagMetres: 0.02
-  maxRotationLagDegrees: 6
+  maxPositionLagMetres: 0.03
+  maxRotationLagDegrees: 9
   supportHandInfluence: 0.85
-  gripTransitionSeconds: 0.18
-  recoilUnsupportedMultiplier: 1.35
+  gripTransitionSeconds: 0.2
+  recoilUnsupportedMultiplier: 2
   recoilSupportedMultiplier: 0.65
-  recoveryUnsupported: 9
-  recoverySupported: 17
-  instabilityPerShot: 0.22
+  recoveryUnsupported: 7
+  recoverySupported: 14
+  instabilityPerShot: 0.25
   instabilityDecayPerSecond: 2.5
-  hapticAmplitude: 0.5
-  hapticDuration: 0.04
+  maxRecoilPitchDegrees: 25
+  maxRecoilYawDegrees: 12
+  hapticAmplitude: 0.8
+  hapticDuration: 0.035
   secondaryHandHapticScale: 0.6
   fireClip: {fileID: 8300000, guid: f7dc70d35478836dba955e7c2b74a030, type: 3}
   dryFireClip: {fileID: 8300000, guid: a7342e2ed45e7329fbdbccb417e51288, type: 3}

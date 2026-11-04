@@ -60,17 +60,17 @@ namespace VRRange.Tests
             var pistol = XrTestRig.Find(WeaponClass.Pistol);
             var def = pistol.Definition;
             float t = 10f / def.muzzleVelocity;
-            float expected = 0.5f * Mathf.Abs(Physics.gravity.y) * def.gravityMultiplier * t * t; // ~0.18 m at 10 m for the pistol
-            // aim exactly horizontal at a point above the face centre: the hit must land below the aim point by the drop
+            float expected = 0.5f * Mathf.Abs(Physics.gravity.y) * def.gravityMultiplier * t * t; // ~3.8 mm at 10 m for a 360 m/s pistol round
+            // fire exactly horizontal (no spread) at a point above the face centre: the hit lands below it by the real drop,
+            // independent of the frame rate (exact constant-gravity integration)
             float aimY = face.position.y + 0.1f;
             var origin = new Vector3(face.position.x, aimY, 0f);
-            XrTestRig.Aim(pistol, origin, origin + Vector3.forward * 10f);
             HitResult? hit = null; lane.Target.Hit += (_, r) => hit = r;
-            Assert.IsTrue(pistol.TryFire());
+            var p = new ProjectileParams { speed = def.muzzleVelocity, gravityMultiplier = def.gravityMultiplier, lifetime = def.projectileLifetime, tracerColor = def.tracerColor };
+            Assert.IsNotNull(ProjectilePool.Instance.Fire(origin, Vector3.forward, p, pistol));
             yield return XrTestRig.WaitUntil(() => hit.HasValue, 3f, "projectile to reach the 10 m target");
             float drop = aimY - hit.Value.worldPoint.y;
-            Assert.Greater(drop, expected * 0.5f, $"visible drop expected (~{expected:0.000} m)");
-            Assert.Less(drop, expected * 1.6f + 0.03f, "but consistent with the configured gravity multiplier");
+            Assert.AreEqual(expected, drop, 0.003f, $"drop at 10 m matches ½gt² (~{expected * 1000f:0.0} mm) within 3 mm at any frame rate");
             Assert.AreEqual(10f, hit.Value.distance, 1.0f, "reported travel distance");
         }
 

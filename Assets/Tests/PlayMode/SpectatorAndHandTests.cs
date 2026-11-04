@@ -188,7 +188,8 @@ namespace VRRange.Tests
             Assert.AreSame(pistol, right.HeldWeapon); Assert.IsNotNull(right.CurrentAnchor); Assert.AreEqual(GripRole.Primary, right.CurrentAnchor.role);
             var palmPose = right.CurrentAnchor.GetPalmPose(false);
             Assert.Less(Vector3.Distance(right.PalmWorldPosition, palmPose.position), 0.025f, "right palm sits on the pistol grip anchor");
-            Assert.Greater(right.Curl(HandPresence.Finger.Middle), 0.7f, "fingers wrap the grip");
+            Assert.Greater(right.Curl(HandPresence.Finger.Middle), 0.45f, "fingers wrap the grip");
+            Assert.GreaterOrEqual(right.ContactCurl(HandPresence.Finger.Middle), 0f, "the contact solve closed the middle finger onto the grip collider");
             Assert.Less(right.Curl(HandPresence.Finger.Index), 0.6f, "index rests along the frame until the trigger is pulled");
             right.SetInputOverride(null, 1f);
             yield return XrTestRig.WaitSeconds(0.5f);

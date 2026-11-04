@@ -65,11 +65,11 @@ namespace VRRange.Tests
                 Assert.Greater(weapon.Muzzle.localPosition.z, 0.05f, $"{name}: muzzle is in front of the grip");
                 var anchors = go.GetComponentsInChildren<WeaponGripAnchor>(true);
                 Assert.IsTrue(anchors.Any(a => a.role == GripRole.Primary), $"{name}: primary grip anchor");
-                if (weapon.Definition.twoHanded) { Assert.IsTrue(anchors.Any(a => a.role == GripRole.Support), $"{name}: support grip anchor"); Assert.IsNotNull(go.GetComponent<XRGrabInteractable>().secondaryAttachTransform, $"{name}: secondary attach"); }
-                foreach (var a in anchors) Assert.IsNotNull(a.pose, $"{name}: anchor {a.role} has a hand pose");
+                if (weapon.Definition.twoHanded || weapon.Definition.allowsSupportHand) { Assert.IsTrue(anchors.Any(a => a.role == GripRole.Support), $"{name}: support grip anchor"); Assert.IsNotNull(go.GetComponent<XRGrabInteractable>().secondaryAttachTransform, $"{name}: secondary attach"); Assert.AreEqual(InteractableSelectMode.Multiple, go.GetComponent<XRGrabInteractable>().selectMode, $"{name}: accepts a support hand"); }
+                foreach (var a in anchors) { Assert.IsNotNull(a.pose, $"{name}: anchor {a.role} has a hand pose"); Assert.IsNotNull(a.gripCollider, $"{name}: anchor {a.role} has a grip collider for the finger contact solve"); Assert.IsTrue(a.gripCollider.transform.IsChildOf(go.transform), $"{name}: grip collider belongs to the weapon"); }
                 Assert.AreEqual(LayerMask.NameToLayer("Weapon"), go.layer, $"{name}: Weapon layer");
                 Assert.IsTrue(go.GetComponentsInChildren<MeshRenderer>(true).Length >= 2, $"{name}: visible model parts");
-                foreach (var mr in go.GetComponentsInChildren<MeshRenderer>(true)) foreach (var m in mr.sharedMaterials) { Assert.IsNotNull(m, $"{name}: {mr.name} has a null material"); Assert.IsNotNull(m.GetTexture("_BaseMap"), $"{name}: {mr.name} material {m.name} has no albedo texture"); }
+                foreach (var mr in go.GetComponentsInChildren<MeshRenderer>(true)) { if (mr.GetComponent<TMPro.TMP_Text>() != null) continue; /* ammo counter: SDF font material */ foreach (var m in mr.sharedMaterials) { Assert.IsNotNull(m, $"{name}: {mr.name} has a null material"); Assert.IsNotNull(m.GetTexture("_BaseMap"), $"{name}: {mr.name} material {m.name} has no albedo texture"); } }
                 Assert.AreEqual(0, GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(go), $"{name}: missing scripts");
                 CollectionAssert.IsEmpty(MissingReferences(go), $"{name}: broken references");
             }
@@ -117,6 +117,15 @@ namespace VRRange.Tests
             Assert.AreEqual(FireMode.Semi, pistol.supportedFireModes); Assert.IsTrue(rifle.Supports(FireMode.Auto) && rifle.Supports(FireMode.Semi)); Assert.AreEqual(FireMode.Auto, smg.defaultFireMode);
             Assert.Less(pistol.virtualMassKg, smg.virtualMassKg); Assert.Less(smg.virtualMassKg, rifle.virtualMassKg, "pistol < SMG < rifle weight");
             Assert.Greater(rifle.muzzleVelocity, pistol.muzzleVelocity); Assert.Greater(smg.roundsPerMinute, rifle.roundsPerMinute);
+            // real-world ballistics since headset round 1: 9x19 mm pistol / 5.56 mm M4A1 / 9 mm Micro Uzi
+            Assert.AreEqual(360f, pistol.muzzleVelocity, 1f); Assert.AreEqual(885f, rifle.muzzleVelocity, 1f); Assert.AreEqual(350f, smg.muzzleVelocity, 1f);
+            Assert.AreEqual(800f, rifle.roundsPerMinute, 1f); Assert.AreEqual(1200f, smg.roundsPerMinute, 1f);
+            foreach (var d in new[] { pistol, rifle, smg }) Assert.AreEqual(1f, d.gravityMultiplier, 1e-3f, $"{d.weaponId}: real gravity");
+            // weight: every weapon has some, distinct and ordered rifle > SMG > pistol
+            Assert.Greater(pistol.oneHandSagDegrees, 0.5f); Assert.Greater(smg.oneHandSagDegrees, pistol.oneHandSagDegrees); Assert.Greater(rifle.oneHandSagDegrees, smg.oneHandSagDegrees);
+            Assert.GreaterOrEqual(rifle.oneHandSagDegrees, 18f); Assert.GreaterOrEqual(rifle.oneHandResponseSeconds, 0.25f); Assert.GreaterOrEqual(rifle.recoilUnsupportedMultiplier, 2.5f);
+            Assert.Greater(rifle.oneHandResponseSeconds, smg.oneHandResponseSeconds); Assert.Greater(smg.oneHandResponseSeconds, pistol.oneHandResponseSeconds);
+            Assert.AreEqual(0f, pistol.supportHandInfluence, 1e-3f, "the pistol's support hand steadies but does not steer (no two-point aim)");
         }
 
         [Test]

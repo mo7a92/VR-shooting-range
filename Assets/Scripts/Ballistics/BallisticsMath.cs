@@ -5,11 +5,14 @@ namespace VRRange.Ballistics
     /// <summary>Pure functions for the game-style projectile model (unit-testable, no Unity objects needed).</summary>
     public static class BallisticsMath
     {
-        /// <summary>Semi-implicit Euler step under constant gravity.</summary>
+        /// <summary>
+        /// Exact step under constant gravity (p += v dt + ½ g dt², v += g dt), so the drop does not depend on the frame
+        /// rate: at real muzzle velocities a frame covers tens of metres and Euler error would exceed the real drop.
+        /// </summary>
         public static void Integrate(ref Vector3 position, ref Vector3 velocity, float deltaTime, Vector3 gravity)
         {
+            position += velocity * deltaTime + gravity * (0.5f * deltaTime * deltaTime);
             velocity += gravity * deltaTime;
-            position += velocity * deltaTime;
         }
 
         /// <summary>Time for a projectile launched horizontally at speed to cover a horizontal distance (ignores drag).</summary>

@@ -39,7 +39,9 @@ behaviour is only confirmed once tested on a Quest 2 (see `TEST_RESULTS.md`).
 ## 4. Projectiles
 - Pooled, non-rigidbody projectiles with swept raycasts, gravity-scaled drop, time of flight, tracer trail,
   surface-dependent decals, particles and audio. One hit per projectile (no double scoring).
-- Distant targets visibly need lead/compensation (speed 90–180 m/s, gravity ×2–3).
+- Real muzzle velocities since headset round 1 (pistol 360 m/s, M4A1 885 m/s, Micro Uzi 350 m/s) with real gravity:
+  flight to 25 m is near-instant, drop is millimetres to centimetres; the swept raycast covers up to tens of metres per
+  frame so nothing tunnels (tested against a 1 cm plate at 25 m). A short, faint tracer streak keeps shots readable.
 
 ## 5. Targets and scoring
 - Bullseye face 0.6 m: rings 10 / 8 / 5 / 2, miss 0 (`ScoringRules.asset`, radii 5/12/20/28 cm).

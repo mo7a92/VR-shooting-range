@@ -26,48 +26,55 @@ namespace VRRange.Editor
             Pistol = Create<WeaponDefinition>($"{RangePaths.Settings}/Weapon_Pistol.asset", force, w =>
             {
                 w.weaponId = "pistol"; w.displayName = "Pistol"; w.weaponClass = WeaponClass.Pistol; w.twoHanded = false;
+                // 9x19 mm service pistol (P38-style): ~360 m/s; semi-automatic only
                 w.supportedFireModes = FireMode.Semi; w.defaultFireMode = FireMode.Semi; w.roundsPerMinute = 360f;
-                w.magazineSize = 12; w.reloadSeconds = 1.5f; w.muzzleVelocity = 90f; w.spreadDegrees = 0.35f; w.gravityMultiplier = 3f;
-                w.kickBackMetres = 0.035f; w.kickUpDegrees = 6f; w.kickSideDegrees = 0.8f; w.recoverySpeed = 16f; w.slideTravel = 0.03f;
-                w.hapticAmplitude = 0.65f; w.hapticDuration = 0.07f; w.muzzleFlashScale = 0.8f; w.tracerColor = new Color(1f, 0.85f, 0.5f);
+                w.magazineSize = 12; w.reloadSeconds = 1.5f; w.muzzleVelocity = 360f; w.spreadDegrees = 0.35f; w.gravityMultiplier = 1f;
+                w.kickBackMetres = 0.045f; w.kickUpDegrees = 9f; w.kickSideDegrees = 1.0f; w.recoverySpeed = 14f; w.slideTravel = 0.03f;
+                w.hapticAmplitude = 0.9f; w.hapticDuration = 0.05f; w.muzzleFlashScale = 0.8f; w.tracerColor = new Color(1f, 0.85f, 0.5f);
                 Audio(w, "pistol_fire");
             });
             Rifle = Create<WeaponDefinition>($"{RangePaths.Settings}/Weapon_Rifle.asset", force, w =>
             {
                 w.weaponId = "rifle"; w.displayName = "Rifle"; w.weaponClass = WeaponClass.Rifle; w.twoHanded = true;
-                w.supportedFireModes = FireMode.Semi | FireMode.Auto; w.defaultFireMode = FireMode.Semi; w.roundsPerMinute = 600f;
-                w.magazineSize = 30; w.reloadSeconds = 2.2f; w.muzzleVelocity = 180f; w.spreadDegrees = 0.2f; w.gravityMultiplier = 2f;
-                w.kickBackMetres = 0.02f; w.kickUpDegrees = 2.5f; w.kickSideDegrees = 0.5f; w.recoverySpeed = 20f; w.slideTravel = 0.04f;
-                w.hapticAmplitude = 0.8f; w.hapticDuration = 0.06f; w.secondaryHandHapticScale = 0.5f; w.muzzleFlashScale = 1.2f; w.tracerColor = new Color(1f, 0.6f, 0.3f);
+                // 5.56x45 mm M4A1 carbine (14.5" barrel, M855): ~885 m/s, 700-950 rpm cyclic
+                w.supportedFireModes = FireMode.Semi | FireMode.Auto; w.defaultFireMode = FireMode.Semi; w.roundsPerMinute = 800f;
+                w.magazineSize = 30; w.reloadSeconds = 2.2f; w.muzzleVelocity = 885f; w.spreadDegrees = 0.2f; w.gravityMultiplier = 1f;
+                w.kickBackMetres = 0.03f; w.kickUpDegrees = 4f; w.kickSideDegrees = 0.8f; w.recoverySpeed = 16f; w.slideTravel = 0.04f;
+                w.hapticAmplitude = 1f; w.hapticDuration = 0.06f; w.secondaryHandHapticScale = 0.5f; w.muzzleFlashScale = 1.2f; w.tracerColor = new Color(1f, 0.6f, 0.3f);
                 Audio(w, "rifle_fire");
             });
             Smg = Create<WeaponDefinition>($"{RangePaths.Settings}/Weapon_SMG.asset", force, w =>
             {
                 w.weaponId = "smg"; w.displayName = "SMG"; w.weaponClass = WeaponClass.SubmachineGun; w.twoHanded = true;
-                w.supportedFireModes = FireMode.Auto | FireMode.Semi; w.defaultFireMode = FireMode.Auto; w.roundsPerMinute = 850f;
-                w.magazineSize = 32; w.reloadSeconds = 1.9f; w.muzzleVelocity = 110f; w.spreadDegrees = 0.9f; w.gravityMultiplier = 3f;
-                w.kickBackMetres = 0.015f; w.kickUpDegrees = 1.8f; w.kickSideDegrees = 1.2f; w.recoverySpeed = 24f; w.slideTravel = 0.025f;
-                w.hapticAmplitude = 0.5f; w.hapticDuration = 0.04f; w.secondaryHandHapticScale = 0.6f; w.muzzleFlashScale = 0.9f; w.tracerColor = new Color(1f, 0.9f, 0.6f);
+                // 9x19 mm Micro Uzi: ~350 m/s, ~1,200 rpm cyclic
+                w.supportedFireModes = FireMode.Auto | FireMode.Semi; w.defaultFireMode = FireMode.Auto; w.roundsPerMinute = 1200f;
+                w.magazineSize = 32; w.reloadSeconds = 1.9f; w.muzzleVelocity = 350f; w.spreadDegrees = 0.9f; w.gravityMultiplier = 1f;
+                w.kickBackMetres = 0.02f; w.kickUpDegrees = 2.6f; w.kickSideDegrees = 1.6f; w.recoverySpeed = 20f; w.slideTravel = 0.025f;
+                w.hapticAmplitude = 0.8f; w.hapticDuration = 0.035f; w.secondaryHandHapticScale = 0.6f; w.muzzleFlashScale = 0.9f; w.tracerColor = new Color(1f, 0.9f, 0.6f);
                 Audio(w, "smg_fire");
             });
             // Handling profiles are always (re)applied: they are tuned together with WeaponHandlingTransformer.
-            ApplyHandling(Pistol, mass: 0.9f, balance: 0.04f, oneHandResp: 0.035f, twoHandResp: 0.03f, sag1: 0.6f, sag2: 0.2f, sway1: 0.18f, sway2: 0.08f, posLag: 0.012f, rotLag: 4f, recoilUnsup: 1.1f, recoilSup: 0.8f, recUnsup: 14f, recSup: 18f, instab: 0.15f);
-            ApplyHandling(Rifle, mass: 3.4f, balance: 0.28f, oneHandResp: 0.14f, twoHandResp: 0.035f, sag1: 4.5f, sag2: 0.35f, sway1: 0.7f, sway2: 0.1f, posLag: 0.03f, rotLag: 9f, recoilUnsup: 1.6f, recoilSup: 0.55f, recUnsup: 6f, recSup: 16f, instab: 0.3f);
-            ApplyHandling(Smg, mass: 2.4f, balance: 0.14f, oneHandResp: 0.08f, twoHandResp: 0.035f, sag1: 2.2f, sag2: 0.3f, sway1: 0.4f, sway2: 0.1f, posLag: 0.02f, rotLag: 6f, recoilUnsup: 1.35f, recoilSup: 0.65f, recUnsup: 9f, recSup: 17f, instab: 0.22f);
+            // Headset round 1 (2026-11-04): every weapon has believable, distinct weight. The pistol is light but not weightless;
+            // the SMG sits in between; the rifle is heavy and front-heavy, so one-handed it sags, lags, sways and loses control
+            // under auto fire (still usable, owner's decision). Two hands make each of them steady.
+            ApplyHandling(Pistol, mass: 0.9f, balance: 0.04f, oneHandResp: 0.06f, twoHandResp: 0.04f, sag1: 1.5f, sag2: 0.5f, sway1: 0.3f, sway2: 0.12f, posLag: 0.015f, rotLag: 5f, recoilUnsup: 1.3f, recoilSup: 0.75f, recUnsup: 9f, recSup: 14f, instab: 0.18f, decay: 3f, supportInfluence: 0f, maxPitch: 25f, maxYaw: 10f);
+            ApplyHandling(Rifle, mass: 3.4f, balance: 0.28f, oneHandResp: 0.3f, twoHandResp: 0.04f, sag1: 22f, sag2: 0.6f, sway1: 1.6f, sway2: 0.15f, posLag: 0.04f, rotLag: 14f, recoilUnsup: 2.8f, recoilSup: 0.6f, recUnsup: 4.5f, recSup: 12f, instab: 0.35f, decay: 2f, supportInfluence: 0.85f, maxPitch: 30f, maxYaw: 14f);
+            ApplyHandling(Smg, mass: 2.4f, balance: 0.14f, oneHandResp: 0.16f, twoHandResp: 0.04f, sag1: 9f, sag2: 0.5f, sway1: 0.9f, sway2: 0.15f, posLag: 0.03f, rotLag: 9f, recoilUnsup: 2.0f, recoilSup: 0.65f, recUnsup: 7f, recSup: 14f, instab: 0.25f, decay: 2.5f, supportInfluence: 0.85f, maxPitch: 25f, maxYaw: 12f);
             BuildHandPoses(force);
             AssetDatabase.SaveAssets();
             SetupLog.Ok("ScoringRules, GameModeSettings, 3 WeaponDefinitions (with handling profiles) and hand poses ready in Assets/Settings");
         }
 
-        static void ApplyHandling(WeaponDefinition w, float mass, float balance, float oneHandResp, float twoHandResp, float sag1, float sag2, float sway1, float sway2, float posLag, float rotLag, float recoilUnsup, float recoilSup, float recUnsup, float recSup, float instab)
+        static void ApplyHandling(WeaponDefinition w, float mass, float balance, float oneHandResp, float twoHandResp, float sag1, float sag2, float sway1, float sway2, float posLag, float rotLag, float recoilUnsup, float recoilSup, float recUnsup, float recSup, float instab, float decay, float supportInfluence, float maxPitch, float maxYaw)
         {
             if (w == null) return;
             if (w.slideRackClip == null) w.slideRackClip = Clip("Weapons/slide_rack");
+            w.allowsSupportHand = true;
             w.virtualMassKg = mass; w.balanceForwardMetres = balance; w.oneHandResponseSeconds = oneHandResp; w.twoHandResponseSeconds = twoHandResp;
             w.oneHandSagDegrees = sag1; w.twoHandSagDegrees = sag2; w.oneHandSwayDegrees = sway1; w.twoHandSwayDegrees = sway2; w.swayFrequencyHz = 0.7f;
-            w.maxPositionLagMetres = posLag; w.maxRotationLagDegrees = rotLag; w.supportHandInfluence = 0.85f; w.gripTransitionSeconds = 0.18f;
+            w.maxPositionLagMetres = posLag; w.maxRotationLagDegrees = rotLag; w.supportHandInfluence = supportInfluence; w.gripTransitionSeconds = 0.2f;
             w.recoilUnsupportedMultiplier = recoilUnsup; w.recoilSupportedMultiplier = recoilSup; w.recoveryUnsupported = recUnsup; w.recoverySupported = recSup;
-            w.instabilityPerShot = instab; w.instabilityDecayPerSecond = 2.5f;
+            w.instabilityPerShot = instab; w.instabilityDecayPerSecond = decay; w.maxRecoilPitchDegrees = maxPitch; w.maxRecoilYawDegrees = maxYaw;
             EditorUtility.SetDirty(w);
         }
 
@@ -88,10 +95,17 @@ namespace VRRange.Editor
             P("Fist", 0.9f, 0.95f, 0.95f, 0.95f, 0.95f, 0.1f, false);
             P("Pinch", 0.6f, 0.65f, 0.8f, 0.85f, 0.9f, 0.2f, false);
             P("Point", 0.8f, 0.0f, 0.95f, 0.95f, 0.95f, 0.2f, false);
-            P("PistolGrip", 0.55f, 0.35f, 0.9f, 0.92f, 0.94f, 0.25f, true);
-            P("RiflePrimary", 0.6f, 0.35f, 0.9f, 0.92f, 0.94f, 0.2f, true);
-            P("RifleSupport", 0.7f, 0.75f, 0.8f, 0.82f, 0.85f, 0.15f, false);
-            P("SmgGrip", 0.55f, 0.35f, 0.9f, 0.92f, 0.94f, 0.25f, true);
+            // Weapon poses are the *minimum* curl: HandPresence closes each finger further until it touches the grip collider
+            // (contact solve), so these only pre-shape the hand. The index finger is not solved: it rests outside the trigger
+            // guard and follows the trigger value.
+            // Shooting-hand poses: thumb forward along the frame on the palm side (low curl, low spread), fingers pre-shaped
+            // to half; the contact solve closes them onto the grip box.
+            P("PistolGrip", 0.15f, 0.3f, 0.5f, 0.5f, 0.5f, 0.12f, true);
+            P("PistolSupport", 0.35f, 0.45f, 0.45f, 0.45f, 0.45f, 0.3f, false);
+            P("RiflePrimary", 0.15f, 0.3f, 0.5f, 0.5f, 0.5f, 0.12f, true);
+            P("RifleSupport", 0.35f, 0.45f, 0.45f, 0.45f, 0.45f, 0.3f, false);
+            P("SmgGrip", 0.15f, 0.3f, 0.5f, 0.5f, 0.5f, 0.12f, true);
+            P("SmgSupport", 0.35f, 0.55f, 0.55f, 0.55f, 0.55f, 0.3f, false);
         }
 
         static void Audio(WeaponDefinition w, string fireClip)

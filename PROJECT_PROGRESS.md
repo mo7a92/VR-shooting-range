@@ -41,6 +41,16 @@ Cloud session: no Unity editor available; code validated with the Roslyn referen
 - [x] V3 builds in the container: Quest 2 APK 0.3.0 (versionCode 3, IL2CPP ARM64 Vulkan OpenXR, 114 MiB) and Windows x64 PCVR player 0.3.0 (Mono/D3D11/OpenXR, 296 MB, 137 MiB zip), both delivered as session files, not committed; sizes/hashes in TEST_RESULTS.md
 - [x] Docs: FINAL_QA_REPORT.md (severity-classed findings, readiness: not production-ready until headset sessions), TEST_RESULTS.md Stage 4, LOCAL_HANDOFF.md §5b Virtual Desktop / VDXR / SteamVR / OBS
 
+## Done (headset feedback round 1, PCVR only, 2026-11-04)
+- [x] Merged the owner's local fixes (grab casters see the Weapon layer, thumb opposition, floor calibration, time-based target test)
+- [x] Real ballistics: 360 / 885 / 350 m/s, 800 / 1,200 rpm, gravity ×1, exact integrator, short tracer; tunnel test (1 cm plate at 25 m) per weapon
+- [x] Weight on every weapon under the rig's real NearFarInteractor (test + per-second `[VRRange][Handling]` log); rifle one-handed sags/lags/sways, SMG between, pistol light with inertia; far grab pulls to the hand
+- [x] Recoil: bigger kicks, accumulation during rapid/auto fire with clamps, recovery after release, sharper haptics; supported fire much steadier
+- [x] Pistol support hand: cups the shooting hand, steadies, never steals; shooting hand release hands the pistol over smoothly; only the shooting hand fires
+- [x] Hands: per-anchor grip colliders + per-finger contact solve, re-authored palms, trigger finger outside the guard; fingertip penetration test ≤ 5 mm; review screenshots in `Docs/Screenshots/round1_fixes`
+- [x] Polish: on-weapon ammo counter, how-to-play counter sign (runtime-placed, scene untouched); target hit ding already existed
+- [x] Prefab/settings-only rebuild entry (`VR Range > Setup > Rebuild Prefabs + Settings Only`, batch `RunPrefabsBatch`) keeps the scene and lightmaps
+
 ## Next actionable tasks (local PC, see LOCAL_HANDOFF.md)
 1. Open in Unity 6.3 LTS (6000.3.27f1 preferred): the scene, prefabs and settings are already generated and committed, so no setup dialog is expected. Run **VR Range → Validate Project** once.
 2. Optional: **VR Range → Setup → Rebuild Everything** to switch the UI to the standard TMP font (TMP essentials are now committed).

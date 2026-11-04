@@ -2,7 +2,20 @@
 
 Honest record of what was verified and how. Two stages so far: a cloud *static* stage (no Unity) and a cloud
 *real-editor* stage (Unity 6000.3.27f1 in a Linux container, GameCI image, Student/Personal licence activated
-through Unity's command-line activation and returned afterwards). **Nothing has run on a Meta Quest 2 yet.**
+through Unity's command-line activation and returned afterwards). Stage 5 adds the first PCVR headset sessions
+(Quest 2 via Virtual Desktop); the standalone Quest APK has still not run on a headset.
+
+## Stage 5: local Windows PC + Quest 2 via Virtual Desktop (VDXR), first headset sessions (2026-11-04)
+| Check | Method / evidence | Result |
+|---|---|---|
+| Local editor | Unity 6000.3.27f1 (Windows Mono module built in) installed from Unity's signed installer; project opened without package changes (XRI 3.3.2, Input System 1.14.2, OpenXR 1.16.1) | **ok** |
+| PCVR runs on the headset | `Player.log`: `XR device: OpenXR Display`, `OpenXR runtime: VirtualDesktopXR 1.1.0`, system "Oculus Quest2", Oculus Touch profile bound | **ok** (user session) |
+| Note: Unity 6000.6.7f1 | An earlier test build with 6000.6 force-upgraded XRI to 3.6.1, Input System 1.20.1, OpenXR 1.18.0 and broke `objectReferenceInstanceIDValue` in `ProjectIntegrityTests`; discarded, do not use 6000.6 for this project | discarded |
+| **Bug: weapons could not be grabbed** (headset) | XRI Starter Assets NearFar casters query only Default (near) / Default+UI (far); weapons are on the `Weapon` layer. Earlier suites grabbed through scripted `XRDirectInteractor`s and missed it. Fix: `PlayerRigSetup` adds the Weapon layer to both casters at start. New `RigGrabAndThumbTests` use the rig's real casters | **fixed in code + tests pass; re-check on headset** |
+| **Bug: thumb folded down like a finger** (headset) | Thumb curl axis aimed at the palm normal; finger-sized limits (165°) folded it into the palm; spread sign mirrored on one hand. Fix in `HandPresence`: thumb bends toward the middle finger, own limits (15/45/55°), empirical bend + spread sign checks. Test: fist thumb tip (across, inward, forward) = (-11, +11, +29) mm, identical for L and R | **fixed in code + tests pass; re-check on headset** |
+| Player too short (headset) | OpenXR 1.16 uses STAGE floor. Added floor calibration (both thumbsticks 1 s with a controller on the floor; PageUp/PageDown/Home) and an eye-height log line. Next session logged 1.51 m | **added; calibration not yet exercised on headset** |
+| Test suites on the local PC (RTX 4070 SUPER) | EditMode 34/34; PlayMode 67/67 after making `TargetMotionTypesBehaveAsSpecified` sample 1.5 s instead of 60 frames (frame-count sampling was too short at uncapped local frame rates) | **passed** |
+| Windows PCVR build | `Tools/Windows/build_pcvr.ps1`, `Logs/VRRangeBuildReport_Windows.txt` | **Succeeded, 0 errors** |
 
 ## Stage 4: V3 PCVR upgrade, visual overhaul and QA suite, real Unity editor in the cloud (2026-10-30/31)
 | Check | Method / evidence | Result |

@@ -82,6 +82,10 @@ It is not stored in git. To rebuild locally the editor needs the **Windows Build
 5. In the headset you should be standing behind the firing line at your real height (the OpenXR *floor* origin is used; if
    your height is wrong, redo the Guardian floor level in the Quest or SteamVR room setup). The desktop window shows the
    spectator view (below).
+   **Floor calibration (in game):** OpenXR 1.16 uses the runtime's STAGE floor, which Virtual Desktop can report too high
+   (you appear short; the 1.0 m counter is above your eyes). Rest one controller on the real floor and click **both
+   thumbsticks for 1 s**; or on the keyboard **PageUp / PageDown** (+/- 2 cm) and **Home** (reset). The offset is saved
+   between sessions; `Player.log` logs `[VRRange] Tracking origin ... in-game eye height` 5 s after start.
 6. The player log is at `%USERPROFILE%\AppData\LocalLow\UniversityProject\VR Shooting Range\Player.log`; the first
    `[VRRange]` line names the detected OpenXR runtime (e.g. `VDXR`, `SteamVR/OpenXR`, `Oculus`). If it says the runtime is
    not initialised, no OpenXR runtime was active when the game started.

@@ -39,6 +39,8 @@ namespace VRRange.Hands
         [SerializeField] float m_IntermediateMaxDegrees = 95f;
         [SerializeField] float m_DistalMaxDegrees = 60f;
         [SerializeField] float m_ThumbSpreadMaxDegrees = 35f;
+        [Tooltip("Thumb bend limits (metacarpal, proximal, distal). The thumb flexes far less than a finger; finger-sized limits fold it into the palm.")]
+        [SerializeField] Vector3 m_ThumbMaxDegrees = new Vector3(15f, 45f, 55f);
 
         // joint data
         class JointChain { public Transform metacarpal, proximal, intermediate, distal, tip; public Quaternion[] rest = new Quaternion[4]; public Vector3[] curlAxisLocal = new Vector3[4]; public Vector3 spreadAxisLocal; }
@@ -136,6 +138,10 @@ namespace VRRange.Hands
             var palmRot = Quaternion.LookRotation(fingerDir, -palmInward);
             m_PalmLocalPos = m_HandRoot.InverseTransformPoint(palmCentre);
             m_PalmLocalRot = Quaternion.Inverse(m_HandRoot.rotation) * palmRot;
+            // The thumb opposes the fingers: each thumb joint bends toward the middle finger's middle joint, pushed slightly
+            // into the palm, so a grip wraps the thumb across toward the fingers instead of folding it down like a finger.
+            var middleInter = Find("MiddleIntermediate") ?? middleProx;
+            var thumbGoalPoint = middleInter.position + palmInward * (handSize * 0.15f);
             for (int f = 0; f < 5; f++)
             {
                 var c = new JointChain
@@ -151,7 +157,14 @@ namespace VRRange.Hands
                     c.rest[j] = t.localRotation;
                     var next = j < 3 && joints[j + 1] != null ? joints[j + 1] : c.tip;
                     var dir = (next.position - t.position).normalized;
-                    var inward = f == 0 ? Vector3.Cross(Vector3.Cross(dir, palmInward), dir).normalized : palmInward; // thumb bends in its own plane toward the palm
+                    // Fingers bend toward the palm. The thumb opposes: it bends across the palm toward the little-finger side
+                    // (and slightly inward), not straight down like a finger.
+                    var inward = palmInward;
+                    if (f == 0)
+                    {
+                        inward = Vector3.ProjectOnPlane(thumbGoalPoint - t.position, dir).normalized;
+                        if (inward.sqrMagnitude < 1e-6f) inward = Vector3.ProjectOnPlane(palmInward, dir).normalized;
+                    }
                     var axisWorld = Vector3.Cross(dir, inward).normalized;
                     if (axisWorld.sqrMagnitude < 1e-6f) axisWorld = Vector3.Cross(dir, fingerDir).normalized;
                     c.curlAxisLocal[j] = t.InverseTransformDirection(axisWorld);
@@ -176,6 +189,32 @@ namespace VRRange.Hands
                     foreach (var c in m_Fingers) { if (c == null) continue; for (int j = 0; j < 4; j++) c.curlAxisLocal[j] = -c.curlAxisLocal[j]; c.spreadAxisLocal = -c.spreadAxisLocal; }
                 }
                 Debug.Log($"[VRRange] Hand {(m_IsLeft ? "L" : "R")} calibrated: size {handSize:0.000} m, thumbSide {thumbSide:0.0000}, curl sign {(after < before ? "flipped" : "kept")}");
+            }
+            // Thumb sign check: bending the thumb must bring its tip closer to the middle finger (opposition).
+            var th = m_Fingers[0];
+            var goalJoint = middleInter;
+            if (th != null && th.proximal != null && th.tip != null)
+            {
+                var saved = th.proximal.localRotation;
+                float before = Vector3.Distance(th.tip.position, goalJoint.position);
+                th.proximal.localRotation = th.rest[1] * Quaternion.AngleAxis(20f, th.curlAxisLocal[1]);
+                float after = Vector3.Distance(th.tip.position, goalJoint.position);
+                th.proximal.localRotation = saved;
+                bool flip = after > before;
+                if (flip) for (int j = 0; j < 4; j++) th.curlAxisLocal[j] = -th.curlAxisLocal[j];
+                Debug.Log($"[VRRange] Hand {(m_IsLeft ? "L" : "R")} thumb: tip-to-middle {before:0.000} -> {after:0.000} m on a 20 deg bend, sign {(flip ? "flipped" : "kept")}");
+            }
+            // Spread sign check: positive spread must swing the thumb away from the index finger. The left hand is a mirror
+            // image, so the same rotation about the back-of-hand normal swings its thumb the other way.
+            if (th != null && th.metacarpal != null && th.tip != null && th.spreadAxisLocal.sqrMagnitude > 0f)
+            {
+                var saved = th.metacarpal.localRotation;
+                float before = Vector3.Distance(th.tip.position, indexProx.position);
+                th.metacarpal.localRotation = th.rest[0] * Quaternion.AngleAxis(10f, th.spreadAxisLocal);
+                float after = Vector3.Distance(th.tip.position, indexProx.position);
+                th.metacarpal.localRotation = saved;
+                if (after < before) th.spreadAxisLocal = -th.spreadAxisLocal;
+                Debug.Log($"[VRRange] Hand {(m_IsLeft ? "L" : "R")} thumb spread sign {(after < before ? "flipped" : "kept")}");
             }
         }
 
@@ -273,7 +312,9 @@ namespace VRRange.Hands
                 var c = m_Fingers[f]; if (c == null) continue;
                 float curl = m_Curl[f];
                 Transform[] joints = { c.metacarpal, c.proximal, c.intermediate, c.distal };
-                float[] max = { f == 0 ? 25f : 0f, m_ProximalMaxDegrees, m_IntermediateMaxDegrees, m_DistalMaxDegrees };
+                float[] max = f == 0
+                    ? new[] { m_ThumbMaxDegrees.x, m_ThumbMaxDegrees.y, m_ThumbMaxDegrees.y, m_ThumbMaxDegrees.z } // thumb rigs may or may not have an intermediate joint
+                    : new[] { 0f, m_ProximalMaxDegrees, m_IntermediateMaxDegrees, m_DistalMaxDegrees };
                 for (int j = 0; j < 4; j++)
                 {
                     var t = joints[j]; if (t == null || max[j] <= 0f) continue;

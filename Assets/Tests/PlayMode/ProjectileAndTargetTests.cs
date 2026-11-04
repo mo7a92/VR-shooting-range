@@ -128,7 +128,7 @@ namespace VRRange.Tests
 
             gm.SetPracticeMotion(TargetMotion.Horizontal); yield return null;
             float maxX = 0f, minZ = float.MaxValue, maxZ = float.MinValue;
-            for (int i = 0; i < 60; i++) { yield return null; var p = carrier.localPosition; maxX = Mathf.Max(maxX, Mathf.Abs(p.x)); minZ = Mathf.Min(minZ, p.z); maxZ = Mathf.Max(maxZ, p.z); }
+            for (float t0 = Time.time; Time.time - t0 < 1.5f;) { yield return null; var p = carrier.localPosition; maxX = Mathf.Max(maxX, Mathf.Abs(p.x)); minZ = Mathf.Min(minZ, p.z); maxZ = Mathf.Max(maxZ, p.z); }
             Assert.Greater(maxX, 0.05f, "horizontal motion moves sideways");
             Assert.LessOrEqual(maxX, gm.Settings.Profile(Difficulty.Medium).lateralRange + 0.01f);
             Assert.AreEqual(10f, minZ, 0.01f); Assert.AreEqual(10f, maxZ, 0.01f);

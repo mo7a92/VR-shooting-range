@@ -32,8 +32,18 @@ ship what works rather than leaving half-done work.
   interaction test must use the rig's `NearFarInteractor` and its casters, as `Assets/Tests/PlayMode/RigGrabAndThumbTests.cs` does.
 - **Tests must measure time, not frames.** Local frame rates are uncapped and much higher than in your container, so a loop
   over N frames covers far less time. One existing test failed locally for exactly this reason and was fixed.
-- **The main deliverable is the Windows PCVR build** (`Tools/Windows/build_pcvr.ps1`, zipped). The Quest APK is secondary;
-  build it only if time remains.
+- **This round is PCVR only.** The deliverable is the Windows PCVR build (`Tools/Windows/build_pcvr.ps1`, zipped).
+  **Skip the Quest APK entirely**: don't build it, and don't tune for Quest 2 performance. Don't break the Quest
+  configuration either. The focus is polishing and fixing the issues below.
+
+## Owner's decisions (follow these; don't ask again)
+- **Pistol two-handed release:** if the shooting hand lets go while the support hand is on the pistol, the pistol
+  **passes to the support hand**, which becomes the new primary grip. The pistol must not drop.
+- **One-handed rifle:** it stays **usable but hard to control**. It leans and sags down noticeably, has much worse
+  recoil control, and wanders under auto fire. Never block one-handed fire.
+- **Weight on every weapon:** all three weapons get believable, distinct weight (sag, lag, inertia and recoil from their
+  mass and balance). The pistol is light but still has some, the SMG is in between, and the rifle is heaviest and
+  front-heavy.
 
 ## Already fixed locally (in the commit you merged; verified with Unity 6000.3.27f1 on the owner's PC)
 1. **Weapons could not be grabbed at all.**
@@ -97,8 +107,11 @@ ship what works rather than leaving half-done work.
   - **Recoil:** much larger one-handed, so `recoilUnsupportedMultiplier` around 2.5–3. Instability builds quickly during
     auto fire and makes the muzzle climb and wander.
   - **Two hands:** with the support hand on the handguard it's steady, as now.
-- **SMG:** somewhere in between. **Pistol:** stays snappy.
-- **Optional:** a limit on one-handed auto fire, such as the muzzle climbing until it's off target after about 5 rounds.
+- **SMG:** somewhere in between: about 2.4 kg, so moderate sag and lag one-handed, and steady with two hands.
+- **Pistol:** light (about 0.9 kg) but not weightless. Give it a small visible inertia and a slight droop after fast
+  movements; it stays quick to aim.
+- **One-handed rifle auto fire stays possible** (owner's decision) but loses control: the muzzle climbs and wanders until
+  it's mostly off target after about 5–8 rounds, and recovers once you stop firing.
 - Keep it fun and usable: the clamps must stop the weapon from going inside the body or the floor.
 - Update `WeaponHandlingTests` to the new expectations.
 
@@ -128,7 +141,9 @@ ship what works rather than leaving half-done work.
     Add it to `weapons_layout.json`, `supportPalm`.
   - `WeaponHandlingTransformer` treats this as "supported": less sway, less recoil, faster recovery.
   - The support hand's visual snaps around the primary hand without intersecting it.
-  - Releasing the primary hand while supported drops the gun cleanly, or hands it over cleanly (pick one and document it).
+  - **Releasing the primary hand while supported hands the pistol over to the support hand** (owner's decision). The
+    support hand smoothly becomes the primary grip on the pistol grip. Don't drop it, and don't snap it visibly.
+    Releasing the support hand returns the pistol to one-handed.
 - Test it with the rig's real interactors.
 
 ### 5. Hands go through the weapon grips; the finger wrap is wrong
@@ -151,6 +166,7 @@ ship what works rather than leaving half-done work.
   - Add an automated check that fingertip joints sit at most about 5 mm inside the grip collider.
 
 ### 6. Overall environment, texture and feature polish (time-box this; only after 1–5 work)
+The owner's focus is **polishing what exists and fixing the issues above**, not big new features. Polish before features.
 - **Visuals (PCVR first):**
   - Check texture resolution and tiling on the floor, walls, counter and booths for visible blur or obvious repetition;
     use the 2K/4K CC0 sets where they help.

@@ -64,8 +64,8 @@ handed over as a file in the session and is not stored in git. To rebuild locall
 - Build log: Unity Console / `Logs/build_apk.log`, summary in `Logs/VRRangeBuildReport.txt`.
 
 ## 5b. Windows PCVR build and Virtual Desktop (VDXR / SteamVR)
-The cloud produced `VRShootingRange_PCVR_Windows.zip` (Windows x64, Mono, Direct3D11, OpenXR; 0.3.1 after headset round 1; sizes
-and sha256 in `TEST_RESULTS.md` Stage 6).
+The cloud produced `VRShootingRange_PCVR_Windows.zip` (Windows x64, Mono, Direct3D11, OpenXR; 0.3.2 after headset round 2; sizes
+and sha256 in `TEST_RESULTS.md` Stage 7).
 It is not stored in git. To rebuild locally the editor needs the **Windows Build Support (Mono)** module
 (Unity Hub → Installs → Add modules), then:
 - Menu **VR Range → Build → Build Windows PCVR (x64)** → `Builds/Windows/VRShootingRange.exe`, or
@@ -152,6 +152,16 @@ Headset round 1 fixes (2026-11-04; verified only by the automated suite and cont
       (`primaryPalm` / `supportPalm` and the `*GripCollider` boxes in `weapons_layout.json`).
 - [ ] **Floor calibration:** controller on the floor + both thumbsticks 1 s (or PageUp/PageDown/Home) gives a correct eye height;
       `Player.log` prints the in-game eye height 5 s after start.
+
+Headset round 2 (hands on grips, verified by `HandPenetrationTests` and container screenshots in `Docs/Screenshots/round2_fixes/`):
+- [ ] **No sinking:** the palm skin rests on the grip panel / under the handguard, fingers wrap and stop at the surface, the two
+      pistol hands touch without overlapping. If a hand still sinks somewhere, note which part: the contact volumes are the
+      `contactVolumes` seeds in `weapons_layout.json` (shrink-wrapped to the mesh on rebuild) and the per-hand skin thickness
+      is measured at start (`Player.log`: "Hand R skin: palm 22.4 mm ...").
+- [ ] **High grip:** the shooting hand's knuckle line runs forward along the bore (about 20° down), the back of the hand faces
+      outward and a little up, the thumb lies along the frame; the virtual wrist sits where your real wrist is when the hand
+      is empty (the empty hand now uses the same fist orientation as the pistol grip). Rifle / SMG support hand: palm under the
+      handguard, fingers over one side, thumb along the other; its little finger may hang free.
 - [ ] Shell casings eject and tinkle; lane scoreboard above the booth updates; combo text appears after 3 hits in a row.
 - [ ] Performance: enable the OVR Metrics Tool (Meta Quest Developer Hub) or read `adb logcat -s VrApi`
       for FPS. Target 72 FPS. If low: bake lighting, reduce `renderScale` in `URP-Quest2.asset`, or lower MSAA to 2x.

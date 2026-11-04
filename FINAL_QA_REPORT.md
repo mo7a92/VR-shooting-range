@@ -114,6 +114,15 @@ judged on screenshots only"; new rows:
 | R11 | Medium (unverified) | Round-1 handling, recoil, pistol hand-over and finger wrap are verified by automated tests and container screenshots, not yet on the headset | Owner's on-headset checklist in `LOCAL_HANDOFF.md` §7 |
 | R12 | Low | The pistol support hand sits beside the shooting hand rather than wrapping its fingers; the SMG support hand cradles the narrow receiver loosely | Palm poses in `weapons_layout.json` (`supportPalm`), re-author with headset feedback |
 
+Headset round 2 (2026-11-04, `TEST_RESULTS.md` Stage 7): the owner's round-1 screenshots still showed hands sinking into the weapons
+(rifle support hand in the rails, pistol palms through the grip and each other) and pistol wrists tilted too far down. Fixed and measured
+by `HandPenetrationTests` on the baked hand meshes: max skin depth inside a weapon or the other hand 0.0–3.8 mm (rule ≤ 4 mm), ≤ 0.43 % of
+vertices (rule < 2 %), every wrapping fingertip within its bound, shooting-hand wrist 21.7° below the bore (rule ≤ 25°), support hands
+18.4° below (pistol) / 25.8° above (rifle, SMG under the handguard), held wrist 1.7–3.1 cm from the empty hand's wrist (rule < 4 cm).
+R2 is closed (per-weapon contact volumes + per-finger contact solve to the fingertip are in); R12 is reduced to "the pistol support cup is
+loose": the support palm's bulges rest on the shooting hand's fingers but the palm centre stays 46 mm from the nearest finger capsule,
+because the rigid hand mesh cannot flatten and the cross-hand clearance is 7 mm. Screenshots: `Docs/Screenshots/round2_fixes/`.
+
 No known **critical** issues. No known reproducible functional bug remains in the automated scope.
 
 ## 9. Release readiness assessment

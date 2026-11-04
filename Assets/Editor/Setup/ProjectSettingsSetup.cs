@@ -18,10 +18,12 @@ namespace VRRange.Editor
         public const string ProductName = "VR Shooting Range";
         public const string CompanyName = "UniversityProject";
         public const string PackageId = "com.universityproject.vrshootingrange";
-        public const string Version = "0.3.1";
+        public const string Version = "0.3.2";
         public const string OpenXRLoaderTypeName = "UnityEngine.XR.OpenXR.OpenXRLoader";
 
-        public static readonly string[] RequiredLayers = { "Weapon", "Projectile", "Target", "Environment", "HeadsetOnly" };
+        public static readonly string[] RequiredLayers = { "Weapon", "Projectile", "Target", "Environment", "HeadsetOnly", HandContactLayer };
+        /// <summary>Hand/weapon contact volumes (fitted boxes, palm box, finger capsules): collide with nothing, queried only by HandPresence.</summary>
+        public const string HandContactLayer = "HandContact";
         /// <summary>Objects only the headset should see (tunnelling vignette); the spectator camera culls this layer.</summary>
         public const string HeadsetOnlyLayer = "HeadsetOnly";
         public const string QuestQualityName = "Quest 2";
@@ -118,6 +120,8 @@ namespace VRRange.Editor
             int lw = LayerMask.NameToLayer("Weapon"), lp = LayerMask.NameToLayer("Projectile");
             if (lw >= 0 && lp >= 0) { Physics.IgnoreLayerCollision(lp, lw, true); Physics.IgnoreLayerCollision(lp, lp, true); }
             SetupLog.Ok("Physics layers: " + string.Join(", ", RequiredLayers));
+            int hc = LayerMask.NameToLayer(HandContactLayer);
+            if (hc >= 0) { for (int i = 0; i < 32; i++) Physics.IgnoreLayerCollision(hc, i, true); SetupLog.Ok("HandContact layer collides with nothing (collision matrix)"); }
         }
 
         /// <summary>

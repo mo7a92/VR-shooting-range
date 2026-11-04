@@ -235,8 +235,11 @@ namespace VRRange.Tests
             Assert.IsTrue(pistol.IsTwoHanded); Assert.Greater(pistol.Handling.TwoHandBlend, 0.9f, "handling treats it as supported");
             Assert.AreEqual(GripRole.Primary, right.CurrentAnchor.role); Assert.AreEqual(GripRole.Support, left.CurrentAnchor.role);
             Assert.AreSame(pistol, left.HeldWeapon);
+            // Round 2: palm centres are bone-line points one measured skin thickness (~22 mm per hand) outside the contact, so the
+            // centre-to-centre distance grew by ~4.5 cm (round 1 measured ~11 cm; round 2 ~15 cm). The skin-level contact is
+            // checked by HandPenetrationTests (support palm vs the shooting hand's finger capsules).
             float handsApart = Vector3.Distance(left.PalmWorldPosition, right.PalmWorldPosition);
-            Assert.That(handsApart, Is.InRange(0.03f, 0.14f), $"support palm cups the shooting hand ({handsApart * 100f:0.0} cm apart)");
+            Assert.That(handsApart, Is.InRange(0.03f, 0.19f), $"support palm cups the shooting hand ({handsApart * 100f:0.0} cm apart, bone line to bone line)");
             // the pistol stays on the shooting hand's grip (no two-point aim on a pistol)
             Assert.Less(Vector3.Distance(pistol.Handling.PrimaryGrip.position, attachR.position), 0.02f, "grip stays in the shooting hand");
             Assert.Less(Mathf.Abs(Pitch(attachR, pistol)), sagBefore + 1f, "support hand does not pull the pistol around");
@@ -260,7 +263,8 @@ namespace VRRange.Tests
             }
             Assert.Less(maxJump, 2.5f, $"no visible snap: peak speed {maxJump:0.00} m/s during the hand-over");
             Assert.AreEqual(1, pistol.HandCount); Assert.IsFalse(pistol.IsTwoHanded);
-            Assert.Less(Vector3.Distance(pistol.Handling.PrimaryGrip.position, attachL.position), 0.02f, "grip settled in the new shooting hand");
+            // round 2: a left shooting hand holds the mirrored grip point (palm on the pistol's -X side), so compare the grip as used
+            Assert.Less(Vector3.Distance(pistol.Handling.PrimaryGripWorld, attachL.position), 0.02f, "grip settled in the new shooting hand");
             Assert.AreEqual(GripRole.Primary, left.CurrentAnchor.role, "the left hand now uses the primary grip pose");
             Assert.IsNull(right.HeldWeapon);
             XrTestRig.PullTrigger(m_Left, pistol); XrTestRig.ReleaseTrigger(m_Left, pistol); yield return null;

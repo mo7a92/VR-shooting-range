@@ -65,6 +65,7 @@ namespace VRRange.Editor
         {
             SetupLog.Begin("VR Range prefabs + settings rebuild (scene untouched)");
             MaterialLibrary.ResetCache(); EditorMeshUtil.ResetCache();
+            Step("Physics layers", () => ProjectSettingsSetup.ApplyLayers());
             Step("Settings assets", () => SettingsAssetBuilder.Build(true));
             Step("FX prefabs", () => FxPrefabBuilder.Build());
             Step("Target prefab", () => TargetPrefabBuilder.Build());

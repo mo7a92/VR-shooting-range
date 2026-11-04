@@ -15,7 +15,7 @@ MonoBehaviour:
   thumb: 0.35
   index: 0.45
   middle: 0.45
-  ring: 0.45
-  little: 0.45
+  ring: 0.5
+  little: 0.6
   thumbSpread: 0.3
   indexFollowsTrigger: 0

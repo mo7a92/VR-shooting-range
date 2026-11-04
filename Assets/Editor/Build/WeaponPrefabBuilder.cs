@@ -15,7 +15,8 @@ namespace VRRange.Editor
         [System.Serializable] class Part { public string name; public string file; public float[] pivot; public string role; }
         [System.Serializable] class Palm { public float[] pos; public float[] forward; public float[] up; public string pose; }
         [System.Serializable] class GripBox { public float[] center; public float[] size; public float[] euler; }
-        [System.Serializable] class WeaponLayout { public string model; public string textureSet; public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public GripBox primaryGripCollider; public GripBox supportGripCollider; public float[] ejectionPort; public float[] ammoDisplay; public float[] ammoDisplayEuler; }
+        [System.Serializable] class ContactSeed { public string name; public float[] center; public float[] size; public float[] euler; }
+        [System.Serializable] class WeaponLayout { public string model; public string textureSet; public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public GripBox primaryGripCollider; public GripBox supportGripCollider; public List<ContactSeed> contactVolumes; public float[] ejectionPort; public float[] ammoDisplay; public float[] ammoDisplayEuler; }
 
         public static readonly Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
 
@@ -71,6 +72,7 @@ namespace VRRange.Editor
 
             var model = EditorRefs.Child(root, "Model");
             Transform slide = null, trigger = null, magazine = null;
+            GameObject inst_for_contacts = null;
             if (!string.IsNullOrEmpty(layout.model))
             {
                 // V3: one FBX (CC0 download processed by Tools/AssetGen/blender_process.py) with named parts; one PBR texture set per weapon.
@@ -80,6 +82,7 @@ namespace VRRange.Editor
                 var inst = (GameObject)PrefabUtility.InstantiatePrefab(asset);
                 PrefabUtility.UnpackPrefabInstance(inst, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
                 inst.name = "Mesh"; inst.transform.SetParent(model.transform, false);
+                inst_for_contacts = inst;
                 inst.transform.localPosition = Vector3.zero; inst.transform.localRotation = Quaternion.identity; inst.transform.localScale = Vector3.one;
                 var texFolder = System.IO.Path.GetDirectoryName($"{RangePaths.ArtWeapons}/{layout.textureSet}").Replace('\\', '/');
                 var texBase = System.IO.Path.GetFileName(layout.textureSet);
@@ -149,9 +152,19 @@ namespace VRRange.Editor
 
             // Weight / handling simulation and hand grip anchors
             var handling = root.AddComponent<WeaponHandlingTransformer>();
-            handling.Configure(def, attach.transform, secondary != null ? secondary.transform : null);
+            // the shooting hand's orientation is the free-hand fist (OpenXR grip pose), so the held wrist stays where the real wrist is
+            if (layout.primaryPalm != null) { layout.primaryPalm.forward = new[] { HandPresence.DefaultFreePalmForward.x, HandPresence.DefaultFreePalmForward.y, HandPresence.DefaultFreePalmForward.z }; layout.primaryPalm.up = new[] { HandPresence.DefaultFreePalmUp.x, HandPresence.DefaultFreePalmUp.y, HandPresence.DefaultFreePalmUp.z }; }
             var primaryAnchor = BuildAnchor(root, "PrimaryGrip", layout.primaryPalm, GripRole.Primary, V(layout.grip));
             var supportAnchor = layout.supportPalm != null && layout.supportPalm.pos != null ? BuildAnchor(root, "SupportGrip", layout.supportPalm, GripRole.Support, V(layout.secondaryGrip)) : null;
+            // The handling transformer holds the weapon by the PALM CENTROIDS (OpenXR grip pose origin ~ palm centroid): the
+            // anchor is the palm-skin contact point on the grip surface, the centroid sits one skin thickness further out
+            // along the anchor's up (back of hand). XRI's own attach transforms stay at the grip for sockets / far grabs.
+            const float kPalmSkin = 0.022f; // HandPresence measures the real value per hand; the transformer only needs a close pivot
+            var palmAttach = EditorRefs.Child(root, "PalmAttach", primaryAnchor.transform.localPosition + primaryAnchor.transform.localRotation * Vector3.up * kPalmSkin, attach.transform.localEulerAngles);
+            GameObject supportPalmAttach = null;
+            if (supportAnchor != null) supportPalmAttach = EditorRefs.Child(root, "SupportPalmAttach", supportAnchor.transform.localPosition + supportAnchor.transform.localRotation * Vector3.up * kPalmSkin);
+            handling.Configure(def, palmAttach.transform, supportPalmAttach != null ? supportPalmAttach.transform : (secondary != null ? secondary.transform : null));
+            BuildContactVolumes(root, inst_for_contacts, layout);
             // Convex grip volumes the fingers close onto (HandPresence contact solve): the pistol grip / handguard, and on the
             // pistol's support grip the whole shooting hand. Solid (non-trigger) so Collider.ClosestPoint is exact; they sit
             // inside the weapon's main collider and are on the Weapon layer, which projectiles ignore.
@@ -187,6 +200,48 @@ namespace VRRange.Editor
             var mr = go.GetComponent<MeshRenderer>(); if (mr != null) { mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false; }
             var display = EditorRefs.Ensure<WeaponAmmoDisplay>(go);
             display.Configure(weapon, tmp);
+        }
+
+        /// <summary>
+        /// Fits one box per contact seed to the visual mesh: every vertex inside the seed box (weapon space, seed rotation) is
+        /// shrink-wrapped in the seed's frame, so the grip panels, rails and slide get boxes that match what is rendered.
+        /// Boxes live on the HandContact layer (collides with nothing; projectiles and grab casters never query it).
+        /// </summary>
+        static void BuildContactVolumes(GameObject root, GameObject meshRoot, WeaponLayout layout)
+        {
+            var holder = EditorRefs.Child(root, "ContactVolumes");
+            EditorRefs.DestroyChildren(holder.transform);
+            int layer = LayerMask.NameToLayer(ProjectSettingsSetup.HandContactLayer); if (layer < 0) layer = 2;
+            holder.layer = layer;
+            var wcv = EditorRefs.Ensure<WeaponContactVolumes>(root);
+            wcv.volumes.Clear();
+            if (layout.contactVolumes == null || layout.contactVolumes.Count == 0 || meshRoot == null) { SetupLog.Warn($"{root.name}: no contact volume seeds in weapons_layout.json"); return; }
+            var verts = new List<Vector3>();
+            foreach (var mf in meshRoot.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (mf.sharedMesh == null) continue;
+                foreach (var v in mf.sharedMesh.vertices) verts.Add(root.transform.InverseTransformPoint(mf.transform.TransformPoint(v)));
+            }
+            int built = 0;
+            foreach (var seed in layout.contactVolumes)
+            {
+                if (seed == null || seed.center == null || seed.size == null) continue;
+                var rot = Quaternion.Euler(V(seed.euler)); var inv = Quaternion.Inverse(rot);
+                var c = V(seed.center); var h = V(seed.size) * 0.5f;
+                var min = Vector3.positiveInfinity; var max = Vector3.negativeInfinity; int n = 0;
+                foreach (var v in verts)
+                {
+                    var l = inv * (v - c);
+                    if (Mathf.Abs(l.x) > h.x || Mathf.Abs(l.y) > h.y || Mathf.Abs(l.z) > h.z) continue;
+                    min = Vector3.Min(min, l); max = Vector3.Max(max, l); n++;
+                }
+                if (n < 12) { SetupLog.Warn($"{root.name}: contact seed '{seed.name}' encloses only {n} vertices; skipped"); continue; }
+                var go = EditorRefs.Child(holder, $"Contact_{seed.name}"); go.layer = layer;
+                go.transform.localPosition = c + rot * ((min + max) * 0.5f); go.transform.localRotation = rot;
+                var box = EditorRefs.Ensure<BoxCollider>(go); box.isTrigger = true; box.center = Vector3.zero; box.size = Vector3.Max(max - min, Vector3.one * 0.004f);
+                wcv.volumes.Add(box); built++;
+            }
+            SetupLog.Ok($"{root.name}: {built} hand-contact volumes fitted to the mesh ({verts.Count} vertices)");
         }
 
         static BoxCollider BuildGripBox(GameObject root, string name, GripBox box, Vector3 fallbackCenter, Vector3 fallbackSize)

@@ -29,8 +29,39 @@ namespace VRRange.Hands
         [SerializeField] bool m_HideControllerModel = true;
 
         [Header("Free-hand palm pose relative to the controller attach (holding the Touch controller)")]
-        [SerializeField] Vector3 m_FreePalmOffset = new Vector3(0f, -0.01f, -0.02f);
-        [SerializeField] Vector3 m_FreePalmEuler = new Vector3(-40f, 0f, 0f);
+        // not serialized on purpose: the committed scene carries older values and the pose is tuned with the weapon anchors in code
+        Vector3 m_FreePalmOffset = DefaultFreePalmOffset;
+        Vector3 m_FreePalmEuler = DefaultFreePalmEuler;
+        /// <summary>
+        /// Free-hand palm pose relative to the controller's grip pose. OpenXR defines the grip pose as: origin at the palm
+        /// centroid, +X = palm normal, +Y along the handle, forward (Unity +Z) out of the fist perpendicular to the handle,
+        /// i.e. the direction a pistol barrel points when the handle is gripped. A fist around the handle therefore has its
+        /// wrist-to-knuckle line a little below that forward and the back of the hand facing outward and a bit up: the same
+        /// orientation as the shooting hand on a pistol grip. The weapon anchors use these exact vectors (authored for a
+        /// right hand, mirrored in X for the left), so the held wrist lands where the free wrist was.
+        /// </summary>
+        public static readonly Vector3 DefaultFreePalmOffset = Vector3.zero;
+        public static readonly Vector3 DefaultFreePalmForward = new Vector3(-0.08f, -0.37f, 0.93f);
+        public static readonly Vector3 DefaultFreePalmUp = new Vector3(0.93f, 0.3f, 0.2f);
+        public static readonly Vector3 DefaultFreePalmEuler = Quaternion.LookRotation(DefaultFreePalmForward, DefaultFreePalmUp).eulerAngles;
+        public Vector3 FreePalmOffset => m_FreePalmOffset;
+        public Vector3 FreePalmEuler => m_FreePalmEuler;
+        /// <summary>Where the free (empty) hand's palm would be for the current controller pose.</summary>
+        public Pose FreePalmPose()
+        {
+            var fwd = DefaultFreePalmForward; var up = DefaultFreePalmUp; var off = m_FreePalmOffset;
+            if (m_IsLeft) { fwd.x = -fwd.x; up.x = -up.x; off.x = -off.x; }
+            var attach = m_PoseReference != null ? m_PoseReference : m_ControllerAttach != null ? m_ControllerAttach : transform;
+            return new Pose(attach.TransformPoint(off), attach.rotation * Quaternion.LookRotation(fwd, up));
+        }
+        /// <summary>World wrist position the hand would have in a given palm pose (bone-line palm centre).</summary>
+        public Vector3 WristForPalmPose(Pose palm)
+        {
+            var rootRot = palm.rotation * Quaternion.Inverse(m_PalmLocalRot);
+            var rootPos = palm.position - rootRot * Vector3.Scale(m_PalmLocalPos, m_HandRoot != null ? m_HandRoot.lossyScale : Vector3.one);
+            var wristLocal = m_Wrist != null && m_HandRoot != null ? m_HandRoot.InverseTransformPoint(m_Wrist.position) : Vector3.zero;
+            return rootPos + rootRot * Vector3.Scale(wristLocal, m_HandRoot != null ? m_HandRoot.lossyScale : Vector3.one);
+        }
 
         [Header("Tuning")]
         [SerializeField, Range(2f, 40f)] float m_FollowSpeed = 25f;
@@ -51,6 +82,54 @@ namespace VRRange.Hands
         [Tooltip("Log the thumb solve samples (debugging the grip authoring).")]
         [SerializeField] bool m_DebugThumb = false;
         public bool DebugThumb { get => m_DebugThumb; set => m_DebugThumb = value; }
+        [Tooltip("Push the whole hand out of the weapon's contact volumes (and the other hand's) with Physics.ComputePenetration on the palm volume.")]
+        [SerializeField] bool m_PalmDepenetration = true;
+
+        // measured at calibration from the baked skin: distance from the palm bone line to the palm skin / back-of-hand skin
+        float m_PalmSkinOffset = 0.018f, m_BackOfHandOffset = 0.012f;
+        // contact volumes of this hand (palm box + finger capsules, parented to the joints) and the current contact targets
+        readonly List<Collider> m_Targets = new List<Collider>();
+        readonly List<ContactShape> m_Shapes = new List<ContactShape>();
+        int m_OtherHandShapeStart = -1;
+        HandPresence m_OtherHand;
+        /// <summary>Everything this hand keeps its palm and fingers out of: the weapon's contact shapes, then (support hand) the other hand's shapes inflated by <see cref="kOtherHandInflate"/>.</summary>
+        public IReadOnlyList<ContactShape> ContactShapes => m_Shapes;
+        readonly List<string> m_ShapeNames = new List<string>();
+        /// <summary>Names parallel to <see cref="ContactShapes"/> (weapon volume collider names, then "other:" + the other hand's shape names).</summary>
+        public IReadOnlyList<string> ContactShapeNames => m_ShapeNames;
+        /// <summary>
+        /// The other hand's capsules and palm box are inflated by 7 mm: both meshes are rounder than their shapes (knuckles,
+        /// finger pads) and skin-on-skin contact must not read as overlap. Measured on the pistol: 3-4 mm let the support palm
+        /// sink 6.5-9 mm into the shooting hand's index knuckle; 7 mm keeps every cross-hand overlap under 4 mm at the cost of
+        /// a ~1 cm air gap under the support palm's centre (its bulges rest on the fingers).
+        /// </summary>
+        const float kOtherHandInflate = 0.007f;
+        void RefreshShapes()
+        {
+            m_Shapes.Clear(); m_ShapeNames.Clear(); m_OtherHandShapeStart = -1;
+            foreach (var c in m_Targets) if (c != null) { m_Shapes.Add(ContactShape.From(c)); m_ShapeNames.Add(c.name); }
+            if (m_OtherHand != null)
+            {
+                m_OtherHandShapeStart = m_Shapes.Count;
+                m_OtherHand.RefreshOwnShapes();
+                var names = m_OtherHand.OwnShapeNames;
+                int k = 0;
+                foreach (var sh0 in m_OtherHand.OwnShapes)
+                {
+                    var sh = sh0;
+                    if (sh.kind == 1 || sh.kind == 2) sh.radius += kOtherHandInflate; else if (sh.kind == 0) sh.half += Vector3.one * kOtherHandInflate;
+                    m_Shapes.Add(sh); m_ShapeNames.Add("other:" + (k < names.Count ? names[k] : k.ToString())); k++;
+                }
+            }
+        }
+        /// <summary>Human-readable summary of the last palm de-penetration solve (tests / debugging).</summary>
+        public string DepenetrationInfo { get; private set; } = "";
+        Vector3 m_DepenOffset, m_DepenTarget;
+        Transform m_MiddleProx;
+        // the frame the free pose is authored in: the controller's NearFarInteractor attach anchor (where a held weapon's
+        // palm attach lands), falling back to the controller transform
+        Transform m_PoseReference;
+        public Transform PoseReference => m_PoseReference != null ? m_PoseReference : m_ControllerAttach;
 
         // joint data
         class JointChain { public Transform metacarpal, proximal, intermediate, distal, tip; public Quaternion[] rest = new Quaternion[4]; public Vector3[] curlAxisLocal = new Vector3[4]; public Vector3 spreadAxisLocal; public Vector3 oppositionAxisLocal; }
@@ -71,6 +150,9 @@ namespace VRRange.Hands
         Renderer[] m_ControllerRenderers;
         float? m_GripOverride, m_TriggerOverride; // test hook (scripted input instead of a tracked controller)
         readonly float[] m_ContactCurl = { -1f, -1f, -1f, -1f, -1f }; // -1 = no contact solution (finger never reaches the grip)
+        // extra closing of the end joints (0..1) after the finger's first contact, so the fingertip reaches the surface too
+        readonly float[] m_TipExtra = new float[5], m_TargetTipExtra = new float[5], m_ContactTipExtra = new float[5];
+        public float TipExtra(Finger f) => m_TipExtra[(int)f];
         float m_NextContactSolve;
         Collider m_SolvedAgainst;
 
@@ -103,6 +185,7 @@ namespace VRRange.Hands
             var scope = m_ControllerAttach != null ? m_ControllerAttach : (transform.parent != null ? transform.parent : transform);
             m_Interactors.Clear();
             scope.GetComponentsInChildren(true, m_Interactors);
+            foreach (var i in m_Interactors) if (i is NearFarInteractor nf) { var a = nf.attachTransform; if (a != null) { m_PoseReference = a; break; } }
             foreach (var i in m_Interactors) { i.selectEntered.AddListener(OnSelectEntered); i.selectExited.AddListener(OnSelectExited); }
             if (m_HideControllerModel) SetControllerModelVisible(false);
         }
@@ -156,6 +239,9 @@ namespace VRRange.Hands
             var palmRot = Quaternion.LookRotation(fingerDir, -palmInward);
             m_PalmLocalPos = m_HandRoot.InverseTransformPoint(palmCentre);
             m_PalmLocalRot = Quaternion.Inverse(m_HandRoot.rotation) * palmRot;
+            m_MiddleProx = middleProx;
+            MeasureSkinOffsets(palmCentre, palmInward, fingerDir, handSize);
+            MeasureFingerRadius(Find("MiddleIntermediate"), Find("MiddleDistal"));
             // The thumb opposes the fingers: each thumb joint bends toward the middle finger's middle joint, pushed slightly
             // into the palm, so a grip wraps the thumb across toward the fingers instead of folding it down like a finger.
             var middleInter = Find("MiddleIntermediate") ?? middleProx;
@@ -198,6 +284,8 @@ namespace VRRange.Hands
                 m_Fingers[f] = c;
             }
             m_Calibrated = true;
+            BuildContactVolumes(indexProx, littleProx, handSize);
+            CachePalmCloud();
             // Empirical sign check (rotation handedness differs between conventions): bend the index proximal by +10 deg
             // and verify the tip moved toward the palm; if not, flip every curl axis. Rest pose is restored afterwards.
             var idx = m_Fingers[1];
@@ -280,9 +368,21 @@ namespace VRRange.Hands
             if (m_Anchor != before) ResetContact();
         }
 
-        void ResetContact() { for (int i = 0; i < 5; i++) m_ContactCurl[i] = -1f; m_NextContactSolve = 0f; m_SolvedAgainst = null; m_ContactThumbOpposition = 0f; m_TargetThumbOpposition = 0f; }
+        void ResetContact() { for (int i = 0; i < 5; i++) { m_ContactCurl[i] = -1f; m_ContactTipExtra[i] = 0f; m_TargetTipExtra[i] = 0f; } m_NextContactSolve = 0f; m_SolvedAgainst = null; m_ContactThumbOpposition = 0f; m_TargetThumbOpposition = 0f; m_Targets.Clear(); m_OtherHand = null; m_DepenTarget = Vector3.zero; }
         /// <summary>Current thumb opposition in degrees (0 = the rig's relaxed thumb; positive = swung out flat along the grip's side).</summary>
         public float ThumbOpposition => m_ThumbOpposition;
+        /// <summary>Distance from the palm bone line to the palm skin, measured from the baked mesh at calibration (metres).</summary>
+        public float PalmSkinOffset => m_PalmSkinOffset;
+        public float BackOfHandOffset => m_BackOfHandOffset;
+        /// <summary>Colliders the fingers and palm are currently kept out of (weapon contact volumes, other hand).</summary>
+        public IReadOnlyList<Collider> ContactTargets => m_Targets;
+        /// <summary>World offset currently applied to the hand root by the palm de-penetration step.</summary>
+        public Vector3 DepenetrationOffset => m_DepenOffset;
+        public Vector3 WristWorldPosition => m_Wrist != null ? m_Wrist.position : transform.position;
+        public Vector3 MiddleKnuckleWorldPosition => m_MiddleProx != null ? m_MiddleProx.position : transform.position;
+        /// <summary>World point where the palm skin touches a grip (bone-line centre pushed out by the measured skin thickness).</summary>
+        public Vector3 PalmSkinWorldPosition => PalmWorldPosition + PalmInwardWorld * m_PalmSkinOffset;
+        public Vector3 BackOfHandWorld => -PalmInwardWorld;
 
         /// <summary>Temporarily force a pose (e.g. pinch while reloading).</summary>
         public void OverridePose(HandPose pose, float seconds) { m_OverridePose = pose; m_OverrideUntil = Time.time + seconds; }
@@ -303,6 +403,7 @@ namespace VRRange.Hands
             for (int i = 0; i < 5; i++) m_Curl[i] = Mathf.Lerp(m_Curl[i], m_TargetCurl[i], k);
             m_Spread = Mathf.Lerp(m_Spread, m_TargetSpread, k);
             m_ThumbOpposition = Mathf.Lerp(m_ThumbOpposition, m_TargetThumbOpposition, k);
+            for (int i = 0; i < 5; i++) m_TipExtra[i] = Mathf.Lerp(m_TipExtra[i], m_TargetTipExtra[i], k);
             ApplyCurls();
         }
 
@@ -310,19 +411,390 @@ namespace VRRange.Hands
         {
             if (m_HandRoot == null) return;
             Pose palmTarget;
-            if (m_Anchor != null && m_HeldWeapon != null) palmTarget = m_Anchor.GetPalmPose(m_IsLeft);
-            else
+            if (m_Anchor != null && m_HeldWeapon != null)
             {
-                var euler = m_FreePalmEuler; var off = m_FreePalmOffset;
-                if (m_IsLeft) { euler.y = -euler.y; euler.z = -euler.z; off.x = -off.x; }
-                palmTarget = new Pose(m_ControllerAttach.TransformPoint(off), m_ControllerAttach.rotation * Quaternion.Euler(euler));
+                // the anchor is the point where the palm SKIN touches the grip: the bone-line palm centre sits one measured skin
+                // thickness further out (along the anchor's up = back of hand), plus whatever the palm de-penetration pushed
+                palmTarget = m_Anchor.GetPalmPose(m_IsLeft);
+                palmTarget.position += palmTarget.rotation * Vector3.up * m_PalmSkinOffset + m_DepenOffset;
             }
+            else palmTarget = FreePalmPose();
             // hand root pose that puts the palm on the target
             var rootRot = palmTarget.rotation * Quaternion.Inverse(m_PalmLocalRot);
             var rootPos = palmTarget.position - rootRot * Vector3.Scale(m_PalmLocalPos, m_HandRoot.lossyScale);
             float k = 1f - Mathf.Exp(-m_FollowSpeed * Time.deltaTime);
             m_HandRoot.SetPositionAndRotation(Vector3.Lerp(m_HandRoot.position, rootPos, k), Quaternion.Slerp(m_HandRoot.rotation, rootRot, k));
+            m_DepenOffset = Vector3.Lerp(m_DepenOffset, m_DepenTarget, k);
         }
+
+        // ---------- skin measurement and contact volumes ----------
+        /// <summary>
+        /// Measures how far the palm skin and the back-of-hand skin sit from the palm bone line, from the skinned mesh baked
+        /// in the rest pose (80th percentile of the vertices within 2 cm of the palm centre in the palm plane). Per hand, so a
+        /// different hand model or scale is handled without a magic number.
+        /// </summary>
+        void MeasureSkinOffsets(Vector3 palmCentre, Vector3 palmInward, Vector3 fingerDir, float handSize)
+        {
+            var smr = m_HandRoot.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            if (smr == null) return;
+            var verts = new List<Vector3>();
+            if (!BakeWorldVertices(smr, verts) || verts.Count == 0) return;
+            var inward = new List<float>(); var outward = new List<float>();
+            // a narrow column through the palm centre (the thumb ball and finger bases would inflate the measurement)
+            float radius = Mathf.Clamp(handSize * 0.15f, 0.008f, 0.02f);
+            foreach (var v in verts)
+            {
+                var d = v - palmCentre;
+                float along = Vector3.Dot(d, palmInward);
+                var inPlane = d - palmInward * along;
+                if (inPlane.magnitude > radius) continue;
+                if (along > 0f) inward.Add(along); else outward.Add(-along);
+            }
+            // the skin is the median of the surface samples on each side (the column contains only surface vertices)
+            if (inward.Count >= 6) { inward.Sort(); m_PalmSkinOffset = Mathf.Clamp(inward[inward.Count / 2], 0.006f, 0.04f); }
+            if (outward.Count >= 6) { outward.Sort(); m_BackOfHandOffset = Mathf.Clamp(outward[outward.Count / 2], 0.004f, 0.03f); }
+            Debug.Log($"[VRRange] Hand {(m_IsLeft ? "L" : "R")} skin: palm {m_PalmSkinOffset * 1000f:0.0} mm, back of hand {m_BackOfHandOffset * 1000f:0.0} mm from the bone line ({inward.Count}/{outward.Count} samples)");
+        }
+
+        /// <summary>Flesh radius of the fingers from the baked mesh: median distance of the vertices around the middle finger's middle segment to its bone line.</summary>
+        void MeasureFingerRadius(Transform a, Transform b)
+        {
+            if (a == null || b == null) return;
+            var smr = m_HandRoot.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            var verts = new List<Vector3>();
+            if (smr == null || !BakeWorldVertices(smr, verts)) return;
+            var ab = b.position - a.position; float len = ab.magnitude; if (len < 1e-4f) return;
+            var dir = ab / len; var radii = new List<float>();
+            foreach (var v in verts)
+            {
+                float t = Vector3.Dot(v - a.position, dir);
+                if (t < len * 0.25f || t > len * 0.75f) continue; // the middle of the segment only (no joints)
+                float r = Vector3.Distance(v, a.position + dir * t);
+                if (r < 0.02f) radii.Add(r);
+            }
+            if (radii.Count < 6) return;
+            radii.Sort();
+            m_FingerRadius = Mathf.Clamp(radii[radii.Count / 2], 0.005f, 0.013f);
+            Debug.Log($"[VRRange] Hand {(m_IsLeft ? "L" : "R")} finger radius {m_FingerRadius * 1000f:0.0} mm ({radii.Count} samples)");
+        }
+
+        /// <summary>Baked skinned-mesh vertices in world space. Handles both BakeMesh scale conventions by comparing with the renderer bounds.</summary>
+        public static bool BakeWorldVertices(SkinnedMeshRenderer smr, List<Vector3> world)
+        {
+            world.Clear();
+            if (smr == null || smr.sharedMesh == null) return false;
+            var mesh = new Mesh();
+            smr.BakeMesh(mesh, true); // vertices in the renderer's local space with its scale applied
+            var local = mesh.vertices;
+            var t = smr.transform;
+            var scaled = new Vector3[local.Length]; var unscaled = new Vector3[local.Length];
+            var b1 = new Bounds(); var b2 = new Bounds(); bool first = true;
+            for (int i = 0; i < local.Length; i++)
+            {
+                scaled[i] = t.position + t.rotation * local[i];               // scale already baked in
+                unscaled[i] = t.TransformPoint(local[i]);                     // scale applied again (if BakeMesh ignored it)
+                if (first) { b1 = new Bounds(scaled[i], Vector3.zero); b2 = new Bounds(unscaled[i], Vector3.zero); first = false; }
+                else { b1.Encapsulate(scaled[i]); b2.Encapsulate(unscaled[i]); }
+            }
+            Object.Destroy(mesh);
+            float target = smr.bounds.size.magnitude;
+            bool useScaled = Mathf.Abs(b1.size.magnitude - target) <= Mathf.Abs(b2.size.magnitude - target);
+            world.AddRange(useScaled ? scaled : unscaled);
+            return true;
+        }
+
+        // palm box dimensions measured at calibration (metres); the shapes themselves are rebuilt from the joints every solve
+        float m_PalmWidth, m_PalmLength;
+        readonly List<ContactShape> m_OwnShapes = new List<ContactShape>();
+        readonly List<string> m_OwnShapeNames = new List<string>();
+        /// <summary>This hand's contact shapes (palm box + one capsule per finger segment), as of its last refresh.</summary>
+        public IReadOnlyList<ContactShape> OwnShapes => m_OwnShapes;
+        public IReadOnlyList<string> OwnShapeNames => m_OwnShapeNames;
+
+        void BuildContactVolumes(Transform indexProx, Transform littleProx, float handSize)
+        {
+            // The palm volume is the fleshy inward half of the palm only (bone line to palm skin), 70 % of the knuckle span
+            // wide and 60 % of the wrist-to-knuckle length long: a real palm conforms to a grip, so a full rigid box of the
+            // hand's outline would push the hand away as soon as it is tilted against a flat grip panel.
+            m_PalmWidth = Vector3.Distance(indexProx.position, littleProx.position) * 0.7f;
+            m_PalmLength = handSize * 0.6f;
+            RefreshOwnShapes();
+        }
+
+        /// <summary>Rebuilds the palm box and finger capsules from the current joint poses (pure geometry, no physics objects).</summary>
+        public void RefreshOwnShapes()
+        {
+            m_OwnShapes.Clear(); m_OwnShapeNames.Clear();
+            if (m_HandRoot == null || !m_Calibrated) return;
+            var palmRot = m_HandRoot.rotation * m_PalmLocalRot;
+            var palm = new ContactShape { kind = 0, scale = 1f, rot = palmRot, invRot = Quaternion.Inverse(palmRot), half = new Vector3(m_PalmWidth, m_PalmSkinOffset, m_PalmLength) * 0.5f, center = PalmWorldPosition + palmRot * (Vector3.down * (0.5f * m_PalmSkinOffset)) };
+            m_OwnShapes.Add(palm); m_OwnShapeNames.Add("Palm");
+            for (int f = 0; f < 5; f++)
+            {
+                var c = m_Fingers[f]; if (c == null) continue;
+                Transform[] pts = { c.proximal, c.intermediate, c.distal, c.tip };
+                for (int i = 0; i < 3; i++)
+                {
+                    var a = pts[i]; var b = pts[i + 1]; if (a == null) continue; if (b == null) b = pts[3];
+                    if (b == null) continue;
+                    m_OwnShapes.Add(new ContactShape { kind = 1, scale = 1f, a = a.position, b = b.position, radius = f == 0 ? m_FingerRadius * 1.1f : m_FingerRadius });
+                    m_OwnShapeNames.Add($"Seg{f}{i}");
+                }
+            }
+        }
+
+        /// <summary>Rebuilds the contact target list: the weapon's contact volumes (or its grip collider) plus, for a support hand, the other hand's volumes.</summary>
+        void RefreshTargets()
+        {
+            m_Targets.Clear();
+            if (m_HeldWeapon == null || m_Anchor == null) return;
+            var wcv = m_HeldWeapon.GetComponent<WeaponContactVolumes>();
+            if (wcv != null && wcv.volumes != null) foreach (var c in wcv.volumes) if (c != null && c.enabled) m_Targets.Add(c);
+            if (m_Targets.Count == 0 && m_Anchor.gripCollider != null) m_Targets.Add(m_Anchor.gripCollider);
+            m_OtherHand = null;
+            if (m_Anchor.role == GripRole.Support)
+                foreach (var h in FindObjectsByType<HandPresence>(FindObjectsSortMode.None))
+                    if (h != this && h.HeldWeapon == m_HeldWeapon) { m_OtherHand = h; break; }
+        }
+
+        /// <summary>
+        /// Palm de-penetration on the real skin: the skinned mesh is baked (at the solve rate), the palm / thenar / knuckle /
+        /// wrist vertices (fingers and thumb excluded: the curl solve owns those) are tested against every contact target,
+        /// and the hand root is pushed out along the deepest vertex's surface normal, a few iterations, so the palm skin
+        /// rests on grip panels and rails instead of sinking into them.
+        /// </summary>
+        // Palm / thenar / knuckle-row / wrist vertices (hand-root space), baked once in the rest pose: that region is rigid with
+        // respect to the hand root, so no skinned-mesh bake is needed at runtime (a BakeMesh inside LateUpdate stalled the editor).
+        readonly List<Vector3> m_PalmCloudLocal = new List<Vector3>();
+        readonly List<Vector3> m_BakeBuffer = new List<Vector3>();
+        void CachePalmCloud()
+        {
+            m_PalmCloudLocal.Clear();
+            var smr = m_HandRoot.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            if (smr == null || !BakeWorldVertices(smr, m_BakeBuffer)) return;
+            RefreshOwnShapes();
+            // Vertices of the digits beyond the knuckles (middle and end segments of every finger and of the thumb) belong
+            // to the curl / opposition solve; everything else (palm, thenar, knuckle row, wrist) is cached here.
+            var digitShapes = new List<ContactShape>();
+            for (int k = 0; k < m_OwnShapes.Count; k++) if (m_OwnShapeNames[k].StartsWith("Seg") && !m_OwnShapeNames[k].EndsWith("0")) digitShapes.Add(m_OwnShapes[k]);
+            for (int i = 0; i < m_BakeBuffer.Count; i += 2)
+            {
+                var v = m_BakeBuffer[i];
+                bool digit = false;
+                for (int k = 0; k < digitShapes.Count && !digit; k++) if (SignedDistance(digitShapes[k], v) < 0.004f) digit = true;
+                if (!digit) m_PalmCloudLocal.Add(m_HandRoot.InverseTransformPoint(v));
+            }
+            Debug.Log($"[VRRange] Hand {(m_IsLeft ? "L" : "R")} palm cloud: {m_PalmCloudLocal.Count} vertices cached for de-penetration");
+        }
+
+        void SolvePalmDepenetration()
+        {
+            if (!m_PalmDepenetration || m_PalmCloudLocal.Count == 0) { m_DepenTarget = Vector3.zero; return; }
+            // The solve works on the hand as it is posed WITHOUT the current de-penetration offset, so the result is absolute, not accumulated.
+            var outward = -PalmInwardWorld; // back of hand
+            var l2w = m_HandRoot.localToWorldMatrix;
+            m_BakeBuffer.Clear();
+            for (int i = 0; i < m_PalmCloudLocal.Count; i++) m_BakeBuffer.Add(l2w.MultiplyPoint3x4(m_PalmCloudLocal[i]) - m_DepenOffset);
+            // Required outward travel per vertex. A vertex counts when it entered through a face roughly facing the palm
+            // (normal within ~70 deg): wrap-around contact at a grip's front or side is the finger solve's job, and pushing the
+            // hand out by a side face's full exit distance would lift the palm off the grip. The travel for a counted vertex
+            // is depth / cos(angle), capped so one stray vertex cannot throw the hand.
+            float Travel(Vector3 v, out int shape, out float depthOut)
+            {
+                float best = 0f; shape = -1; depthOut = 0f;
+                for (int si = 0; si < m_Shapes.Count; si++)
+                {
+                    float depth = DepthAndNormal(m_Shapes[si], v, out var n);
+                    if (depth <= 0f) continue;
+                    float align = Vector3.Dot(n, outward);
+                    float e = align >= 0.35f ? Mathf.Min(depth / align, 0.03f) : Mathf.Min(ExitDistance(m_Shapes[si], v, outward), depth * 2f, 0.03f);
+                    if (e > best) { best = e; shape = si; depthOut = depth; }
+                }
+                return best;
+            }
+            float exit = 0f; int exitShape = -1; float exitDepth = 0f; Vector3 exitVertexLocal = Vector3.zero;
+            for (int i = 0; i < m_BakeBuffer.Count; i++)
+            {
+                float e = Travel(m_BakeBuffer[i], out int sh, out float d);
+                if (e > exit) { exit = e; exitShape = sh; exitDepth = d; exitVertexLocal = m_PalmCloudLocal[i]; }
+            }
+            // 1.5 mm clearance: the cached palm cloud is rigid, the live thenar moves a little with the thumb opposition
+            var push = outward * Mathf.Min(exit > 0f ? exit + 0.0015f : 0f, 0.06f);
+            string info = exitShape >= 0
+                ? $"pass1 {exit * 1000f:0.0} mm along the palm normal (vertex at hand-local {exitVertexLocal * 1000f:0} mm, {exitDepth * 1000f:0.0} mm deep in {(exitShape < m_ShapeNames.Count ? m_ShapeNames[exitShape] : exitShape.ToString())})"
+                : "pass1 0 mm";
+            float pass2 = 0f; string pass2Shape = "";
+            // Second pass for the other hand only (support hand cupping the shooting hand): its finger capsules are round, so
+            // the hand backs out of the deepest one along that capsule's radial normal, a few iterations.
+            if (m_OtherHandShapeStart >= 0)
+            {
+                for (int iter = 0; iter < 3; iter++)
+                {
+                    float deepest = 0f; var normal = Vector3.zero; int deepestShape = -1;
+                    for (int i = 0; i < m_BakeBuffer.Count; i++)
+                    {
+                        var v = m_BakeBuffer[i] + push;
+                        for (int si = m_OtherHandShapeStart; si < m_Shapes.Count; si++)
+                        {
+                            float depth = DepthAndNormal(m_Shapes[si], v, out var n);
+                            if (depth > deepest) { deepest = depth; normal = n; deepestShape = si; }
+                        }
+                    }
+                    if (deepest < 0.001f) break;
+                    float step = Mathf.Min(deepest + 0.0005f, 0.015f);
+                    push += normal * step; pass2 += step;
+                    if (deepestShape >= 0 && deepestShape < m_ShapeNames.Count) pass2Shape = m_ShapeNames[deepestShape];
+                }
+            }
+            if (pass2 > 0f) info += $", pass2 {pass2 * 1000f:0.0} mm radially out of {pass2Shape}";
+            DepenetrationInfo = info;
+            m_DepenTarget = Vector3.ClampMagnitude(push, 0.06f);
+        }
+
+        /// <summary>Distance a point inside the collider must travel along dir (unit) to leave it; 0 when outside.</summary>
+        public static float ExitDistance(Collider c, Vector3 p, Vector3 dir)
+        {
+            if (c is BoxCollider box)
+            {
+                var t = box.transform; var l = t.InverseTransformPoint(p) - box.center; var h = box.size * 0.5f;
+                if (Mathf.Abs(l.x) >= h.x || Mathf.Abs(l.y) >= h.y || Mathf.Abs(l.z) >= h.z) return 0f;
+                var dl = t.InverseTransformDirection(dir); // local direction (scaled)
+                float best = float.MaxValue;
+                for (int i = 0; i < 3; i++)
+                {
+                    float di = dl[i]; if (Mathf.Abs(di) < 1e-6f) continue;
+                    float face = di > 0f ? h[i] : -h[i];
+                    float tt = (face - l[i]) / di; if (tt >= 0f && tt < best) best = tt;
+                }
+                return best == float.MaxValue ? 0f : best; // t is in world units because dir is a unit world vector
+            }
+            if (c is CapsuleCollider cap)
+            {
+                var t = cap.transform; float sc = Mathf.Max(1e-5f, t.lossyScale.x);
+                var axis = cap.direction == 0 ? Vector3.right : cap.direction == 1 ? Vector3.up : Vector3.forward;
+                float half = Mathf.Max(0f, cap.height * 0.5f - cap.radius);
+                var a = t.TransformPoint(cap.center + axis * half); var b = t.TransformPoint(cap.center - axis * half);
+                var ab = b - a; float u = ab.sqrMagnitude > 1e-10f ? Mathf.Clamp01(Vector3.Dot(p - a, ab) / ab.sqrMagnitude) : 0f;
+                var off = p - (a + ab * u); float r = cap.radius * sc; float d2 = off.sqrMagnitude;
+                if (d2 >= r * r) return 0f;
+                float od = Vector3.Dot(off, dir);
+                return -od + Mathf.Sqrt(Mathf.Max(0f, r * r - (d2 - od * od))); // leave the sphere around the closest point
+            }
+            float sd = SignedDistance(c, p);
+            return sd < 0f ? -sd : 0f;
+        }
+
+        /// <summary>Depth of a point inside a collider (0 outside) and the outward normal of the nearest face.</summary>
+        /// <summary>
+        /// A contact volume reduced to plain numbers (world centre, inverse rotation, half extents / segment and radius) so
+        /// per-vertex queries do not touch the Transform API. Rebuilt once per solve.
+        /// </summary>
+        public struct ContactShape
+        {
+            public int kind; // 0 box, 1 capsule, 2 sphere, 3 other
+            public Collider collider;
+            public Vector3 center; public Quaternion rot, invRot; public Vector3 half; public float scale;
+            public Vector3 a, b; public float radius;
+
+            public static ContactShape From(Collider c)
+            {
+                var sh = new ContactShape { collider = c, kind = 3, scale = 1f, rot = Quaternion.identity, invRot = Quaternion.identity };
+                if (c == null) return sh;
+                var t = c.transform; var ls = t.lossyScale; float sc = Mathf.Max(1e-5f, (Mathf.Abs(ls.x) + Mathf.Abs(ls.y) + Mathf.Abs(ls.z)) / 3f);
+                if (c is BoxCollider box) { sh.kind = 0; sh.center = t.TransformPoint(box.center); sh.rot = t.rotation; sh.invRot = Quaternion.Inverse(t.rotation); sh.half = box.size * 0.5f; sh.scale = sc; }
+                else if (c is CapsuleCollider cap)
+                {
+                    sh.kind = 1; var axis = cap.direction == 0 ? Vector3.right : cap.direction == 1 ? Vector3.up : Vector3.forward;
+                    float h = Mathf.Max(0f, cap.height * 0.5f - cap.radius);
+                    sh.a = t.TransformPoint(cap.center + axis * h); sh.b = t.TransformPoint(cap.center - axis * h); sh.radius = cap.radius * Mathf.Abs(ls.x);
+                }
+                else if (c is SphereCollider sph) { sh.kind = 2; sh.a = t.TransformPoint(sph.center); sh.radius = sph.radius * sc; }
+                return sh;
+            }
+        }
+
+        /// <summary>Signed distance from a point to the shape's surface (negative inside).</summary>
+        public static float SignedDistance(in ContactShape s, Vector3 p)
+        {
+            switch (s.kind)
+            {
+                case 0:
+                {
+                    var l = s.invRot * (p - s.center) / s.scale;
+                    var q = new Vector3(Mathf.Abs(l.x) - s.half.x, Mathf.Abs(l.y) - s.half.y, Mathf.Abs(l.z) - s.half.z);
+                    float outside = new Vector3(Mathf.Max(q.x, 0f), Mathf.Max(q.y, 0f), Mathf.Max(q.z, 0f)).magnitude;
+                    float inside = Mathf.Min(Mathf.Max(q.x, Mathf.Max(q.y, q.z)), 0f);
+                    return (outside + inside) * s.scale;
+                }
+                case 1:
+                {
+                    var ab = s.b - s.a; float tt = ab.sqrMagnitude > 1e-10f ? Mathf.Clamp01(Vector3.Dot(p - s.a, ab) / ab.sqrMagnitude) : 0f;
+                    return Vector3.Distance(p, s.a + ab * tt) - s.radius;
+                }
+                case 2: return Vector3.Distance(p, s.a) - s.radius;
+                default: return s.collider != null ? Vector3.Distance(p, s.collider.ClosestPoint(p)) : float.MaxValue;
+            }
+        }
+
+        /// <summary>Distance a point inside the shape must travel along dir (unit, world) to leave it; 0 when outside.</summary>
+        public static float ExitDistance(in ContactShape s, Vector3 p, Vector3 dir)
+        {
+            if (s.kind == 0)
+            {
+                var l = s.invRot * (p - s.center) / s.scale;
+                if (Mathf.Abs(l.x) >= s.half.x || Mathf.Abs(l.y) >= s.half.y || Mathf.Abs(l.z) >= s.half.z) return 0f;
+                var dl = s.invRot * dir; float best = float.MaxValue;
+                for (int i = 0; i < 3; i++)
+                {
+                    float di = dl[i]; if (Mathf.Abs(di) < 1e-6f) continue;
+                    float tt = ((di > 0f ? s.half[i] : -s.half[i]) - l[i]) / di;
+                    if (tt >= 0f && tt < best) best = tt;
+                }
+                return best == float.MaxValue ? 0f : best * s.scale;
+            }
+            if (s.kind == 1 || s.kind == 2)
+            {
+                var ab = s.kind == 1 ? s.b - s.a : Vector3.zero; float tt = ab.sqrMagnitude > 1e-10f ? Mathf.Clamp01(Vector3.Dot(p - s.a, ab) / ab.sqrMagnitude) : 0f;
+                var off = p - (s.a + ab * tt); float d2 = off.sqrMagnitude; float r = s.radius;
+                if (d2 >= r * r) return 0f;
+                float od = Vector3.Dot(off, dir);
+                return -od + Mathf.Sqrt(Mathf.Max(0f, r * r - (d2 - od * od)));
+            }
+            float sd = SignedDistance(s, p); return sd < 0f ? -sd : 0f;
+        }
+
+        /// <summary>Depth of a point inside the shape (0 outside) and the outward normal of the nearest face.</summary>
+        public static float DepthAndNormal(in ContactShape s, Vector3 p, out Vector3 normal)
+        {
+            normal = Vector3.up;
+            switch (s.kind)
+            {
+                case 0:
+                {
+                    var l = s.invRot * (p - s.center) / s.scale;
+                    var q = new Vector3(s.half.x - Mathf.Abs(l.x), s.half.y - Mathf.Abs(l.y), s.half.z - Mathf.Abs(l.z));
+                    if (q.x <= 0f || q.y <= 0f || q.z <= 0f) return 0f;
+                    if (q.x <= q.y && q.x <= q.z) { normal = s.rot * (Vector3.right * Mathf.Sign(l.x)); return q.x * s.scale; }
+                    if (q.y <= q.z) { normal = s.rot * (Vector3.up * Mathf.Sign(l.y)); return q.y * s.scale; }
+                    normal = s.rot * (Vector3.forward * Mathf.Sign(l.z)); return q.z * s.scale;
+                }
+                case 1:
+                case 2:
+                {
+                    var ab = s.kind == 1 ? s.b - s.a : Vector3.zero; float tt = ab.sqrMagnitude > 1e-10f ? Mathf.Clamp01(Vector3.Dot(p - s.a, ab) / ab.sqrMagnitude) : 0f;
+                    var off = p - (s.a + ab * tt); float dist = off.magnitude; float depth = s.radius - dist;
+                    if (depth <= 0f) return 0f;
+                    normal = dist > 1e-5f ? off / dist : Vector3.up; return depth;
+                }
+                default:
+                {
+                    float sd = SignedDistance(s, p); if (sd >= 0f) return 0f;
+                    var cp = s.collider.ClosestPoint(p); normal = (p - cp).sqrMagnitude > 1e-10f ? (p - cp).normalized : Vector3.up; return -sd;
+                }
+            }
+        }
+
+        public static float DepthAndNormal(Collider c, Vector3 p, out Vector3 normal) => DepthAndNormal(ContactShape.From(c), p, out normal);
 
         void ComputeTargetCurls(float grip, float trigger)
         {
@@ -351,20 +823,24 @@ namespace VRRange.Hands
         void ApplyCurls()
         {
             if (!m_Calibrated) return;
-            for (int f = 0; f < 5; f++) ApplyFingerCurl(f, m_Curl[f], m_Spread, m_ThumbOpposition);
+            for (int f = 0; f < 5; f++) ApplyFingerCurl(f, m_Curl[f], m_Spread, m_ThumbOpposition, m_TipExtra[f]);
         }
 
-        void ApplyFingerCurl(int f, float curl, float spread, float opposition = 0f)
+        /// <summary>Degrees the end joints close beyond the common curl at tipExtra = 1 (intermediate, distal).</summary>
+        const float kTipExtraIntermediate = 55f, kTipExtraDistal = 50f;
+
+        void ApplyFingerCurl(int f, float curl, float spread, float opposition = 0f, float tipExtra = 0f)
         {
             var c = m_Fingers[f]; if (c == null) return;
             Transform[] joints = { c.metacarpal, c.proximal, c.intermediate, c.distal };
             float[] max = f == 0
                 ? new[] { m_ThumbMaxDegrees.x, m_ThumbMaxDegrees.y, m_ThumbMaxDegrees.y, m_ThumbMaxDegrees.z } // thumb rigs may or may not have an intermediate joint
                 : new[] { 0f, m_ProximalMaxDegrees, m_IntermediateMaxDegrees, m_DistalMaxDegrees };
+            float[] extra = f == 0 ? new[] { 0f, 0f, 0f, kTipExtraDistal * 0.6f } : new[] { 0f, 0f, kTipExtraIntermediate, kTipExtraDistal };
             for (int j = 0; j < 4; j++)
             {
                 var t = joints[j]; if (t == null || max[j] <= 0f) continue;
-                var rot = c.rest[j] * Quaternion.AngleAxis(curl * max[j], c.curlAxisLocal[j]);
+                var rot = c.rest[j] * Quaternion.AngleAxis(Mathf.Min(curl * max[j] + tipExtra * extra[j], max[j] + extra[j]), c.curlAxisLocal[j]);
                 if (f == 0 && j == 0 && c.spreadAxisLocal.sqrMagnitude > 0f)
                     rot = rot * Quaternion.AngleAxis((spread - 0.5f) * 2f * m_ThumbSpreadMaxDegrees * 0.5f, c.spreadAxisLocal);
                 if (f == 0 && j == 0 && opposition != 0f && c.oppositionAxisLocal.sqrMagnitude > 0f)
@@ -388,20 +864,93 @@ namespace VRRange.Hands
             if (Time.time >= m_NextContactSolve || m_SolvedAgainst != grip)
             {
                 m_NextContactSolve = Time.time + 1f / Mathf.Max(1f, m_ContactSolveRate);
+                if (m_SolvedAgainst != grip || m_Targets.Count == 0) RefreshTargets();
                 m_SolvedAgainst = grip;
+                RefreshOwnShapes();
+                RefreshShapes();
+                SolvePalmDepenetration();
                 bool indexFree = m_Anchor.pose == null || m_Anchor.pose.indexFollowsTrigger;
                 bool shootingHand = m_Anchor.role == GripRole.Primary;
                 for (int f = 0; f < 5; f++)
                 {
+                    m_ContactTipExtra[f] = 0f;
                     if (f == 1 && indexFree) { m_ContactCurl[f] = -1f; continue; }
                     if (m_Fingers[f] == null) { m_ContactCurl[f] = -1f; continue; }
                     m_ContactCurl[f] = f == 0 && shootingHand ? SolveThumbOnPalmSide(m_TargetCurl[f], grip) : SolveFinger(f, m_TargetCurl[f], grip);
+                    // after the first contact the end joints keep closing until the fingertip itself touches
+                    // (the shooting-hand thumb already optimises its tip distance in the opposition/curl search; its end joint bends away from the frame)
+                    if (m_ContactCurl[f] >= 0f && !(f == 0 && shootingHand)) m_ContactTipExtra[f] = SolveTipExtra(f, m_ContactCurl[f], 0f, grip);
+                    // a finger that cannot reach the grip at any curl (little finger below a short grip, knuckle line held off by
+                    // the thenar bulge) closes to the pose that brings its tip nearest to the surface instead of hanging at the pose curl
+                    else if (m_ContactCurl[f] < 0f && f >= 2) SolveNearestApproach(f, m_TargetCurl[f], grip, out m_ContactCurl[f], out m_ContactTipExtra[f]);
                 }
                 if (!shootingHand) m_ContactThumbOpposition = 0f;
                 // the solve posed the joints; ApplyCurls below restores the smoothed state
             }
-            for (int f = 0; f < 5; f++) if (m_ContactCurl[f] >= 0f) m_TargetCurl[f] = m_ContactCurl[f];
+            for (int f = 0; f < 5; f++) { if (m_ContactCurl[f] >= 0f) m_TargetCurl[f] = m_ContactCurl[f]; m_TargetTipExtra[f] = m_ContactTipExtra[f]; }
             m_TargetThumbOpposition = m_ContactThumbOpposition;
+        }
+
+        /// <summary>
+        /// With the common curl fixed at its contact value, closes the end joints (intermediate + distal) until the distal
+        /// segment or the tip touches a contact surface, never pushing any sample inside. Returns the extra amount (0..1).
+        /// </summary>
+        float m_DeepMargin = 0.001f;
+        float SolveTipExtra(int f, float curl, float opposition, Collider grip)
+        {
+            var c = m_Fingers[f]; if (c == null || c.tip == null || c.distal == null) return 0f;
+            float spread = m_TargetSpread;
+            m_DeepMargin = 0.002f;
+            try { return SolveTipExtraInner(f, curl, opposition, grip, c, spread); }
+            finally { m_DeepMargin = 0.001f; }
+        }
+
+        float SolveTipExtraInner(int f, float curl, float opposition, Collider grip, JointChain c, float spread)
+        {
+            // already touching with the tip? then nothing to add
+            ApplyFingerCurl(f, curl, spread, opposition, 0f);
+            if (TipState(c, grip) >= 1) return 0f;
+            float lo = 0f;
+            for (float e = 0.1f; e <= 1f + 1e-4f; e += 0.1f)
+            {
+                ApplyFingerCurl(f, curl, spread, opposition, e);
+                int whole = ContactState(f, grip);
+                if (whole == 2) { // bisect back to the last pose that does not penetrate
+                    float hi = e;
+                    for (int i = 0; i < 4; i++) { float mid = 0.5f * (lo + hi); ApplyFingerCurl(f, curl, spread, opposition, mid); if (ContactState(f, grip) == 2) hi = mid; else lo = mid; }
+                    return lo;
+                }
+                if (TipState(c, grip) >= 1) return e;
+                lo = e;
+            }
+            return lo;
+        }
+
+        int TipState(JointChain c, Collider grip) => Sample(c.tip.position, grip); // the fingertip itself must touch
+
+        /// <summary>
+        /// For a finger that never touches: the (curl, tipExtra) pose, searched from the pose curl to a full curl, whose tip
+        /// bone comes nearest to a contact surface without any sample going too deep. Leaves curl = -1 when nothing beats the
+        /// pose curl by more than 1 mm.
+        /// </summary>
+        void SolveNearestApproach(int f, float minCurl, Collider grip, out float curl, out float tipExtra)
+        {
+            curl = -1f; tipExtra = 0f;
+            var c = m_Fingers[f]; if (c == null || c.tip == null) return;
+            float spread = m_TargetSpread;
+            float Gap() { float d = float.MaxValue; if (m_Shapes.Count == 0) return SignedDistance(grip, c.tip.position); for (int i = 0; i < m_Shapes.Count; i++) { float sd = SignedDistance(m_Shapes[i], c.tip.position); if (sd < d) d = sd; } return d; }
+            ApplyFingerCurl(f, minCurl, spread, 0f, 0f);
+            float best = Gap() - 0.0005f, bestCurl = -1f, bestExtra = 0f;
+            // from half a curl more open than the pose (a short grip may be reached by a straighter finger) to fully closed
+            for (float cu = Mathf.Max(0f, minCurl - 0.5f); cu <= 1f + 1e-4f; cu += 0.05f)
+                for (float e = 0f; e <= 1f + 1e-4f; e += 0.25f)
+                {
+                    ApplyFingerCurl(f, cu, spread, 0f, e);
+                    if (ContactState(f, grip) == 2) break; // deeper end joints only go further in
+                    float g = Gap();
+                    if (g < best) { best = g; bestCurl = cu; bestExtra = e; }
+                }
+            if (bestCurl >= 0f) { curl = bestCurl; tipExtra = bestExtra; }
         }
 
         /// <summary>Largest curl in [0,1] at which the finger touches the collider without penetrating it, starting at minCurl; -1 if it never touches.</summary>
@@ -430,16 +979,15 @@ namespace VRRange.Hands
                 float cc = Mathf.Min(maxCurl, c);
                 int s = Contact(f, cc, spread, grip);
                 if (s == 0) { lo = cc; continue; }
-                if (s == 1) return cc;
-                // penetrating between lo (free) and cc: bisect to the contact curl
-                float hi = cc;
-                for (int i = 0; i < 4; i++)
+                // contact somewhere between lo (free) and cc: bisect to the curl where the flesh just touches the surface
+                float hi = cc; float touching = s == 1 ? cc : float.NaN;
+                for (int i = 0; i < 5; i++)
                 {
                     float mid = 0.5f * (lo + hi);
                     int sm = Contact(f, mid, spread, grip);
-                    if (sm == 2) hi = mid; else { lo = mid; if (sm == 1) return mid; }
+                    if (sm == 0) lo = mid; else { hi = mid; if (sm == 1) touching = mid; }
                 }
-                return lo;
+                return float.IsNaN(touching) ? lo : touching;
             }
             return -1f;
         }
@@ -455,34 +1003,63 @@ namespace VRRange.Hands
             float spread = m_TargetSpread;
             float sideSign = Mathf.Sign(grip.transform.InverseTransformPoint(PalmWorldPosition).x);
             float TipSide() => grip.transform.InverseTransformPoint(c.tip.position).x * sideSign;
-            // 1. opposition: swing the relaxed (inward-leaning) thumb out of the palm until its tip is on the palm's side of the grip
-            float opposition = -1f;
-            for (float o = 0f; o <= 75f + 1e-3f; o += 5f)
+            float TipGap() { float d = float.MaxValue; for (int i = 0; i < m_Shapes.Count; i++) { float sd = SignedDistance(m_Shapes[i], c.tip.position); if (sd < d) d = sd; } return d == float.MaxValue ? SignedDistance(grip, c.tip.position) : d; }
+            // Joint search over opposition (swing out of the palm) and curl (close): the thumb must stay on the palm's side
+            // of the grip and outside every contact volume; among those poses take the one whose tip is closest to the
+            // frame surface, so the thumb rests ON the frame instead of hovering above it.
+            float bestScore = float.MaxValue, bestOpp = 0f, bestCurl = minCurl; bool found = false;
+            float maxCurl = 1f, lowCurl = Mathf.Max(0f, minCurl - 0.3f);
+            for (float o = -30f; o <= 75f + 1e-3f; o += 7.5f)
+            for (float curl = lowCurl; curl <= maxCurl + 1e-4f; curl += 0.1f)
             {
-                ApplyFingerCurl(0, minCurl, spread, o);
-                if (TipSide() > 0.004f) { opposition = o; break; }
+                ApplyFingerCurl(0, curl, spread, o);
+                if (TipSide() <= 0.003f) continue;
+                int state = ContactState(0, grip);
+                if (state == 2) continue;
+                float gap = TipGap();
+                // prefer touching (gap ~ flesh radius), then the least opposition (closest to the natural thumb)
+                float score = Mathf.Abs(gap - m_FingerRadius) + Mathf.Abs(o) * 0.0001f;
+                if (score < bestScore) { bestScore = score; bestOpp = o; bestCurl = curl; found = true; }
+            }
+            if (found)
+            {
+                // refine around the best grid cell (opposition ±5 deg, curl ±0.07) so the thumb lands on the frame, not near it
+                float o0 = bestOpp, c0 = bestCurl;
+                for (int pass = 0; pass < 2; pass++)
+                {
+                    float oStep = pass == 0 ? 2.5f : 1f, cStep = pass == 0 ? 0.025f : 0.01f, oRange = pass == 0 ? 5f : 2f, cRange = pass == 0 ? 0.07f : 0.03f;
+                    o0 = bestOpp; c0 = bestCurl;
+                    for (float o = o0 - oRange; o <= o0 + oRange + 1e-3f; o += oStep)
+                    for (float curl = Mathf.Max(0f, c0 - cRange); curl <= Mathf.Min(1f, c0 + cRange) + 1e-4f; curl += cStep)
+                    {
+                        ApplyFingerCurl(0, curl, spread, o);
+                        if (TipSide() <= 0.003f) continue;
+                        int state = ContactState(0, grip);
+                        if (state == 2) continue;
+                        float gap = TipGap();
+                        float score = Mathf.Abs(gap - m_FingerRadius) + Mathf.Abs(o) * 0.0001f;
+                        if (score < bestScore) { bestScore = score; bestOpp = o; bestCurl = curl; }
+                    }
+                }
             }
             if (m_DebugThumb)
             {
-                var sb = new System.Text.StringBuilder($"[VRRange] thumb solve {(m_IsLeft ? "L" : "R")} on {grip.name}: palm x {grip.transform.InverseTransformPoint(PalmWorldPosition).x * 1000f:0} mm, opposition {opposition:0};");
-                foreach (var test in new[] { 0f, 30f, 60f }) { ApplyFingerCurl(0, minCurl, spread, test); var tl = grip.transform.InverseTransformPoint(c.tip.position) * 1000f; sb.Append($" opp {test:0}: tip ({tl.x:0},{tl.y:0},{tl.z:0});"); }
-                Debug.Log(sb.ToString());
+                int sideFail = 0, deepFail = 0, ok = 0; float minGapSeen = float.MaxValue; float oppAtMin = 0f, curlAtMin = 0f;
+                for (float o = -30f; o <= 75f + 1e-3f; o += 15f)
+                for (float curl = lowCurl; curl <= maxCurl + 1e-4f; curl += 0.2f)
+                {
+                    ApplyFingerCurl(0, curl, spread, o);
+                    if (TipSide() <= 0.003f) { sideFail++; continue; }
+                    if (ContactState(0, grip) == 2) { deepFail++; continue; }
+                    ok++; float g = TipGap(); if (g < minGapSeen) { minGapSeen = g; oppAtMin = o; curlAtMin = curl; }
+                }
+                ApplyFingerCurl(0, bestCurl, spread, bestOpp);
+                var tl = grip.transform.InverseTransformPoint(c.tip.position) * 1000f;
+                Debug.Log($"[VRRange] thumb solve {(m_IsLeft ? "L" : "R")} on {grip.name}: opposition {bestOpp:0}, curl {bestCurl:0.00}, score {bestScore * 1000f:0.0} mm, found {found}; tip grip-local ({tl.x:0},{tl.y:0},{tl.z:0}) mm; coarse grid: {ok} valid, {sideFail} crossed, {deepFail} inside; smallest valid gap {minGapSeen * 1000f:0.0} mm at opp {oppAtMin:0} curl {curlAtMin:0.0}; targets {m_Shapes.Count}");
             }
-            if (opposition < 0f) { m_ContactThumbOpposition = 0f; return minCurl; }
-            m_ContactThumbOpposition = opposition;
-            // 2. with that opposition, close the thumb from its pre-shape until it touches the grip side, never crossing over
-            float maxCurl = Mathf.Min(1f, minCurl + 0.5f);
-            float lastValid = float.NaN;
-            for (float curl = Mathf.Max(0f, minCurl - 0.3f); curl <= maxCurl + 1e-4f; curl += 0.05f)
-            {
-                ApplyFingerCurl(0, curl, spread, opposition);
-                int state = ContactState(0, grip);
-                bool valid = TipSide() > 0.002f && state != 2;
-                if (!valid) { if (!float.IsNaN(lastValid)) break; continue; }
-                lastValid = curl;
-                if (state == 1) return curl;
-            }
-            return float.IsNaN(lastValid) ? minCurl : lastValid;
+            if (!found) { m_ContactThumbOpposition = 0f; return minCurl; }
+            m_ContactThumbOpposition = bestOpp;
+            return bestCurl;
         }
 
         /// <summary>
@@ -500,15 +1077,19 @@ namespace VRRange.Hands
         {
             var c = m_Fingers[f];
             int result = 0;
-            Transform[] pts = { c.proximal, c.intermediate, c.distal, c.tip };
+            // the thumb's metacarpal segment (thenar) moves with the opposition, so it is sampled too; its flesh compresses
+            // against a grip, so it only counts as "too deep" when the bone itself is within 4 mm of the surface
+            Transform[] pts = f == 0 && c.metacarpal != null ? new[] { c.metacarpal, c.proximal, c.intermediate, c.distal, c.tip } : new[] { c.proximal, c.intermediate, c.distal, c.tip };
+            bool thenar = f == 0 && c.metacarpal != null;
             Vector3 prev = default; bool hasPrev = false;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < pts.Length; i++)
             {
                 var t = pts[i]; if (t == null) continue;
                 var p = t.position;
+                bool thenarSeg = thenar && i == 1; // metacarpal -> proximal
                 if (hasPrev)
                 {
-                    int s = Sample(Vector3.Lerp(prev, p, 0.6f), grip); if (s > result) result = s;
+                    for (float u = 0.3f; u < 0.95f; u += 0.3f) { int s = thenarSeg ? SampleDeep(Vector3.Lerp(prev, p, u), grip, 0.004f) : Sample(Vector3.Lerp(prev, p, u), grip); if (s > result) result = s; }
                 }
                 if (i > 0) { int s = Sample(p, grip); if (s > result) result = s; }
                 prev = p; hasPrev = true;
@@ -517,20 +1098,40 @@ namespace VRRange.Hands
             return result;
         }
 
+        /// <summary>Like Sample, but "too deep" only when the bone is within boneClearance of the surface (compressible flesh).</summary>
+        int SampleDeep(Vector3 p, Collider grip, float boneClearance)
+        {
+            float d = float.MaxValue;
+            if (m_Shapes.Count == 0) d = SignedDistance(grip, p);
+            else for (int i = 0; i < m_Shapes.Count; i++) { float sd = SignedDistance(m_Shapes[i], p); if (sd < d) d = sd; }
+            if (d < boneClearance) return 2;
+            return d < m_FingerRadius + 0.001f ? 1 : 0;
+        }
+
         int Sample(Vector3 p, Collider grip)
         {
-            if (grip is BoxCollider box)
-            {
-                // exact inside test for the box grips (ClosestPoint returns the point itself both inside and on the surface)
-                var l = box.transform.InverseTransformPoint(p) - box.center; var h = box.size * 0.5f;
-                float depth = Mathf.Min(h.x - Mathf.Abs(l.x), Mathf.Min(h.y - Mathf.Abs(l.y), h.z - Mathf.Abs(l.z)));
-                if (depth > 0.001f) return 2;
-                if (depth >= 0f) return 1;
-            }
-            var q = grip.ClosestPoint(p);
-            float d = Vector3.Distance(p, q);
-            if (d < 0.0005f) return grip is BoxCollider ? 1 : 2;
-            return d < m_FingerRadius ? 1 : 0;
+            // smallest signed distance to any contact target (the grip collider alone if no targets are known)
+            float d = float.MaxValue;
+            if (m_Shapes.Count == 0) d = SignedDistance(grip, p);
+            else for (int i = 0; i < m_Shapes.Count; i++) { float sd = SignedDistance(m_Shapes[i], p); if (sd < d) d = sd; }
+            // the bone line sits one flesh radius outside a touching surface: deeper than 1 mm of flesh overlap is "too deep"
+            // (2 mm while the end joints close onto the surface: the finger pad flattens a little)
+            if (d < m_FingerRadius - m_DeepMargin) return 2;
+            return d < m_FingerRadius + 0.001f ? 1 : 0;
+        }
+
+        /// <summary>Signed distance from a point to a collider's surface (negative inside). Exact for boxes, capsules and spheres; ClosestPoint otherwise (never negative).</summary>
+        public static float SignedDistance(Collider c, Vector3 p) => SignedDistance(ContactShape.From(c), p);
+
+        /// <summary>World positions of a finger's joints (metacarpal, proximal, intermediate, distal, tip; null entries become NaN) for tests / debugging.</summary>
+        public bool TryGetJoints(Finger f, out Vector3[] world)
+        {
+            var c = m_Fingers[(int)f];
+            if (c == null) { world = null; return false; }
+            Transform[] j = { c.metacarpal, c.proximal, c.intermediate, c.distal, c.tip };
+            world = new Vector3[5];
+            for (int i = 0; i < 5; i++) world[i] = j[i] != null ? j[i].position : new Vector3(float.NaN, float.NaN, float.NaN);
+            return true;
         }
 
         /// <summary>World position of a fingertip (tests / debugging).</summary>

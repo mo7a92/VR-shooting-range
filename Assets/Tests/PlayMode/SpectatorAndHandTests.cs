@@ -187,8 +187,15 @@ namespace VRRange.Tests
             yield return XrTestRig.WaitSeconds(0.6f);
             Assert.AreSame(pistol, right.HeldWeapon); Assert.IsNotNull(right.CurrentAnchor); Assert.AreEqual(GripRole.Primary, right.CurrentAnchor.role);
             var palmPose = right.CurrentAnchor.GetPalmPose(false);
-            Assert.Less(Vector3.Distance(right.PalmWorldPosition, palmPose.position), 0.025f, "right palm sits on the pistol grip anchor");
-            Assert.Greater(right.Curl(HandPresence.Finger.Middle), 0.45f, "fingers wrap the grip");
+            Assert.Less(Vector3.Distance(right.PalmSkinWorldPosition, palmPose.position), 0.03f, "right palm skin sits on the pistol grip anchor (bone line one skin thickness further out)");
+            // Round 2: fingers close until their flesh touches the grip's contact volumes, then the end joints close onto it, so the
+            // common curl alone no longer says "wrapped" (a palm resting on its skin reaches the grip at curl ~0.35). The contact
+            // solve must have found the grip and the middle fingertip's bone must lie within 12 mm of a contact surface.
+            Assert.GreaterOrEqual(right.ContactCurl(HandPresence.Finger.Middle), 0f, "middle finger found the grip");
+            Assert.IsTrue(right.TryGetTip(HandPresence.Finger.Middle, out var midTip));
+            float midGap = float.MaxValue;
+            foreach (var sh in right.ContactShapes) midGap = Mathf.Min(midGap, HandPresence.SignedDistance(sh, midTip));
+            Assert.Less(midGap, 0.012f, $"fingers wrap the grip (middle fingertip {midGap * 1000f:0.0} mm from the grip)");
             Assert.GreaterOrEqual(right.ContactCurl(HandPresence.Finger.Middle), 0f, "the contact solve closed the middle finger onto the grip collider");
             Assert.Less(right.Curl(HandPresence.Finger.Index), 0.6f, "index rests along the frame until the trigger is pulled");
             right.SetInputOverride(null, 1f);
@@ -209,8 +216,8 @@ namespace VRRange.Tests
             yield return XrTestRig.WaitSeconds(0.7f);
             Assert.IsTrue(rifle.IsTwoHanded); Assert.AreSame(rifle, left.HeldWeapon); Assert.AreSame(rifle, right.HeldWeapon);
             Assert.AreEqual(GripRole.Primary, right.CurrentAnchor.role); Assert.AreEqual(GripRole.Support, left.CurrentAnchor.role);
-            Assert.Less(Vector3.Distance(left.PalmWorldPosition, left.CurrentAnchor.GetPalmPose(true).position), 0.03f, "left palm on the support anchor");
-            Assert.Less(Vector3.Distance(right.PalmWorldPosition, right.CurrentAnchor.GetPalmPose(false).position), 0.03f, "right palm on the primary anchor");
+            Assert.Less(Vector3.Distance(left.PalmSkinWorldPosition, left.CurrentAnchor.GetPalmPose(true).position), 0.035f, "left palm skin on the support anchor");
+            Assert.Less(Vector3.Distance(right.PalmSkinWorldPosition, right.CurrentAnchor.GetPalmPose(false).position), 0.035f, "right palm skin on the primary anchor");
             Assert.Greater(Vector3.Distance(left.PalmWorldPosition, right.PalmWorldPosition), 0.15f, "hands are on different grips (no overlap)");
             // release the support hand: smooth transition (no large per-frame jumps of the weapon or hand)
             var lastPalm = right.PalmWorldPosition; float maxJump = 0f;

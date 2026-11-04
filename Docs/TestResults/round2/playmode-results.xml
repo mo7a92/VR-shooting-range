@@ -1,0 +1,1684 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="73" result="Skipped:Ignored" total="73" passed="72" failed="0" inconclusive="0" skipped="1" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-04 21:54:24Z" end-time="2026-11-04 21:57:34Z" duration="189.6367793">
+  <test-suite type="TestSuite" id="1093" name="VR Shooting Range" fullname="VR Shooting Range" runstate="Runnable" testcasecount="73" result="Skipped" label="Ignored" start-time="2026-11-04 21:54:24Z" end-time="2026-11-04 21:57:34Z" duration="189.636779" total="73" passed="72" failed="0" inconclusive="0" skipped="1" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <reason>
+      <message><![CDATA[One or more child tests were ignored]]></message>
+    </reason>
+    <test-suite type="Assembly" id="1090" name="VRRange.Tests.PlayMode.dll" fullname="/project/Library/ScriptAssemblies/VRRange.Tests.PlayMode.dll" runstate="Runnable" testcasecount="73" result="Skipped" label="Ignored" start-time="2026-11-04 21:54:24Z" end-time="2026-11-04 21:57:34Z" duration="189.626602" total="73" passed="72" failed="0" inconclusive="0" skipped="1" asserts="0">
+      <properties>
+        <property name="_PID" value="1094" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <reason>
+        <message><![CDATA[One or more child tests were ignored]]></message>
+      </reason>
+      <test-suite type="TestSuite" id="1091" name="VRRange" fullname="VRRange" runstate="Runnable" testcasecount="73" result="Skipped" label="Ignored" start-time="2026-11-04 21:54:24Z" end-time="2026-11-04 21:57:34Z" duration="189.626005" total="73" passed="72" failed="0" inconclusive="0" skipped="1" asserts="0">
+        <properties />
+        <reason>
+          <message><![CDATA[One or more child tests were ignored]]></message>
+        </reason>
+        <test-suite type="TestSuite" id="1092" name="Tests" fullname="VRRange.Tests" runstate="Runnable" testcasecount="73" result="Skipped" label="Ignored" start-time="2026-11-04 21:54:24Z" end-time="2026-11-04 21:57:34Z" duration="189.625546" total="73" passed="72" failed="0" inconclusive="0" skipped="1" asserts="0">
+          <properties />
+          <reason>
+            <message><![CDATA[One or more child tests were ignored]]></message>
+          </reason>
+          <test-suite type="TestFixture" id="1004" name="FullGameplaySequenceTests" fullname="VRRange.Tests.FullGameplaySequenceTests" classname="VRRange.Tests.FullGameplaySequenceTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-11-04 21:54:24Z" end-time="2026-11-04 21:54:38Z" duration="13.236752" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1005" name="CompleteSessionFromLaunchToRestart" fullname="VRRange.Tests.FullGameplaySequenceTests.CompleteSessionFromLaunchToRestart" methodname="CompleteSessionFromLaunchToRestart" classname="VRRange.Tests.FullGameplaySequenceTests" runstate="Runnable" seed="429108284" result="Passed" start-time="2026-11-04 21:54:24Z" end-time="2026-11-04 21:54:38Z" duration="13.222377" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange][Handling] Weapon_Pistol: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=14.2deg yaw=-0.7deg instability=0.12 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.8deg yaw=0.0deg instability=0.09 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+Setting linear velocity of a kinematic body is not supported.
+Setting angular velocity of a kinematic body is not supported.
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1006" name="GameModeAndUiTests" fullname="VRRange.Tests.GameModeAndUiTests" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-11-04 21:54:38Z" end-time="2026-11-04 21:54:59Z" duration="20.824871" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1008" name="AccuracyChallengeCountsDownThenRunsAndFinishesWithResults" fullname="VRRange.Tests.GameModeAndUiTests.AccuracyChallengeCountsDownThenRunsAndFinishesWithResults" methodname="AccuracyChallengeCountsDownThenRunsAndFinishesWithResults" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="1470578080" result="Passed" start-time="2026-11-04 21:54:38Z" end-time="2026-11-04 21:54:42Z" duration="4.467511" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1013" name="DifficultyDistanceAndMotionButtonsUpdateStateAndLabels" fullname="VRRange.Tests.GameModeAndUiTests.DifficultyDistanceAndMotionButtonsUpdateStateAndLabels" methodname="DifficultyDistanceAndMotionButtonsUpdateStateAndLabels" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="296995933" result="Passed" start-time="2026-11-04 21:54:42Z" end-time="2026-11-04 21:54:43Z" duration="0.473432" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1012" name="FinishIsIdempotentAndGradesFollowTheRatio" fullname="VRRange.Tests.GameModeAndUiTests.FinishIsIdempotentAndGradesFollowTheRatio" methodname="FinishIsIdempotentAndGradesFollowTheRatio" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="924313190" result="Passed" start-time="2026-11-04 21:54:43Z" end-time="2026-11-04 21:54:46Z" duration="3.430076" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1014" name="HudLabelsReflectWeaponAndScoreEvents" fullname="VRRange.Tests.GameModeAndUiTests.HudLabelsReflectWeaponAndScoreEvents" methodname="HudLabelsReflectWeaponAndScoreEvents" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="1845125627" result="Passed" start-time="2026-11-04 21:54:46Z" end-time="2026-11-04 21:54:47Z" duration="0.478987" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1016" name="LaneScoreboardUpdatesOnHitsAndResetsOnModeStart" fullname="VRRange.Tests.GameModeAndUiTests.LaneScoreboardUpdatesOnHitsAndResetsOnModeStart" methodname="LaneScoreboardUpdatesOnHitsAndResetsOnModeStart" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="1470153361" result="Passed" start-time="2026-11-04 21:54:47Z" end-time="2026-11-04 21:54:47Z" duration="0.429365" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1009" name="MovingTargetChallengeEndsWhenTheTimerExpiresAndScoresWithMultiplier" fullname="VRRange.Tests.GameModeAndUiTests.MovingTargetChallengeEndsWhenTheTimerExpiresAndScoresWithMultiplier" methodname="MovingTargetChallengeEndsWhenTheTimerExpiresAndScoresWithMultiplier" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="647710334" result="Passed" start-time="2026-11-04 21:54:47Z" end-time="2026-11-04 21:54:51Z" duration="3.591177" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1011" name="PersonalBestOnlyImprovesAndSurvivesRestart" fullname="VRRange.Tests.GameModeAndUiTests.PersonalBestOnlyImprovesAndSurvivesRestart" methodname="PersonalBestOnlyImprovesAndSurvivesRestart" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="1784872927" result="Passed" start-time="2026-11-04 21:54:51Z" end-time="2026-11-04 21:54:57Z" duration="6.475091" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1010" name="RestartResetsScoreAmmoTargetsAndCombo" fullname="VRRange.Tests.GameModeAndUiTests.RestartResetsScoreAmmoTargetsAndCombo" methodname="RestartResetsScoreAmmoTargetsAndCombo" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="536589038" result="Passed" start-time="2026-11-04 21:54:57Z" end-time="2026-11-04 21:54:58Z" duration="0.577146" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1007" name="SceneStartsInFreePracticeWithMenuVisible" fullname="VRRange.Tests.GameModeAndUiTests.SceneStartsInFreePracticeWithMenuVisible" methodname="SceneStartsInFreePracticeWithMenuVisible" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="1501204573" result="Passed" start-time="2026-11-04 21:54:58Z" end-time="2026-11-04 21:54:58Z" duration="0.438682" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1015" name="UiIsWiredAndReadable" fullname="VRRange.Tests.GameModeAndUiTests.UiIsWiredAndReadable" methodname="UiIsWiredAndReadable" classname="VRRange.Tests.GameModeAndUiTests" runstate="Runnable" seed="1609821131" result="Passed" start-time="2026-11-04 21:54:58Z" end-time="2026-11-04 21:54:59Z" duration="0.459090" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1017" name="HandPenetrationTests" fullname="VRRange.Tests.HandPenetrationTests" classname="VRRange.Tests.HandPenetrationTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-11-04 21:54:59Z" end-time="2026-11-04 21:55:17Z" duration="18.452179" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1018" name="HandsRestOnTheWeaponsWithoutSinkingInAndWristsSitLikeAHighGrip" fullname="VRRange.Tests.HandPenetrationTests.HandsRestOnTheWeaponsWithoutSinkingInAndWristsSitLikeAHighGrip" methodname="HandsRestOnTheWeaponsWithoutSinkingInAndWristsSitLikeAHighGrip" classname="VRRange.Tests.HandPenetrationTests" runstate="Runnable" seed="607231813" result="Passed" start-time="2026-11-04 21:54:59Z" end-time="2026-11-04 21:55:17Z" duration="18.450572" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="Timeout" value="1200000" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange][Test] hand penetration: Pistol primary start
+[VRRange][Handling] Weapon_Pistol: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] hand penetration: Pistol primary+support start
+[VRRange][Handling] Weapon_Pistol: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] hand penetration: Rifle primary start
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] hand penetration: Rifle primary+support start
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] hand penetration: SMG primary start
+[VRRange][Handling] Weapon_SMG: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] hand penetration: SMG primary+support start
+[VRRange][Handling] Weapon_SMG: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] hand penetration report:
+skin offsets: R palm 22.4 mm / back 16.7 mm, L palm 22.4 mm / back 16.7 mm
+right interactor attach anchor relative to the controller: (0, 0, 0) mm, rotation (0, 0, 0) deg; free-pose reference = [Right InteractionAttachController] Attach Child
+Pistol primary: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
+Pistol primary shooting(R): max depth 2.3 mm, 13/8651 vertices inside (0.15 %), de-penetration push 21.0 mm (pass1 19.5 mm along the palm normal (vertex at hand-local (-33, -36, -43) mm, 9.9 mm deep in Contact_frame))
+Pistol primary shooting(R):   inside by volume: Contact_guard: 13 verts, max 2.3 mm | regions: fingers 13
+Pistol primary shooting(R) Thumb tip: 10.3 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
+Pistol primary shooting(R) Thumb joints: meta 20.5mm@frame prox 11.0mm@frame distal 9.8mm@dustcover tip 10.3mm@dustcover
+Pistol primary shooting(R) Middle tip: 10.0 mm from the nearest contact surface (curl 0.35, tip extra 0.00)
+Pistol primary shooting(R) Middle joints: meta 38.7mm@grip prox 42.4mm@grip inter 29.5mm@guard distal 24.4mm@grip tip 10.0mm@grip
+Pistol primary shooting(R) Ring tip: 7.7 mm from the nearest contact surface (curl 0.30, tip extra 0.06)
+Pistol primary shooting(R) Ring joints: meta 48.9mm@grip prox 47.1mm@grip inter 41.3mm@grip distal 23.6mm@grip tip 7.7mm@grip
+Pistol primary shooting(R) Little tip: 8.5 mm from the nearest contact surface (curl 0.20, tip extra 0.25)
+Pistol primary shooting(R) Little joints: meta 49.8mm@grip prox 49.8mm@grip inter 47.9mm@grip distal 29.4mm@grip tip 8.5mm@grip
+Pistol primary shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 58 mm
+Pistol primary shooting(R): wrist 2.2 cm from the free hand's wrist (palm centre moved (20, 6, 4) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.39, 0.92), bore (0.00, -0.03, 1.00) in controller space, turned 1.4 deg)
+Pistol primary+support: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
+Pistol primary+support shooting(R): max depth 2.3 mm, 12/8651 vertices inside (0.14 %), de-penetration push 21.0 mm (pass1 19.5 mm along the palm normal (vertex at hand-local (-33, -36, -43) mm, 9.9 mm deep in Contact_frame))
+Pistol primary+support shooting(R):   inside by volume: Contact_guard: 12 verts, max 2.3 mm | regions: fingers 12
+Pistol primary+support shooting(R) Thumb tip: 10.3 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
+Pistol primary+support shooting(R) Thumb joints: meta 20.5mm@frame prox 11.0mm@frame distal 9.8mm@dustcover tip 10.3mm@dustcover
+Pistol primary+support shooting(R) Middle tip: 10.0 mm from the nearest contact surface (curl 0.35, tip extra 0.00)
+Pistol primary+support shooting(R) Middle joints: meta 38.7mm@grip prox 42.4mm@grip inter 29.5mm@guard distal 24.4mm@grip tip 10.0mm@grip
+Pistol primary+support shooting(R) Ring tip: 7.7 mm from the nearest contact surface (curl 0.30, tip extra 0.06)
+Pistol primary+support shooting(R) Ring joints: meta 48.9mm@grip prox 47.1mm@grip inter 41.3mm@grip distal 23.6mm@grip tip 7.7mm@grip
+Pistol primary+support shooting(R) Little tip: 8.5 mm from the nearest contact surface (curl 0.20, tip extra 0.25)
+Pistol primary+support shooting(R) Little joints: meta 49.8mm@grip prox 49.8mm@grip inter 47.9mm@grip distal 29.4mm@grip tip 8.5mm@grip
+Pistol primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 58 mm
+Pistol primary+support shooting(R): wrist 2.1 cm from the free hand's wrist (palm centre moved (20, 6, 4) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.38, 0.92), bore (0.00, -0.01, 1.00) in controller space, turned 0.5 deg)
+Pistol primary+support support(L): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 31.5 mm (pass1 30.0 mm along the palm normal (vertex at hand-local (11, -22, 14) mm, 12.1 mm deep in other:Seg12))
+Pistol primary+support support(L): support palm skin 45.9 mm from the shooting hand's Seg12
+Pistol primary+support support(L) Middle tip: 8.5 mm from the nearest contact surface (curl 0.25, tip extra 0.00)
+Pistol primary+support support(L) Middle joints: meta 74.9mm@grip prox 70.9mm@dustcover inter 51.8mm@guard distal 39.3mm@guard tip 39.7mm@guard
+Pistol primary+support support(L) Ring tip: 10.1 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
+Pistol primary+support support(L) Ring joints: meta 83.3mm@grip prox 78.7mm@grip inter 71.7mm@guard distal 54.9mm@grip tip 34.1mm@grip
+Pistol primary+support support(L) Little tip: 19.3 mm from the nearest contact surface (curl 0.40, tip extra 0.00)
+Pistol primary+support support(L) Little joints: meta 83.6mm@grip prox 76.7mm@grip inter 70.0mm@grip distal 49.8mm@grip tip 30.8mm@grip
+Pistol primary+support support(L): wrist pitch -18.4 deg (+ above / − below the bore), back-of-hand roll 9.5 deg from outward, palm x -90 mm
+Rifle primary: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
+Rifle primary shooting(R): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 16.7 mm (pass1 15.2 mm along the palm normal (vertex at hand-local (-29, -37, -41) mm, 7.8 mm deep in Contact_grip))
+Rifle primary shooting(R) Thumb tip: 9.5 mm from the nearest contact surface (curl 0.08, tip extra 0.00)
+Rifle primary shooting(R) Thumb joints: meta 20.2mm@grip prox 16.0mm@triggerArea distal 17.6mm@magwell tip 9.5mm@magwell
+Rifle primary shooting(R) Middle tip: 8.6 mm from the nearest contact surface (curl 0.35, tip extra 0.08)
+Rifle primary shooting(R) Middle joints: meta 40.0mm@grip prox 42.7mm@magwell inter 21.1mm@magazine distal 19.5mm@grip tip 8.6mm@grip
+Rifle primary shooting(R) Ring tip: 10.1 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
+Rifle primary shooting(R) Ring joints: meta 50.4mm@grip prox 48.6mm@grip inter 39.0mm@magazine distal 24.0mm@grip tip 10.1mm@grip
+Rifle primary shooting(R) Little tip: 8.8 mm from the nearest contact surface (curl 0.25, tip extra 0.00)
+Rifle primary shooting(R) Little joints: meta 51.3mm@grip prox 51.3mm@grip inter 47.2mm@grip distal 29.8mm@grip tip 8.8mm@grip
+Rifle primary shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 54 mm
+Rifle primary shooting(R): wrist 3.1 cm from the free hand's wrist (palm centre moved (16, 3, 5) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.09, -0.70, 0.71), bore (-0.02, -0.38, 0.92) in controller space, turned 22.6 deg)
+Rifle primary+support: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
+Rifle primary+support shooting(R): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 16.7 mm (pass1 15.2 mm along the palm normal (vertex at hand-local (-29, -37, -41) mm, 7.8 mm deep in Contact_grip))
+Rifle primary+support shooting(R) Thumb tip: 9.5 mm from the nearest contact surface (curl 0.08, tip extra 0.00)
+Rifle primary+support shooting(R) Thumb joints: meta 20.2mm@grip prox 16.0mm@triggerArea distal 17.6mm@magwell tip 9.5mm@magwell
+Rifle primary+support shooting(R) Middle tip: 8.6 mm from the nearest contact surface (curl 0.35, tip extra 0.08)
+Rifle primary+support shooting(R) Middle joints: meta 40.0mm@grip prox 42.7mm@magwell inter 21.1mm@magazine distal 19.6mm@grip tip 8.6mm@grip
+Rifle primary+support shooting(R) Ring tip: 10.1 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
+Rifle primary+support shooting(R) Ring joints: meta 50.4mm@grip prox 48.6mm@grip inter 39.0mm@magazine distal 24.0mm@grip tip 10.1mm@grip
+Rifle primary+support shooting(R) Little tip: 8.8 mm from the nearest contact surface (curl 0.25, tip extra 0.00)
+Rifle primary+support shooting(R) Little joints: meta 51.3mm@grip prox 51.3mm@grip inter 47.2mm@grip distal 29.8mm@grip tip 8.8mm@grip
+Rifle primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 54 mm
+Rifle primary+support shooting(R): wrist 1.7 cm from the free hand's wrist (palm centre moved (16, 5, 3) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.38, 0.92), bore (0.00, -0.01, 1.00) in controller space, turned 0.6 deg)
+Rifle primary+support support(L): max depth 3.9 mm, 38/8651 vertices inside (0.44 %), de-penetration push 18.3 mm (pass1 16.8 mm along the palm normal (vertex at hand-local (49, -39, -4) mm, 8.4 mm deep in Contact_handguardRail))
+Rifle primary+support support(L):   inside by volume: Contact_handguardRail: 38 verts, max 3.9 mm | regions: thumb side 38
+Rifle primary+support support(L) Middle tip: 7.5 mm from the nearest contact surface (curl 0.30, tip extra 0.19)
+Rifle primary+support support(L) Middle joints: meta 42.5mm@handguardRail prox 52.6mm@handguardRail inter 40.1mm@handguardBand distal 25.2mm@handguardBand tip 7.5mm@handguardBand
+Rifle primary+support support(L) Ring tip: 9.8 mm from the nearest contact surface (curl 0.40, tip extra 0.10)
+Rifle primary+support support(L) Ring joints: meta 45.4mm@handguardRail prox 55.7mm@handguardBand inter 50.3mm@handguardBand distal 31.2mm@handguardBand tip 9.8mm@handguardBand
+Rifle primary+support support(L) Little tip: 15.0 mm from the nearest contact surface (curl 0.50, tip extra 0.00)
+Rifle primary+support support(L) Little joints: meta 43.6mm@handguardRail prox 54.2mm@handguardBand inter 53.2mm@handguardBand distal 34.9mm@handguardBand tip 15.0mm@handguardBand
+Rifle primary+support support(L): wrist pitch 25.8 deg (+ above / − below the bore), back-of-hand roll -72.6 deg from outward, palm x 24 mm
+Rifle primary+support support(L): palm skin 49 mm below the Contact_handguardRail centre
+SMG primary: settled after 0.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
+SMG primary shooting(R): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 21.9 mm (pass1 20.4 mm along the palm normal (vertex at hand-local (-56, -21, -21) mm, 11.1 mm deep in Contact_receiver))
+SMG primary shooting(R) Thumb tip: 13.6 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
+SMG primary shooting(R) Thumb joints: meta 19.0mm@receiver prox 10.1mm@receiver distal 9.3mm@receiver tip 13.6mm@receiver
+SMG primary shooting(R) Middle tip: 7.8 mm from the nearest contact surface (curl 0.35, tip extra 0.10)
+SMG primary shooting(R) Middle joints: meta 39.3mm@receiver prox 47.0mm@receiver inter 43.0mm@grip distal 25.7mm@grip tip 7.9mm@grip
+SMG primary shooting(R) Ring tip: 10.2 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
+SMG primary shooting(R) Ring joints: meta 51.7mm@receiver prox 54.6mm@grip inter 47.1mm@grip distal 26.4mm@grip tip 10.2mm@grip
+SMG primary shooting(R) Little tip: 10.9 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
+SMG primary shooting(R) Little joints: meta 55.2mm@receiver prox 56.9mm@grip inter 50.2mm@grip distal 30.8mm@grip tip 10.9mm@grip
+SMG primary shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 58 mm
+SMG primary shooting(R): wrist 2.6 cm from the free hand's wrist (palm centre moved (21, 6, 5) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.07, -0.51, 0.86), bore (0.01, -0.15, 0.99) in controller space, turned 8.8 deg)
+SMG primary+support: settled after 3.2 s extra; primary grip point 0.0 mm from the interactor attach anchor (0, 0, 0) mm
+SMG primary+support shooting(R): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 21.9 mm (pass1 20.4 mm along the palm normal (vertex at hand-local (-56, -21, -21) mm, 11.1 mm deep in Contact_receiver))
+SMG primary+support shooting(R) Thumb tip: 13.6 mm from the nearest contact surface (curl 0.00, tip extra 0.00)
+SMG primary+support shooting(R) Thumb joints: meta 19.0mm@receiver prox 10.1mm@receiver distal 9.2mm@receiver tip 13.6mm@receiver
+SMG primary+support shooting(R) Middle tip: 7.9 mm from the nearest contact surface (curl 0.35, tip extra 0.10)
+SMG primary+support shooting(R) Middle joints: meta 39.3mm@receiver prox 47.0mm@receiver inter 43.0mm@grip distal 25.7mm@grip tip 7.9mm@grip
+SMG primary+support shooting(R) Ring tip: 10.2 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
+SMG primary+support shooting(R) Ring joints: meta 51.7mm@receiver prox 54.6mm@grip inter 47.1mm@grip distal 26.4mm@grip tip 10.2mm@grip
+SMG primary+support shooting(R) Little tip: 10.9 mm from the nearest contact surface (curl 0.30, tip extra 0.00)
+SMG primary+support shooting(R) Little joints: meta 55.2mm@receiver prox 56.9mm@grip inter 50.2mm@grip distal 30.8mm@grip tip 10.9mm@grip
+SMG primary+support shooting(R): wrist pitch -21.7 deg (+ above / − below the bore), back-of-hand roll 17.9 deg from outward, palm x 58 mm
+SMG primary+support shooting(R): wrist 2.2 cm from the free hand's wrist (palm centre moved (21, 7, 5) mm in controller space; knuckle line free (-0.08, -0.37, 0.93) vs held (-0.08, -0.38, 0.92), bore (0.00, -0.01, 1.00) in controller space, turned 0.5 deg)
+SMG primary+support support(L): max depth 0.0 mm, 0/8651 vertices inside (0.00 %), de-penetration push 16.9 mm (pass1 15.7 mm along the palm normal (vertex at hand-local (-20, -13, -91) mm, 6.5 mm deep in other:Seg12))
+SMG primary+support support(L) Middle tip: 7.8 mm from the nearest contact surface (curl 0.40, tip extra 0.12)
+SMG primary+support support(L) Middle joints: meta 44.4mm@receiver prox 49.5mm@receiver inter 51.6mm@receiver distal 31.1mm@receiver tip 7.8mm@receiver
+SMG primary+support support(L) Ring tip: 9.7 mm from the nearest contact surface (curl 0.58, tip extra 0.00)
+SMG primary+support support(L) Ring joints: meta 46.5mm@receiver prox 51.7mm@receiver inter 51.5mm@receiver distal 29.1mm@receiver tip 9.6mm@receiver
+SMG primary+support support(L) Little tip: 18.2 mm from the nearest contact surface (curl 0.65, tip extra 0.00)
+SMG primary+support support(L) Little joints: meta 43.9mm@receiver prox 51.6mm@receiver inter 55.7mm@receiver distal 36.7mm@receiver tip 21.9mm@receiver
+SMG primary+support support(L): wrist pitch 25.8 deg (+ above / − below the bore), back-of-hand roll -72.6 deg from outward, palm x 20 mm
+SMG primary+support support(L): palm skin 56 mm below the Contact_receiver centre
+
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1019" name="HeadsetRound1Tests" fullname="VRRange.Tests.HeadsetRound1Tests" classname="VRRange.Tests.HeadsetRound1Tests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-04 21:55:17Z" end-time="2026-11-04 21:55:49Z" duration="31.543754" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1024" name="FingersWrapEveryGripWithoutPenetratingItAndTheThumbOpposesTheFingers" fullname="VRRange.Tests.HeadsetRound1Tests.FingersWrapEveryGripWithoutPenetratingItAndTheThumbOpposesTheFingers" methodname="FingersWrapEveryGripWithoutPenetratingItAndTheThumbOpposesTheFingers" classname="VRRange.Tests.HeadsetRound1Tests" runstate="Runnable" seed="1746518391" result="Passed" start-time="2026-11-04 21:55:17Z" end-time="2026-11-04 21:55:25Z" duration="8.045311" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange][Handling] Weapon_Pistol: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] Pistol grip report:
+Pistol R/primary: palm centre 42 mm from the grip collider
+Pistol R/primary Thumb: contactCurl 0.00 curl 0.00 tip 50.8 mm outside
+Pistol R/primary Middle: contactCurl 0.35 curl 0.35 tip 21.3 mm outside
+Pistol R/primary Ring: contactCurl 0.30 curl 0.30 tip 19.2 mm outside
+Pistol R/primary Little: contactCurl 0.20 curl 0.20 tip 14.0 mm outside
+Pistol R/primary: grip-local mm: palm (57.95, 19.47, 4.73), thumb tip (21.39, 34.90, 76.45), middle tip (-18.21, -12.39, 47.13)
+Pistol L/support: palm centre 45 mm from the grip collider
+Pistol L/support Thumb: contactCurl 0.35 curl 0.35 tip 51.2 mm outside
+Pistol L/support Middle: contactCurl 0.25 curl 0.25 tip 53.2 mm outside
+Pistol L/support Ring: contactCurl 0.30 curl 0.30 tip 37.5 mm outside
+Pistol L/support Little: contactCurl 0.40 curl 0.40 tip 17.2 mm outside
+Pistol L/support: grip-local mm: palm (-89.66, 14.72, 39.10), thumb tip (-31.13, 19.71, 84.21), middle tip (2.65, -10.13, 86.20)
+
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] Rifle grip report:
+Rifle R/primary: palm centre 38 mm from the grip collider
+Rifle R/primary Thumb: contactCurl 0.08 curl 0.08 tip 46.9 mm outside
+Rifle R/primary Middle: contactCurl 0.35 curl 0.35 tip 16.0 mm outside
+Rifle R/primary Ring: contactCurl 0.30 curl 0.30 tip 22.8 mm outside
+Rifle R/primary Little: contactCurl 0.25 curl 0.25 tip 18.8 mm outside
+Rifle R/primary: grip-local mm: palm (53.96, 20.60, -0.58), thumb tip (32.83, 43.30, 68.82), middle tip (-19.84, -4.75, 40.50)
+Rifle L/support: palm centre 54 mm from the grip collider
+Rifle L/support Thumb: contactCurl 0.35 curl 0.35 tip 18.1 mm outside
+Rifle L/support Middle: contactCurl 0.30 curl 0.30 tip 12.7 mm outside
+Rifle L/support Ring: contactCurl 0.40 curl 0.40 tip 14.9 mm outside
+Rifle L/support Little: contactCurl 0.50 curl 0.50 tip 18.7 mm outside
+Rifle L/support: grip-local mm: palm (24.11, -78.53, -5.37), thumb tip (43.05, -26.19, 43.50), middle tip (37.65, 4.52, 21.14)
+
+[VRRange][Handling] Weapon_SMG: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] SMG grip report:
+SMG R/primary: palm centre 43 mm from the grip collider
+SMG R/primary Thumb: contactCurl 0.00 curl 0.00 tip 61.3 mm outside
+SMG R/primary Middle: contactCurl 0.35 curl 0.35 tip 17.0 mm outside
+SMG R/primary Ring: contactCurl 0.30 curl 0.30 tip 19.6 mm outside
+SMG R/primary Little: contactCurl 0.30 curl 0.30 tip 6.1 mm outside
+SMG R/primary: grip-local mm: palm (57.84, 26.35, 6.86), thumb tip (23.33, 27.20, 80.74), middle tip (-15.06, -9.40, 36.96)
+SMG L/support: palm centre 43 mm from the grip collider
+SMG L/support Thumb: contactCurl -1.00 curl 0.35 tip 49.5 mm outside
+SMG L/support Middle: contactCurl 0.40 curl 0.40 tip 15.9 mm outside
+SMG L/support Ring: contactCurl 0.56 curl 0.56 tip 10.0 mm outside
+SMG L/support Little: contactCurl 0.65 curl 0.65 tip 22.5 mm outside
+SMG L/support: grip-local mm: palm (19.83, -72.75, 24.53), thumb tip (38.77, -20.42, 73.41), middle tip (22.96, 3.63, 43.78)
+
+]]></output>
+            </test-case>
+            <test-case id="1023" name="PistolSecondHandSupportsAndTakesOverWhenTheShootingHandLetsGo" fullname="VRRange.Tests.HeadsetRound1Tests.PistolSecondHandSupportsAndTakesOverWhenTheShootingHandLetsGo" methodname="PistolSecondHandSupportsAndTakesOverWhenTheShootingHandLetsGo" classname="VRRange.Tests.HeadsetRound1Tests" runstate="Runnable" seed="1276706590" result="Passed" start-time="2026-11-04 21:55:25Z" end-time="2026-11-04 21:55:28Z" duration="2.964625" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange][Handling] Weapon_Pistol: hands=2 via Near-Far Interactor (NearFarInteractor) blend=0.42 sag=1.1deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hand-over to Near-Far Interactor (previous shooting hand released)
+[VRRange][Handling] Weapon_Pistol: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=1.5deg lag=2.0cm recoil pitch=1.0deg yaw=0.1deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+            <test-case id="1022" name="RapidRifleFireAccumulatesMuzzleClimbAndTheSupportHandReducesIt" fullname="VRRange.Tests.HeadsetRound1Tests.RapidRifleFireAccumulatesMuzzleClimbAndTheSupportHandReducesIt" methodname="RapidRifleFireAccumulatesMuzzleClimbAndTheSupportHandReducesIt" classname="VRRange.Tests.HeadsetRound1Tests" runstate="Runnable" seed="193673106" result="Passed" start-time="2026-11-04 21:55:28Z" end-time="2026-11-04 21:55:39Z" duration="10.555319" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Test] burst of 1: peak recoil pitch 6.0 deg, muzzle rose 6.5 deg
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.2deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=16.7deg yaw=-0.1deg instability=0.92 handSpeed=0.00m/s
+[VRRange][Test] burst of 10: peak recoil pitch 29.9 deg, muzzle rose 31.7 deg
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=4.7deg yaw=0.2deg instability=0.60 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.1deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.6deg yaw=-0.1deg instability=0.02 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=1.3deg yaw=0.1deg instability=0.16 handSpeed=0.00m/s
+[VRRange][Test] burst of 10: peak recoil pitch 1.3 deg, muzzle rose 1.3 deg
+]]></output>
+            </test-case>
+            <test-case id="1020" name="RealMuzzleVelocitiesHitAOneCentimetreTargetAt25MetresWithoutTunnelling" fullname="VRRange.Tests.HeadsetRound1Tests.RealMuzzleVelocitiesHitAOneCentimetreTargetAt25MetresWithoutTunnelling" methodname="RealMuzzleVelocitiesHitAOneCentimetreTargetAt25MetresWithoutTunnelling" classname="VRRange.Tests.HeadsetRound1Tests" runstate="Runnable" seed="23405097" result="Passed" start-time="2026-11-04 21:55:39Z" end-time="2026-11-04 21:55:40Z" duration="1.056405" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+]]></output>
+            </test-case>
+            <test-case id="1021" name="RifleHeldByTheRigsNearFarInteractorSagsLagsAndSwaysOneHanded" fullname="VRRange.Tests.HeadsetRound1Tests.RifleHeldByTheRigsNearFarInteractorSagsLagsAndSwaysOneHanded" methodname="RifleHeldByTheRigsNearFarInteractorSagsLagsAndSwaysOneHanded" classname="VRRange.Tests.HeadsetRound1Tests" runstate="Runnable" seed="1142616655" result="Passed" start-time="2026-11-04 21:55:40Z" end-time="2026-11-04 21:55:49Z" duration="8.919255" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=2.1cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.1cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1025" name="NullHandlingTests" fullname="VRRange.Tests.NullHandlingTests" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-11-04 21:55:49Z" end-time="2026-11-04 21:55:53Z" duration="4.353230" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1030" name="GameModeManagerWithoutLanesWeaponsOrSettingsRunsAndFinishes" fullname="VRRange.Tests.NullHandlingTests.GameModeManagerWithoutLanesWeaponsOrSettingsRunsAndFinishes" methodname="GameModeManagerWithoutLanesWeaponsOrSettingsRunsAndFinishes" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="538585578" result="Passed" start-time="2026-11-04 21:55:49Z" end-time="2026-11-04 21:55:49Z" duration="0.493505" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+]]></output>
+            </test-case>
+            <test-case id="1034" name="HandlingTransformerWithoutDefinitionLeavesPoseUntouched" fullname="VRRange.Tests.NullHandlingTests.HandlingTransformerWithoutDefinitionLeavesPoseUntouched" methodname="HandlingTransformerWithoutDefinitionLeavesPoseUntouched" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="444353239" result="Passed" start-time="2026-11-04 21:55:49Z" end-time="2026-11-04 21:55:49Z" duration="0.436925" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+]]></output>
+            </test-case>
+            <test-case id="1033" name="HandPresenceWithoutRigWarnsAndStaysPassive" fullname="VRRange.Tests.NullHandlingTests.HandPresenceWithoutRigWarnsAndStaysPassive" methodname="HandPresenceWithoutRigWarnsAndStaysPassive" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="1059334388" result="Passed" start-time="2026-11-04 21:55:49Z" end-time="2026-11-04 21:55:50Z" duration="0.466238" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+[VRRange] HandPresence (R): no wrist joint found under Model; using static hand.
+]]></output>
+            </test-case>
+            <test-case id="1032" name="MovingTargetControllerWithoutCarrierOrProfileClampsAndMoves" fullname="VRRange.Tests.NullHandlingTests.MovingTargetControllerWithoutCarrierOrProfileClampsAndMoves" methodname="MovingTargetControllerWithoutCarrierOrProfileClampsAndMoves" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="1493103043" result="Passed" start-time="2026-11-04 21:55:50Z" end-time="2026-11-04 21:55:50Z" duration="0.427566" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+]]></output>
+            </test-case>
+            <test-case id="1029" name="ProjectilePoolWithoutPrefabLogsErrorAndReturnsNull" fullname="VRRange.Tests.NullHandlingTests.ProjectilePoolWithoutPrefabLogsErrorAndReturnsNull" methodname="ProjectilePoolWithoutPrefabLogsErrorAndReturnsNull" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="1730249122" result="Passed" start-time="2026-11-04 21:55:50Z" end-time="2026-11-04 21:55:51Z" duration="0.429508" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+[VRRange] ProjectilePool has no projectile prefab; weapons will fire without visible projectiles.
+]]></output>
+            </test-case>
+            <test-case id="1026" name="StaticManagersAreSafeWithoutInstances" fullname="VRRange.Tests.NullHandlingTests.StaticManagersAreSafeWithoutInstances" methodname="StaticManagersAreSafeWithoutInstances" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="1637016413" result="Passed" start-time="2026-11-04 21:55:51Z" end-time="2026-11-04 21:55:51Z" duration="0.437220" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+]]></output>
+            </test-case>
+            <test-case id="1031" name="TargetWithoutRulesOrMarkerStillReportsHits" fullname="VRRange.Tests.NullHandlingTests.TargetWithoutRulesOrMarkerStillReportsHits" methodname="TargetWithoutRulesOrMarkerStillReportsHits" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="1642487248" result="Passed" start-time="2026-11-04 21:55:51Z" end-time="2026-11-04 21:55:52Z" duration="0.443840" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+]]></output>
+            </test-case>
+            <test-case id="1028" name="WeaponWithDefinitionButNoPoolOrEffectsStillCountsShots" fullname="VRRange.Tests.NullHandlingTests.WeaponWithDefinitionButNoPoolOrEffectsStillCountsShots" methodname="WeaponWithDefinitionButNoPoolOrEffectsStillCountsShots" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="1793651544" result="Passed" start-time="2026-11-04 21:55:52Z" end-time="2026-11-04 21:55:52Z" duration="0.765180" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+[VRRange] No ProjectilePool in scene; shots are counted but nothing flies.
+]]></output>
+            </test-case>
+            <test-case id="1027" name="WeaponWithoutDefinitionLogsOnceAndNeverFires" fullname="VRRange.Tests.NullHandlingTests.WeaponWithoutDefinitionLogsOnceAndNeverFires" methodname="WeaponWithoutDefinitionLogsOnceAndNeverFires" classname="VRRange.Tests.NullHandlingTests" runstate="Runnable" seed="814808163" result="Passed" start-time="2026-11-04 21:55:52Z" end-time="2026-11-04 21:55:53Z" duration="0.449912" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+[VRRange] Weapon 'BareWeapon' has no WeaponDefinition. It will not fire.
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1035" name="ProjectileAndTargetTests" fullname="VRRange.Tests.ProjectileAndTargetTests" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-11-04 21:55:53Z" end-time="2026-11-04 21:56:13Z" duration="20.444396" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1042" name="DifficultyScalesTargetSpeedAndExposure" fullname="VRRange.Tests.ProjectileAndTargetTests.DifficultyScalesTargetSpeedAndExposure" methodname="DifficultyScalesTargetSpeedAndExposure" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="1398262822" result="Passed" start-time="2026-11-04 21:55:53Z" end-time="2026-11-04 21:55:54Z" duration="1.607207" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1043" name="DistanceIsClampedToPresets" fullname="VRRange.Tests.ProjectileAndTargetTests.DistanceIsClampedToPresets" methodname="DistanceIsClampedToPresets" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="115357494" result="Passed" start-time="2026-11-04 21:55:54Z" end-time="2026-11-04 21:55:55Z" duration="0.450209" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1038" name="GravityDropsTheProjectileOverDistance" fullname="VRRange.Tests.ProjectileAndTargetTests.GravityDropsTheProjectileOverDistance" methodname="GravityDropsTheProjectileOverDistance" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="833525470" result="Passed" start-time="2026-11-04 21:55:55Z" end-time="2026-11-04 21:55:55Z" duration="0.484801" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1039" name="HitSpawnsImpactEffectsAndTargetMarker" fullname="VRRange.Tests.ProjectileAndTargetTests.HitSpawnsImpactEffectsAndTargetMarker" methodname="HitSpawnsImpactEffectsAndTargetMarker" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="61084429" result="Passed" start-time="2026-11-04 21:55:55Z" end-time="2026-11-04 21:55:56Z" duration="0.462478" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1037" name="ProjectileExpiresByLifetimeWhenNothingIsHit" fullname="VRRange.Tests.ProjectileAndTargetTests.ProjectileExpiresByLifetimeWhenNothingIsHit" methodname="ProjectileExpiresByLifetimeWhenNothingIsHit" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="796031208" result="Passed" start-time="2026-11-04 21:55:56Z" end-time="2026-11-04 21:55:57Z" duration="1.234238" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1044" name="ProjectileNeverHitsItsOwnWeaponOrOtherProjectiles" fullname="VRRange.Tests.ProjectileAndTargetTests.ProjectileNeverHitsItsOwnWeaponOrOtherProjectiles" methodname="ProjectileNeverHitsItsOwnWeaponOrOtherProjectiles" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="1075131548" result="Passed" start-time="2026-11-04 21:55:57Z" end-time="2026-11-04 21:55:58Z" duration="0.537147" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1036" name="ProjectilesAreRecycledAndNeverPersist" fullname="VRRange.Tests.ProjectileAndTargetTests.ProjectilesAreRecycledAndNeverPersist" methodname="ProjectilesAreRecycledAndNeverPersist" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="187213619" result="Passed" start-time="2026-11-04 21:55:58Z" end-time="2026-11-04 21:56:05Z" duration="7.275707" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1040" name="ScoringMatchesRingDistance" fullname="VRRange.Tests.ProjectileAndTargetTests.ScoringMatchesRingDistance" methodname="ScoringMatchesRingDistance" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="545806333" result="Passed" start-time="2026-11-04 21:56:05Z" end-time="2026-11-04 21:56:05Z" duration="0.473052" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1041" name="TargetMotionTypesBehaveAsSpecified" fullname="VRRange.Tests.ProjectileAndTargetTests.TargetMotionTypesBehaveAsSpecified" methodname="TargetMotionTypesBehaveAsSpecified" classname="VRRange.Tests.ProjectileAndTargetTests" runstate="Runnable" seed="669678510" result="Passed" start-time="2026-11-04 21:56:05Z" end-time="2026-11-04 21:56:13Z" duration="7.916072" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1045" name="RangeSceneSmokeTests" fullname="VRRange.Tests.RangeSceneSmokeTests" classname="VRRange.Tests.RangeSceneSmokeTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-04 21:56:13Z" end-time="2026-11-04 21:56:19Z" duration="5.869073" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1048" name="AccuracyChallengeFinishesAfterShotLimit" fullname="VRRange.Tests.RangeSceneSmokeTests.AccuracyChallengeFinishesAfterShotLimit" methodname="AccuracyChallengeFinishesAfterShotLimit" classname="VRRange.Tests.RangeSceneSmokeTests" runstate="Runnable" seed="1669881667" result="Passed" start-time="2026-11-04 21:56:13Z" end-time="2026-11-04 21:56:18Z" duration="4.466832" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1049" name="MovingTargetsStayInsideLane" fullname="VRRange.Tests.RangeSceneSmokeTests.MovingTargetsStayInsideLane" methodname="MovingTargetsStayInsideLane" classname="VRRange.Tests.RangeSceneSmokeTests" runstate="Runnable" seed="826625825" result="Passed" start-time="2026-11-04 21:56:18Z" end-time="2026-11-04 21:56:18Z" duration="0.484288" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1047" name="PistolShotHitsTargetAndScores" fullname="VRRange.Tests.RangeSceneSmokeTests.PistolShotHitsTargetAndScores" methodname="PistolShotHitsTargetAndScores" classname="VRRange.Tests.RangeSceneSmokeTests" runstate="Runnable" seed="1151436779" result="Passed" start-time="2026-11-04 21:56:18Z" end-time="2026-11-04 21:56:19Z" duration="0.478802" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1046" name="SceneHasManagersLanesAndWeapons" fullname="VRRange.Tests.RangeSceneSmokeTests.SceneHasManagersLanesAndWeapons" methodname="SceneHasManagersLanesAndWeapons" classname="VRRange.Tests.RangeSceneSmokeTests" runstate="Runnable" seed="1991497459" result="Passed" start-time="2026-11-04 21:56:19Z" end-time="2026-11-04 21:56:19Z" duration="0.437115" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1050" name="RigGrabAndThumbTests" fullname="VRRange.Tests.RigGrabAndThumbTests" classname="VRRange.Tests.RigGrabAndThumbTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-04 21:56:19Z" end-time="2026-11-04 21:56:23Z" duration="3.983049" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1052" name="RealNearCasterFindsAWeaponItTouches" fullname="VRRange.Tests.RigGrabAndThumbTests.RealNearCasterFindsAWeaponItTouches" methodname="RealNearCasterFindsAWeaponItTouches" classname="VRRange.Tests.RigGrabAndThumbTests" runstate="Runnable" seed="969927387" result="Passed" start-time="2026-11-04 21:56:19Z" end-time="2026-11-04 21:56:20Z" duration="0.555148" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+]]></output>
+            </test-case>
+            <test-case id="1051" name="RigCastersIncludeTheWeaponLayer" fullname="VRRange.Tests.RigGrabAndThumbTests.RigCastersIncludeTheWeaponLayer" methodname="RigCastersIncludeTheWeaponLayer" classname="VRRange.Tests.RigGrabAndThumbTests" runstate="Runnable" seed="1371277341" result="Passed" start-time="2026-11-04 21:56:20Z" end-time="2026-11-04 21:56:20Z" duration="0.511268" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+]]></output>
+            </test-case>
+            <test-case id="1053" name="ThumbBendsTowardTheFingers" fullname="VRRange.Tests.RigGrabAndThumbTests.ThumbBendsTowardTheFingers" methodname="ThumbBendsTowardTheFingers" classname="VRRange.Tests.RigGrabAndThumbTests" runstate="Runnable" seed="1567663215" result="Passed" start-time="2026-11-04 21:56:20Z" end-time="2026-11-04 21:56:23Z" duration="2.914899" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange][Test] R thumb tip to middle knuckle: open 0.056 m, fist 0.024 m | tip mm (across, inward, forward): open (24.43, 41.46, 64.28), fist (-11.18, 11.10, 29.49), middle knuckle (0.00, -4.24, 43.74)
+[VRRange][Test] L thumb tip to middle knuckle: open 0.055 m, fist 0.024 m | tip mm (across, inward, forward): open (24.00, 41.19, 64.34), fist (-11.41, 10.85, 29.30), middle knuckle (0.00, -4.24, 43.74)
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1054" name="SpectatorAndHandTests" fullname="VRRange.Tests.SpectatorAndHandTests" classname="VRRange.Tests.SpectatorAndHandTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-04 21:56:23Z" end-time="2026-11-04 21:56:36Z" duration="12.677149" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1059" name="FreeHandsFollowTheControllerAndAnimateWithGripAndTrigger" fullname="VRRange.Tests.SpectatorAndHandTests.FreeHandsFollowTheControllerAndAnimateWithGripAndTrigger" methodname="FreeHandsFollowTheControllerAndAnimateWithGripAndTrigger" classname="VRRange.Tests.SpectatorAndHandTests" runstate="Runnable" seed="1224621014" result="Passed" start-time="2026-11-04 21:56:23Z" end-time="2026-11-04 21:56:28Z" duration="4.975684" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+]]></output>
+            </test-case>
+            <test-case id="1060" name="HandsSnapToWeaponGripAnchorsAndTransitionBetweenOneAndTwoHands" fullname="VRRange.Tests.SpectatorAndHandTests.HandsSnapToWeaponGripAnchorsAndTransitionBetweenOneAndTwoHands" methodname="HandsSnapToWeaponGripAnchorsAndTransitionBetweenOneAndTwoHands" classname="VRRange.Tests.SpectatorAndHandTests" runstate="Runnable" seed="2088867476" result="Passed" start-time="2026-11-04 21:56:28Z" end-time="2026-11-04 21:56:32Z" duration="3.382417" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange][Handling] Weapon_Pistol: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via Near-Far Interactor (NearFarInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Near-Far Interactor (NearFarInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+            <test-case id="1057" name="LetterboxMathCoversAllWindowShapes" fullname="VRRange.Tests.SpectatorAndHandTests.LetterboxMathCoversAllWindowShapes" methodname="LetterboxMathCoversAllWindowShapes" classname="VRRange.Tests.SpectatorAndHandTests" runstate="Runnable" seed="1021254032" result="Passed" start-time="2026-11-04 21:56:32Z" end-time="2026-11-04 21:56:32Z" duration="0.423194" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1058" name="PlatformGraphicsSwitchTogglesPcvrFeatures" fullname="VRRange.Tests.SpectatorAndHandTests.PlatformGraphicsSwitchTogglesPcvrFeatures" methodname="PlatformGraphicsSwitchTogglesPcvrFeatures" classname="VRRange.Tests.SpectatorAndHandTests" runstate="Runnable" seed="7385459" result="Passed" start-time="2026-11-04 21:56:32Z" end-time="2026-11-04 21:56:32Z" duration="0.502894" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Graphics profile: Quest 2 | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Graphics profile: Quest 2 | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+]]></output>
+            </test-case>
+            <test-case id="1055" name="SpectatorCameraIsDesktopOnlyAndSeparateFromTheHeadsetCamera" fullname="VRRange.Tests.SpectatorAndHandTests.SpectatorCameraIsDesktopOnlyAndSeparateFromTheHeadsetCamera" methodname="SpectatorCameraIsDesktopOnlyAndSeparateFromTheHeadsetCamera" classname="VRRange.Tests.SpectatorAndHandTests" runstate="Runnable" seed="478057367" result="Passed" start-time="2026-11-04 21:56:32Z" end-time="2026-11-04 21:56:33Z" duration="0.448926" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1056" name="SpectatorModesFollowSmoothlyAndCanBeTurnedOff" fullname="VRRange.Tests.SpectatorAndHandTests.SpectatorModesFollowSmoothlyAndCanBeTurnedOff" methodname="SpectatorModesFollowSmoothlyAndCanBeTurnedOff" classname="VRRange.Tests.SpectatorAndHandTests" runstate="Runnable" seed="1071288401" result="Passed" start-time="2026-11-04 21:56:33Z" end-time="2026-11-04 21:56:36Z" duration="2.940363" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Spectator: FirstPerson
+[VRRange] Spectator: ThirdPerson (preset 1)
+[VRRange] Spectator: third person preset 2
+[VRRange] Spectator: third person preset 4
+[VRRange] Spectator: Fixed
+[VRRange] Spectator: Off
+[VRRange] Spectator: FirstPerson
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1061" name="StressAndStabilityTests" fullname="VRRange.Tests.StressAndStabilityTests" classname="VRRange.Tests.StressAndStabilityTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-04 21:56:36Z" end-time="2026-11-04 21:57:02Z" duration="25.973877" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1063" name="RapidWeaponSwitchingAndReloadingLeavesNoLeaksOrStuckState" fullname="VRRange.Tests.StressAndStabilityTests.RapidWeaponSwitchingAndReloadingLeavesNoLeaksOrStuckState" methodname="RapidWeaponSwitchingAndReloadingLeavesNoLeaksOrStuckState" classname="VRRange.Tests.StressAndStabilityTests" runstate="Runnable" seed="325899434" result="Passed" start-time="2026-11-04 21:56:36Z" end-time="2026-11-04 21:56:45Z" duration="9.004398" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=5.6deg yaw=-0.4deg instability=0.01 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=2.1deg yaw=0.2deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.6deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+            <test-case id="1064" name="RepeatedModeRestartsAreStableAndDeterministic" fullname="VRRange.Tests.StressAndStabilityTests.RepeatedModeRestartsAreStableAndDeterministic" methodname="RepeatedModeRestartsAreStableAndDeterministic" classname="VRRange.Tests.StressAndStabilityTests" runstate="Runnable" seed="1666914581" result="Passed" start-time="2026-11-04 21:56:45Z" end-time="2026-11-04 21:56:47Z" duration="1.926776" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Perf] 20 mode restarts: heap delta 168 KB, object delta 12
+]]></output>
+            </test-case>
+            <test-case id="1065" name="SceneStatisticsAreWithinQuestBudgets" fullname="VRRange.Tests.StressAndStabilityTests.SceneStatisticsAreWithinQuestBudgets" methodname="SceneStatisticsAreWithinQuestBudgets" classname="VRRange.Tests.StressAndStabilityTests" runstate="Runnable" seed="1143334520" result="Passed" start-time="2026-11-04 21:56:47Z" end-time="2026-11-04 21:56:47Z" duration="0.481290" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Perf] scene: 627 active renderers, 75 distinct materials, 201741 triangles (unculled total), 15 realtime/mixed lights, 0 dynamic rigidbodies
+]]></output>
+            </test-case>
+            <test-case id="1062" name="SustainedAutomaticFireKeepsPoolsBoundedAndHeapStable" fullname="VRRange.Tests.StressAndStabilityTests.SustainedAutomaticFireKeepsPoolsBoundedAndHeapStable" methodname="SustainedAutomaticFireKeepsPoolsBoundedAndHeapStable" classname="VRRange.Tests.StressAndStabilityTests" runstate="Runnable" seed="1674364352" result="Passed" start-time="2026-11-04 21:56:47Z" end-time="2026-11-04 21:57:02Z" duration="14.559293" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=23.3deg yaw=0.9deg instability=0.98 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=9.5deg yaw=1.3deg instability=0.76 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=21.7deg yaw=-2.2deg instability=0.97 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=22.6deg yaw=-1.1deg instability=0.98 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=23.4deg yaw=2.6deg instability=0.98 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=24.0deg yaw=2.7deg instability=0.99 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=24.8deg yaw=0.3deg instability=1.00 handSpeed=0.00m/s
+[VRRange][Perf] sustained auto fire: 106 shots in 6 s, avg frame 0.9 ms, max 723.4 ms (editor/CPU container numbers, not headset)
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.1deg yaw=0.0deg instability=0.10 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Perf] managed heap before 544804 KB, after 544848 KB (delta 44 KB)
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1066" name="VisualCaptureTests" fullname="VRRange.Tests.VisualCaptureTests" classname="VRRange.Tests.VisualCaptureTests" runstate="Runnable" testcasecount="1" result="Skipped" label="Ignored" start-time="2026-11-04 21:57:02Z" end-time="2026-11-04 21:57:02Z" duration="0.013694" total="1" passed="0" failed="0" inconclusive="0" skipped="1" asserts="0">
+            <properties />
+            <reason>
+              <message><![CDATA[One or more child tests were ignored]]></message>
+            </reason>
+            <test-case id="1067" name="CaptureReviewShots" fullname="VRRange.Tests.VisualCaptureTests.CaptureReviewShots" methodname="CaptureReviewShots" classname="VRRange.Tests.VisualCaptureTests" runstate="Runnable" seed="1119081361" result="Skipped" label="Ignored" start-time="2026-11-04 21:57:02Z" end-time="2026-11-04 21:57:02Z" duration="0.008157" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <reason>
+                <message><![CDATA[No graphics device (nographics run)]]></message>
+              </reason>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1068" name="WeaponHandlingTests" fullname="VRRange.Tests.WeaponHandlingTests" classname="VRRange.Tests.WeaponHandlingTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-04 21:57:02Z" end-time="2026-11-04 21:57:14Z" duration="12.213500" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1069" name="AllWeaponsHaveHandlingProfilesAndAnchors" fullname="VRRange.Tests.WeaponHandlingTests.AllWeaponsHaveHandlingProfilesAndAnchors" methodname="AllWeaponsHaveHandlingProfilesAndAnchors" classname="VRRange.Tests.WeaponHandlingTests" runstate="Runnable" seed="1332069590" result="Passed" start-time="2026-11-04 21:57:02Z" end-time="2026-11-04 21:57:02Z" duration="0.493208" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1074" name="HandsAreVisibleCalibratedAndFollowGrips" fullname="VRRange.Tests.WeaponHandlingTests.HandsAreVisibleCalibratedAndFollowGrips" methodname="HandsAreVisibleCalibratedAndFollowGrips" classname="VRRange.Tests.WeaponHandlingTests" runstate="Runnable" seed="965030979" result="Passed" start-time="2026-11-04 21:57:02Z" end-time="2026-11-04 21:57:05Z" duration="2.903327" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange] Hand L skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand L finger radius 9.5 mm (131 samples)
+[VRRange] Hand L palm cloud: 2692 vertices cached for de-penetration
+[VRRange] Hand L calibrated: size 0.096 m, thumbSide 0.0342, curl sign kept
+[VRRange] Hand L thumb: tip-to-middle 0.076 -> 0.056 m on a 20 deg bend, sign kept
+[VRRange] Hand L thumb spread sign kept
+[VRRange] Hand R skin: palm 22.4 mm, back of hand 16.7 mm from the bone line (113/151 samples)
+[VRRange] Hand R finger radius 9.5 mm (131 samples)
+[VRRange] Hand R palm cloud: 2693 vertices cached for de-penetration
+[VRRange] Hand R calibrated: size 0.096 m, thumbSide -0.0345, curl sign kept
+[VRRange] Hand R thumb: tip-to-middle 0.076 -> 0.057 m on a 20 deg bend, sign kept
+[VRRange] Hand R thumb spread sign flipped
+]]></output>
+            </test-case>
+            <test-case id="1070" name="OneHandedRifleSagsAndFollowsWithLag" fullname="VRRange.Tests.WeaponHandlingTests.OneHandedRifleSagsAndFollowsWithLag" methodname="OneHandedRifleSagsAndFollowsWithLag" classname="VRRange.Tests.WeaponHandlingTests" runstate="Runnable" seed="1100919109" result="Passed" start-time="2026-11-04 21:57:05Z" end-time="2026-11-04 21:57:08Z" duration="2.696919" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_Rifle: hands=1 via RightHand (XRDirectInteractor) blend=0.00 sag=22.0deg lag=1.2cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via RightHand (XRDirectInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+            <test-case id="1071" name="PistolIsMoreResponsiveThanRifle" fullname="VRRange.Tests.WeaponHandlingTests.PistolIsMoreResponsiveThanRifle" methodname="PistolIsMoreResponsiveThanRifle" classname="VRRange.Tests.WeaponHandlingTests" runstate="Runnable" seed="40879779" result="Passed" start-time="2026-11-04 21:57:08Z" end-time="2026-11-04 21:57:09Z" duration="0.998982" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1073" name="RecoilIsLargerUnsupportedThanSupported" fullname="VRRange.Tests.WeaponHandlingTests.RecoilIsLargerUnsupportedThanSupported" methodname="RecoilIsLargerUnsupportedThanSupported" classname="VRRange.Tests.WeaponHandlingTests" runstate="Runnable" seed="53982804" result="Passed" start-time="2026-11-04 21:57:09Z" end-time="2026-11-04 21:57:13Z" duration="3.634863" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_Rifle: hands=1 via Primary (XRDirectInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=1.7deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Primary (XRDirectInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=2 via Primary (XRDirectInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+            <test-case id="1072" name="TwoHandedGripAimsAlongBothHandsAndReleasesSmoothly" fullname="VRRange.Tests.WeaponHandlingTests.TwoHandedGripAimsAlongBothHandsAndReleasesSmoothly" methodname="TwoHandedGripAimsAlongBothHandsAndReleasesSmoothly" classname="VRRange.Tests.WeaponHandlingTests" runstate="Runnable" seed="1517090829" result="Passed" start-time="2026-11-04 21:57:13Z" end-time="2026-11-04 21:57:14Z" duration="1.483181" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_Rifle: hands=2 via Primary (XRDirectInteractor) blend=1.00 sag=0.6deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1075" name="WeaponInteractionTests" fullname="VRRange.Tests.WeaponInteractionTests" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-11-04 21:57:14Z" end-time="2026-11-04 21:57:34Z" duration="20.036685" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1086" name="AmmoCounterEventsTrackEveryChange" fullname="VRRange.Tests.WeaponInteractionTests.AmmoCounterEventsTrackEveryChange" methodname="AmmoCounterEventsTrackEveryChange" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="530459580" result="Passed" start-time="2026-11-04 21:57:14Z" end-time="2026-11-04 21:57:15Z" duration="0.489008" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1080" name="AutomaticFireContinuesWhileHeldAndStopsOnRelease" fullname="VRRange.Tests.WeaponInteractionTests.AutomaticFireContinuesWhileHeldAndStopsOnRelease" methodname="AutomaticFireContinuesWhileHeldAndStopsOnRelease" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="679112802" result="Passed" start-time="2026-11-04 21:57:15Z" end-time="2026-11-04 21:57:16Z" duration="1.277781" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1081" name="DroppingTheWeaponStopsAutomaticFire" fullname="VRRange.Tests.WeaponInteractionTests.DroppingTheWeaponStopsAutomaticFire" methodname="DroppingTheWeaponStopsAutomaticFire" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="1583752283" result="Passed" start-time="2026-11-04 21:57:16Z" end-time="2026-11-04 21:57:17Z" duration="1.154104" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1082" name="EmptyMagazineDryFiresAndReloadRestoresAmmo" fullname="VRRange.Tests.WeaponInteractionTests.EmptyMagazineDryFiresAndReloadRestoresAmmo" methodname="EmptyMagazineDryFiresAndReloadRestoresAmmo" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="895339701" result="Passed" start-time="2026-11-04 21:57:17Z" end-time="2026-11-04 21:57:22Z" duration="4.670979" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=15.7deg yaw=0.2deg instability=0.13 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=11.0deg yaw=0.4deg instability=0.05 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Pistol: hands=1 via R (XRDirectInteractor) blend=0.00 sag=1.5deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+            <test-case id="1085" name="FireModeToggleRespectsSupportedModes" fullname="VRRange.Tests.WeaponInteractionTests.FireModeToggleRespectsSupportedModes" methodname="FireModeToggleRespectsSupportedModes" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="1991179757" result="Passed" start-time="2026-11-04 21:57:22Z" end-time="2026-11-04 21:57:22Z" duration="0.486401" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1079" name="FireRateIsRespectedOnRapidPulls" fullname="VRRange.Tests.WeaponInteractionTests.FireRateIsRespectedOnRapidPulls" methodname="FireRateIsRespectedOnRapidPulls" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="302770386" result="Passed" start-time="2026-11-04 21:57:22Z" end-time="2026-11-04 21:57:23Z" duration="0.430247" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1089" name="FiringSendsShotsToScoreManagerAndSpawnsPooledProjectiles" fullname="VRRange.Tests.WeaponInteractionTests.FiringSendsShotsToScoreManagerAndSpawnsPooledProjectiles" methodname="FiringSendsShotsToScoreManagerAndSpawnsPooledProjectiles" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="1619272967" result="Passed" start-time="2026-11-04 21:57:23Z" end-time="2026-11-04 21:57:23Z" duration="0.467777" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1088" name="ManyGrabReleaseCyclesLeaveNoStuckOrDuplicateState" fullname="VRRange.Tests.WeaponInteractionTests.ManyGrabReleaseCyclesLeaveNoStuckOrDuplicateState" methodname="ManyGrabReleaseCyclesLeaveNoStuckOrDuplicateState" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="710790054" result="Passed" start-time="2026-11-04 21:57:23Z" end-time="2026-11-04 21:57:24Z" duration="0.963064" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1076" name="PickupReleaseAndReacquireKeepsSingleCleanState" fullname="VRRange.Tests.WeaponInteractionTests.PickupReleaseAndReacquireKeepsSingleCleanState" methodname="PickupReleaseAndReacquireKeepsSingleCleanState" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="606682061" result="Passed" start-time="2026-11-04 21:57:24Z" end-time="2026-11-04 21:57:24Z" duration="0.452460" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1084" name="ReleasingDuringReloadCompletesWithoutErrorsAndRefillCancelsReload" fullname="VRRange.Tests.WeaponInteractionTests.ReleasingDuringReloadCompletesWithoutErrorsAndRefillCancelsReload" methodname="ReleasingDuringReloadCompletesWithoutErrorsAndRefillCancelsReload" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="1032033184" result="Passed" start-time="2026-11-04 21:57:24Z" end-time="2026-11-04 21:57:29Z" duration="4.958850" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Retain Transform Parent is set to true, and has a non-null Original Scene Parent. However, the old parent is deactivated so we are choosing not to re-parent upon dropping.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_SMG: hands=1 via R (XRDirectInteractor) blend=0.00 sag=9.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+            <test-case id="1083" name="ReloadIsIgnoredWhenFullOrAlreadyReloading" fullname="VRRange.Tests.WeaponInteractionTests.ReloadIsIgnoredWhenFullOrAlreadyReloading" methodname="ReloadIsIgnoredWhenFullOrAlreadyReloading" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="1766267314" result="Passed" start-time="2026-11-04 21:57:29Z" end-time="2026-11-04 21:57:32Z" duration="3.066469" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_Rifle: hands=1 via R (XRDirectInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.1deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+[VRRange][Handling] Weapon_Rifle: hands=1 via R (XRDirectInteractor) blend=0.00 sag=22.0deg lag=0.0cm recoil pitch=0.0deg yaw=0.0deg instability=0.00 handSpeed=0.00m/s
+]]></output>
+            </test-case>
+            <test-case id="1077" name="SecondHandSupportsThePistolAndTakesOverWhenTheFirstLetsGo" fullname="VRRange.Tests.WeaponInteractionTests.SecondHandSupportsThePistolAndTakesOverWhenTheFirstLetsGo" methodname="SecondHandSupportsThePistolAndTakesOverWhenTheFirstLetsGo" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="635959221" result="Passed" start-time="2026-11-04 21:57:32Z" end-time="2026-11-04 21:57:33Z" duration="0.466133" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+[VRRange][Handling] Weapon_Pistol: hand-over to L (previous shooting hand released)
+]]></output>
+            </test-case>
+            <test-case id="1078" name="SemiAutoFiresOncePerTriggerPullAndConsumesAmmo" fullname="VRRange.Tests.WeaponInteractionTests.SemiAutoFiresOncePerTriggerPullAndConsumesAmmo" methodname="SemiAutoFiresOncePerTriggerPullAndConsumesAmmo" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="686800055" result="Passed" start-time="2026-11-04 21:57:33Z" end-time="2026-11-04 21:57:34Z" duration="0.660808" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+]]></output>
+            </test-case>
+            <test-case id="1087" name="WeaponReturnsToSocketAndWhenFallingThroughTheFloor" fullname="VRRange.Tests.WeaponInteractionTests.WeaponReturnsToSocketAndWhenFallingThroughTheFloor" methodname="WeaponReturnsToSocketAndWhenFallingThroughTheFloor" classname="VRRange.Tests.WeaponInteractionTests" runstate="Runnable" seed="945475870" result="Passed" start-time="2026-11-04 21:57:34Z" end-time="2026-11-04 21:57:34Z" duration="0.488006" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+[VRRange] Graphics profile: PCVR | quality level 'PCVR' | URP asset URP-PCVR
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] Near-Far Interactor: grab casters now include the Weapon layer (near 257, far -2147483359)
+[VRRange] XR is not active (XRSettings.enabled == false). On device this means OpenXR did not initialise.
+[VRRange] VR Shooting Range 0.3.2 | Unity 6000.3.27f1 | LinuxEditor | PC | GPU Null Device (Null) | XR device:  | OpenXR runtime: unknown (TargetInvocationException)
+Saving results to: /root/.config/unity3d/UniversityProject/VR Shooting Range/TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

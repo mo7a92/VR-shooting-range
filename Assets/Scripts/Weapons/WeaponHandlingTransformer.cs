@@ -59,6 +59,9 @@ namespace VRRange.Weapons
         public float HandSpeed => m_HandSpeed;
         public bool WeightSimulation { get => m_WeightSimulation; set => m_WeightSimulation = value; }
         public Transform PrimaryGrip => m_PrimaryGrip;
+        /// <summary>World position of the primary palm centroid as actually used for the current shooting hand (mirrored in X for a left hand; see <see cref="RefreshInteractors"/>).</summary>
+        public Vector3 PrimaryGripWorld => m_Grab != null ? m_Grab.transform.TransformPoint(m_PrimaryGripLocal.position) : m_PrimaryGrip != null ? m_PrimaryGrip.position : transform.position;
+        XRGrabInteractable m_Grab;
         public Transform SupportGrip => m_SupportGrip;
         /// <summary>Accumulated recoil pitch in degrees (positive = muzzle up).</summary>
         public float RecoilPitch => -m_RecoilEuler.x;
@@ -128,6 +131,7 @@ namespace VRRange.Weapons
 
         void RefreshInteractors(XRGrabInteractable grab)
         {
+            m_Grab = grab;
             m_Primary = null; m_Support = null;
             var list = grab.interactorsSelecting;
             for (int i = 0; i < list.Count; i++)
@@ -140,6 +144,13 @@ namespace VRRange.Weapons
             m_PrimaryGripLocal = new Pose(t.InverseTransformPoint(prim.position), Quaternion.Inverse(t.rotation) * prim.rotation);
             var sup = m_SupportGrip != null ? m_SupportGrip : grab.secondaryAttachTransform;
             m_SupportGripLocal = sup != null ? new Pose(t.InverseTransformPoint(sup.position), Quaternion.Inverse(t.rotation) * sup.rotation) : m_PrimaryGripLocal;
+            // The grip points are the palm centroids, authored for a right shooting hand on the weapon's +X side. A left
+            // shooting hand holds the mirror image (its palm on -X, the support hand on +X).
+            if (m_Primary is XRBaseInputInteractor input && input.handedness == InteractorHandedness.Left)
+            {
+                m_PrimaryGripLocal.position = new Vector3(-m_PrimaryGripLocal.position.x, m_PrimaryGripLocal.position.y, m_PrimaryGripLocal.position.z);
+                m_SupportGripLocal.position = new Vector3(-m_SupportGripLocal.position.x, m_SupportGripLocal.position.y, m_SupportGripLocal.position.z);
+            }
             m_TwoHandTarget = m_Support != null && sup != null ? 1f : 0f;
         }
 

@@ -193,7 +193,8 @@ namespace VRRange.Tests
                     float palmGap;
                     if (h.IsLeft && cups) { other.RefreshOwnShapes(); palmGap = NearestSurface(h.PalmSkinWorldPosition, other.OwnShapes); }
                     else palmGap = NearestSurface(h.PalmSkinWorldPosition, wcv.Shapes());
-                    report.AppendLine($"{tag}: palm skin point {palmGap * 1000f:0.0} mm from the {(h.IsLeft && cups ? "shooting hand" : "grip")} surface");
+                    var anchorPos = h.CurrentAnchor.GetPalmPose(h.IsLeft).position;
+                    report.AppendLine($"{tag}: palm skin point {palmGap * 1000f:0.0} mm from the {(h.IsLeft && cups ? "shooting hand" : "grip")} surface; authored anchor point {NearestSurface(anchorPos, wcv.Shapes()) * 1000f:0.0} mm from the grip, skin point {Vector3.Distance(anchorPos, h.PalmSkinWorldPosition) * 1000f:0.0} mm from the anchor (de-penetration offset {h.DepenetrationOffset.magnitude * 1000f:0.0} mm), skin offset in use {h.PalmSkinOffset * 1000f:0.0} mm");
                     // the palm is concave: on this mesh the pads around the centre stand up to 7 mm proud of the centre point, so the
                     // centre point itself may hover up to 8 mm while the pads touch
                     if (palmGap > 0.008f) failures.Add($"{tag}: palm floats {palmGap * 1000f:0.0} mm off the {(h.IsLeft && cups ? "shooting hand" : "grip")} (max 8 mm)");

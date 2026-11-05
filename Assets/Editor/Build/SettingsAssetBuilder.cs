@@ -59,7 +59,7 @@ namespace VRRange.Editor
             // under auto fire (still usable, owner's decision). Two hands make each of them steady.
             ApplyHandling(Pistol, mass: 0.9f, balance: 0.04f, oneHandResp: 0.06f, twoHandResp: 0.04f, sag1: 1.5f, sag2: 0.5f, sway1: 0.3f, sway2: 0.12f, posLag: 0.015f, rotLag: 5f, recoilUnsup: 1.3f, recoilSup: 0.75f, recUnsup: 9f, recSup: 14f, instab: 0.18f, decay: 3f, supportInfluence: 0f, maxPitch: 25f, maxYaw: 10f);
             ApplyHandling(Rifle, mass: 3.4f, balance: 0.28f, oneHandResp: 0.3f, twoHandResp: 0.04f, sag1: 22f, sag2: 0.6f, sway1: 1.6f, sway2: 0.15f, posLag: 0.04f, rotLag: 14f, recoilUnsup: 2.8f, recoilSup: 0.6f, recUnsup: 4.5f, recSup: 12f, instab: 0.35f, decay: 2f, supportInfluence: 0.85f, maxPitch: 30f, maxYaw: 14f);
-            ApplyHandling(Smg, mass: 2.4f, balance: 0.14f, oneHandResp: 0.16f, twoHandResp: 0.04f, sag1: 9f, sag2: 0.5f, sway1: 0.9f, sway2: 0.15f, posLag: 0.03f, rotLag: 9f, recoilUnsup: 2.0f, recoilSup: 0.65f, recUnsup: 7f, recSup: 14f, instab: 0.25f, decay: 2.5f, supportInfluence: 0.85f, maxPitch: 25f, maxYaw: 12f);
+            ApplyHandling(Smg, mass: 2.4f, balance: 0.14f, oneHandResp: 0.16f, twoHandResp: 0.04f, sag1: 9f, sag2: 0.5f, sway1: 0.9f, sway2: 0.15f, posLag: 0.03f, rotLag: 9f, recoilUnsup: 2.0f, recoilSup: 0.65f, recUnsup: 7f, recSup: 14f, instab: 0.25f, decay: 2.5f, supportInfluence: 0f, maxPitch: 25f, maxYaw: 12f); // cup hold like the pistol: no two-point aim
             BuildHandPoses(force);
             AssetDatabase.SaveAssets();
             SetupLog.Ok("ScoringRules, GameModeSettings, 3 WeaponDefinitions (with handling profiles) and hand poses ready in Assets/Settings");

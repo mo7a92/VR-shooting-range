@@ -211,10 +211,21 @@ namespace VRRange.Hands
 
         // ---------- calibration ----------
         /// <summary>Finds the XR Hands rig joints and derives per-joint curl axes from the rest pose (no hard-coded axis conventions).</summary>
+        /// <summary>
+        /// The XR Hands sample mesh is a fat, slightly large hand: 39 mm thick at the palm (22 mm palm skin + 17 mm back of hand) and
+        /// 96 mm wrist to middle knuckle, where an adult hand is about 28 mm and 88 mm. Its thenar and web are 10-17 mm thicker than
+        /// the palm centre, which held every palm 15-20 mm off a grip panel (the de-penetration backs the whole rigid hand out of the
+        /// frame overhang). The root is scaled once at calibration to adult proportions: 0.72 across the palm (hand-root Y = palm
+        /// normal), 0.92 along and across the fingers. Every measurement below (skin, finger radius, palm cloud) is taken after it.
+        /// </summary>
+        static readonly Vector3 kProportionScale = new Vector3(0.92f, 0.72f, 0.92f);
+        bool m_ProportionsApplied;
+
         public void Calibrate()
         {
             m_Calibrated = false;
             if (m_HandRoot == null) return;
+            if (!m_ProportionsApplied) { m_HandRoot.localScale = Vector3.Scale(m_HandRoot.localScale, kProportionScale); m_ProportionsApplied = true; }
             string p = m_IsLeft ? "L_" : "R_";
             var all = m_HandRoot.GetComponentsInChildren<Transform>(true);
             Transform Find(string n) { foreach (var t in all) if (t.name == p + n || t.name == n) return t; return null; }
@@ -483,22 +494,13 @@ namespace VRRange.Hands
             world.Clear();
             if (smr == null || smr.sharedMesh == null) return false;
             var mesh = new Mesh();
-            smr.BakeMesh(mesh, true); // vertices in the renderer's local space with its scale applied
+            // useScale = true bakes into the renderer's local space including its (lossy) scale, so the exact inverse is the
+            // renderer's full local-to-world transform; this also holds under the non-uniform proportion scale on the hand root
+            smr.BakeMesh(mesh, true);
             var local = mesh.vertices;
             var t = smr.transform;
-            var scaled = new Vector3[local.Length]; var unscaled = new Vector3[local.Length];
-            var b1 = new Bounds(); var b2 = new Bounds(); bool first = true;
-            for (int i = 0; i < local.Length; i++)
-            {
-                scaled[i] = t.position + t.rotation * local[i];               // scale already baked in
-                unscaled[i] = t.TransformPoint(local[i]);                     // scale applied again (if BakeMesh ignored it)
-                if (first) { b1 = new Bounds(scaled[i], Vector3.zero); b2 = new Bounds(unscaled[i], Vector3.zero); first = false; }
-                else { b1.Encapsulate(scaled[i]); b2.Encapsulate(unscaled[i]); }
-            }
+            for (int i = 0; i < local.Length; i++) world.Add(t.TransformPoint(local[i]));
             Object.Destroy(mesh);
-            float target = smr.bounds.size.magnitude;
-            bool useScaled = Mathf.Abs(b1.size.magnitude - target) <= Mathf.Abs(b2.size.magnitude - target);
-            world.AddRange(useScaled ? scaled : unscaled);
             return true;
         }
 
@@ -558,10 +560,11 @@ namespace VRRange.Hands
             var wcv = m_HeldWeapon.GetComponent<WeaponContactVolumes>();
             if (wcv != null && wcv.volumes != null) foreach (var c in wcv.volumes) if (c != null && c.enabled) m_Targets.Add(c);
             if (m_Targets.Count == 0 && m_Anchor.gripCollider != null) m_Targets.Add(m_Anchor.gripCollider);
+            // both hands know each other: the support hand's palm backs out of the shooting hand, and the shooting hand's
+            // fingers stop at the support hand's thumb / palm instead of being solved as if it were not there
             m_OtherHand = null;
-            if (m_Anchor.role == GripRole.Support)
-                foreach (var h in FindObjectsByType<HandPresence>(FindObjectsSortMode.None))
-                    if (h != this && h.HeldWeapon == m_HeldWeapon) { m_OtherHand = h; break; }
+            foreach (var h in FindObjectsByType<HandPresence>(FindObjectsSortMode.None))
+                if (h != this && h.HeldWeapon == m_HeldWeapon && h.m_HeldWeapon != null) { m_OtherHand = h; break; }
         }
 
         /// <summary>
@@ -607,7 +610,9 @@ namespace VRRange.Hands
                 // length off the palm centre line) are soft and squash under a frame / receiver overhang; they get 8 mm on top of
                 // their bulge excess. The palm centre strip gets its bulge excess only (none at the palm centre itself).
                 float across = Mathf.Abs(Vector3.Dot(v - PalmWorldPosition, Vector3.Cross(PalmInwardWorld, (m_MiddleProx != null ? m_MiddleProx.position : PalmWorldPosition + m_HandRoot.forward) - PalmWorldPosition).normalized));
-                float ridge = across > handLen * 0.3f ? 0.008f : 0f;
+                // ramps from 0 at the palm centre line to 8 mm at 30 % of the hand length: a palm pressed on a flat panel at the
+                // grip-pose roll (18 deg) touches along a line and its pressing edge squashes a few mm
+                float ridge = 0.008f * Mathf.Clamp01(across / (handLen * 0.3f));
                 // only the palm proper may compress: the knuckle row / proximal finger segments (beyond 55 % of the hand length)
                 // and the wrist (behind 45 %) hang below the palm plane in the rest pose and must not inherit a "bulge" allowance
                 float along = Vector3.Dot(v - PalmWorldPosition, fingerDirRest);
@@ -638,10 +643,16 @@ namespace VRRange.Hands
                     // a bulge vertex may compress by its excess thickness (less into the other hand)
                     // (a support hand presses on rails and handguard edges, not on a panel under an overhang: 3 mm there too)
                     bool crossHand = si >= m_OtherHandShapeStart && m_OtherHandShapeStart >= 0;
+                    if (crossHand && m_Anchor != null && m_Anchor.role == GripRole.Primary) continue; // the shooting hand never moves for the support hand
                     depth -= crossHand || (m_Anchor != null && m_Anchor.role != GripRole.Primary) ? Mathf.Min(excess, kMaxCrossHandCompression) : excess;
                     if (depth <= 0f) continue;
                     float align = Vector3.Dot(n, outward);
-                    float e = align >= 0.35f ? Mathf.Min(depth / align, 0.03f) : Mathf.Min(ExitDistance(m_Shapes[si], v, outward), depth * 2f, 0.03f);
+                    // exact travel along the push direction to leave the shape (a corner vertex near the back strap must not be
+                    // charged the full depth-over-cosine of the side face), minus the travel the allowed compression already covers;
+                    // side-entered vertices (face normal > ~70 deg from the palm normal) are bounded by twice their depth so
+                    // wrap-around contact cannot lift the palm off the grip
+                    float exitAlong = Mathf.Max(0f, ExitDistance(m_Shapes[si], v, outward) - (crossHand || (m_Anchor != null && m_Anchor.role != GripRole.Primary) ? Mathf.Min(excess, kMaxCrossHandCompression) : excess) / Mathf.Max(align, 0.5f));
+                    float e = Mathf.Min(exitAlong, align >= 0.35f ? depth / align : depth * 2f, 0.03f);
                     if (e > best) { best = e; shape = si; depthOut = depth; }
                 }
                 return best;
@@ -660,7 +671,7 @@ namespace VRRange.Hands
             float pass2 = 0f; string pass2Shape = "";
             // Second pass for the other hand only (support hand cupping the shooting hand): its finger capsules are round, so
             // the hand backs out of the deepest one along that capsule's radial normal, a few iterations.
-            if (m_OtherHandShapeStart >= 0)
+            if (m_OtherHandShapeStart >= 0 && m_Anchor != null && m_Anchor.role != GripRole.Primary)
             {
                 for (int iter = 0; iter < 3; iter++)
                 {
@@ -898,7 +909,7 @@ namespace VRRange.Hands
             if (Time.time >= m_NextContactSolve || m_SolvedAgainst != grip)
             {
                 m_NextContactSolve = Time.time + 1f / Mathf.Max(1f, m_ContactSolveRate);
-                if (m_SolvedAgainst != grip || m_Targets.Count == 0) RefreshTargets();
+                if (m_SolvedAgainst != grip || m_Targets.Count == 0 || (m_OtherHand == null) != (m_HeldWeapon.HandCount < 2)) RefreshTargets();
                 m_SolvedAgainst = grip;
                 RefreshOwnShapes();
                 RefreshShapes();
@@ -1056,7 +1067,7 @@ namespace VRRange.Hands
             // frame surface, so the thumb rests ON the frame instead of hovering above it.
             float bestScore = float.MaxValue, bestOpp = 0f, bestCurl = minCurl; bool found = false;
             float maxCurl = 1f, lowCurl = Mathf.Max(0f, minCurl - 0.3f);
-            for (float o = -30f; o <= 75f + 1e-3f; o += 7.5f)
+            for (float o = -60f; o <= 75f + 1e-3f; o += 7.5f)
             for (float curl = lowCurl; curl <= maxCurl + 1e-4f; curl += 0.1f)
             {
                 ApplyFingerCurl(0, curl, spread, o);
@@ -1092,7 +1103,7 @@ namespace VRRange.Hands
             if (m_DebugThumb)
             {
                 int sideFail = 0, deepFail = 0, ok = 0; float minGapSeen = float.MaxValue; float oppAtMin = 0f, curlAtMin = 0f;
-                for (float o = -30f; o <= 75f + 1e-3f; o += 15f)
+                for (float o = -60f; o <= 75f + 1e-3f; o += 15f)
                 for (float curl = lowCurl; curl <= maxCurl + 1e-4f; curl += 0.2f)
                 {
                     ApplyFingerCurl(0, curl, spread, o);
@@ -1136,9 +1147,10 @@ namespace VRRange.Hands
                 bool thenarSeg = thenar && i == 1; // metacarpal -> proximal
                 if (hasPrev)
                 {
-                    for (float u = 0.3f; u < 0.95f; u += 0.3f) { int s = thenarSeg ? SampleDeep(Vector3.Lerp(prev, p, u), grip, 0.004f) : Sample(Vector3.Lerp(prev, p, u), grip); if (s > result) result = s; }
+                    for (float u = 0.3f; u < 0.95f; u += 0.3f) { int s = thenarSeg ? SampleDeep(Vector3.Lerp(prev, p, u), grip, 0.002f) : Sample(Vector3.Lerp(prev, p, u), grip); if (s > result) result = s; }
                 }
-                if (i > 0) { int s = Sample(p, grip); if (s > result) result = s; }
+                // the thumb's base joint sits in the thenar, which is allowed to compress against the grip: bone clearance only
+                if (i > 0) { int s = thenar && i == 1 ? SampleDeep(p, grip, 0.002f) : Sample(p, grip); if (s > result) result = s; }
                 prev = p; hasPrev = true;
                 if (result == 2) return 2;
             }

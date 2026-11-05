@@ -1,192 +1,115 @@
-# Next session: headset feedback round 1 (2026-11-04)
+# Next session: make the hands actually hold the guns (round 2 is NOT accepted)
 
-Paste everything below into the Claude Code session that works on this repo.
+Read this whole file before touching code. It is the handoff from the cloud sessions of 2026-11-04/05.
+Branch: `claude/determined-feynman-nc2t0l`, last commit with code changes `3dcf7e7` (round 2b). `TEST_RESULTS.md` Stage 7 is the
+honest record. `Docs/Screenshots/round2_fixes/` shows the state at `3dcf7e7`. Nothing has run on a headset since round 1.
 
----
+## 1. The problem, in one paragraph
+Look at `Docs/Screenshots/round2_fixes/round2_pistol_both_front.png` and `round2_smg_both_palmside.png` from commit `7b093c8`
+(the owner's words: "can anyone in the world hold a gun like that? the gun is floating"). The hands hover around the weapons instead
+of gripping them: the palm centre's skin sits 12–15 mm off the grip panel, the shooting thumb does not touch the frame (18–38 mm),
+and the two-handed pistol / SMG holds are open cups 20–40 mm apart. The first round-2 test "passed" because it only checked
+"nothing inside the weapon" and "fingertip within 12 mm"; a hand floating with fingertips grazing the front strap satisfies both.
+The acceptance criteria were tightened in `3dcf7e7` and the test now **fails by design** until the hands are right.
 
-Continue the VR Shooting Range project. The owner played the **Windows PCVR build on a Quest 2 through Virtual Desktop
-(VDXR)** on their PC (RTX 4070 SUPER) for the first time. A local Claude Code session fixed the blocking bugs it found
-(listed under "Already fixed"). Their commit is on branch `local/headset-fixes-2026-11-04`. Start from it:
+## 2. Hard rules (unchanged from the owner)
+- Unity **6000.3.27f1** only, packages unchanged (XRI 3.3.2, OpenXR 1.16.1, Input System 1.14.2, URP 17.3). PCVR only, no APK.
+- No scene rebuild, no re-bake (prefab + settings rebuild only: `VRRange.Editor.RangeProjectBootstrap.RunPrefabsBatch`).
+- Every interaction test through the rig's real `NearFarInteractor`s; time-based waits, not frames.
+- Never claim a pass without the numbers; look at every screenshot before claiming anything; do not loosen the criteria to get green.
+- No camera recoil / shake. Keep GUIDs stable. Do not commit builds, licence files or credentials.
+- **Push only when the acceptance test passes** (owner's instruction). Commit locally as often as you like.
 
-```
-git fetch origin
-git checkout claude/determined-feynman-nc2t0l
-git merge --ff-only origin/local/headset-fixes-2026-11-04
-```
+## 3. Acceptance test (already written, keep it)
+`Assets/Tests/PlayMode/HandPenetrationTests.cs::HandsRestOnTheWeaponsWithoutSinkingInAndWristsSitLikeAHighGrip`, 6 configurations
+(pistol / rifle / SMG × shooting hand alone / with support hand). It bakes both hand meshes and reports, per hand:
+- max depth inside the weapon outside the "compression zone" (≤ 4 mm), inside the zone (≤ 12 mm), inside the other hand (≤ 4 mm)
+- vertices in front of the muzzle (must be 0)
+- palm centre skin point distance to the grip (≤ 8 mm; for a cupping support hand: to the shooting hand's shapes)
+- fingertip bone distance to the nearest contact surface (≤ 12 mm; SMG thumb 16 mm; a support little finger may hang free)
+- wrist pitch (shooting ≤ 25° below the bore, support ≤ 30°), back-of-hand roll (reported), held wrist vs empty-hand wrist (< 4 cm)
+It writes `Logs/hand_report.txt` and 48 screenshots to `Logs/shots/round2_*.png`. Read the report first, then the screenshots.
 
-Read `CLAUDE.md`, then `TEST_RESULTS.md` **Stage 5**. Then fix the six issues below in the order given.
+## 4. How the hand system works (files)
+- `Assets/Scripts/Hands/HandPresence.cs` — everything: calibration (`Calibrate`), per-hand measurement of palm skin / back-of-hand
+  thickness and finger flesh radius from the baked mesh (`MeasureSkinOffsets`, `MeasureFingerRadius`, `BakeWorldVertices`),
+  own contact shapes (palm box + finger capsules, `RefreshOwnShapes`), targets (`RefreshTargets`: the weapon's
+  `WeaponContactVolumes` + the other hand), palm de-penetration on a cached rest-pose vertex cloud (`CachePalmCloud`,
+  `SolvePalmDepenetration`: pushes the hand root out along its palm normal until the deepest vertex clears, with a per-vertex
+  "flesh compression" allowance `m_PalmCloudExcess`), finger closing (`SolveFinger` bisection to first contact, `SolveTipExtra` closes the
+  end joints until the tip touches, `SolveNearestApproach` when nothing touches), thumb (`SolveThumbOnPalmSide`: joint search over
+  opposition and curl, must stay on the palm's side of the grip). Free hand pose = OpenXR grip-pose fist
+  (`DefaultFreePalmForward/Up`); held pose = anchor pose + skin thickness along the anchor's up, plus the de-penetration offset.
+- `Assets/Scripts/Weapons/WeaponContactVolumes.cs` + `Assets/Editor/Build/WeaponPrefabBuilder.cs::BuildContactVolumes` — per-part
+  **boxes** shrink-wrapped to mesh vertices inside authored seed boxes (`contactVolumes` in `Assets/Art/Weapons/weapons_layout.json`),
+  on layer `HandContact` (collides with nothing). Anchors `primaryPalm` / `supportPalm` (pos = the palm SKIN contact point, forward =
+  fingers, up = back of the hand) live in the same JSON; the prefab builder overrides the primary forward/up with the free-pose fist.
+- `Assets/Scripts/Weapons/WeaponHandlingTransformer.cs` — holds the weapon by `PalmAttach` (anchor + up × 22 mm) at the controller;
+  mirrors X for a left shooting hand; `PrimaryGripWorld` is the point actually used.
+- Hand mesh: the XR Hands sample rig (skinned mesh, 8,651 vertices per hand), driven from controller input by `Assets/Scripts/Hands`.
 
-**This session's credits run out today. The owner needs a final, polished, working Windows PCVR build at the end of it.**
-Work in priority order, commit and push after each issue, and keep the build green at every commit. If time runs short,
-ship what works rather than leaving half-done work.
+## 5. What was measured and what the real causes are
+1. **The hand model is too fat and too big.** Baked: palm skin 22.4 mm + back of hand 16.7 mm = 39 mm thick (adult ≈ 28 mm), wrist to
+   middle knuckle 96 mm (adult ≈ 88 mm), thenar / hypothenar / web 10–17 mm thicker than the palm centre. The rigid thenar held every
+   palm 15–20 mm off the grip panel.
+2. **Box contact volumes do not match the palm.** The fitted frame / receiver boxes are as wide as the grip and cut 11–12 mm into the
+   web of the hand; the grip box is a "widest point" box, so the palm pressed on it at the 18° grip-pose roll touches along one edge
+   while the centre floats. Every allowance that lets the edge squash also lets the palm sink elsewhere (round 2c measured:
+   palm 5.8–8.0 mm off, but rifle 6.2 mm and SMG 10.7 mm inside the grip box).
+3. **The thumb solve finds no admissible pose** once the hand sits low and the thenar is pressed against the grip: it falls back to
+   curl 0 and the thumb points up along the slide 18–38 mm away. Needs `DebugThumb` output (`VRRANGE_DEBUG_THUMB=1`) to see which
+   constraint rejects every candidate (side-of-grip test, `SampleDeep` bone clearance, or the ≥ 3 mm palm-side rule).
+4. **Two-handed cups** (pistol and SMG: the Micro Uzi has only 10 cm of free receiver between the trigger finger and the muzzle,
+   so an under-receiver support hand stands in front of the muzzle; it was changed to cup the shooting hand like the pistol). The
+   support palm still sits 20–40 mm off the shooting hand: the cross-hand clearance (3–7 mm inflation of capsules) and the thenar
+   bulge keep it off, and the authored `supportPalm` positions were never measured against the thinner hand.
+5. Authored skin points: the rifle and SMG `primaryPalm` x values were measured 7–8 mm off their panels (fixed in the patch:
+   rifle x 0.012, SMG x 0.010); pistol 1.8 mm (fine).
 
-## Hard rules for this round
-- **Use Unity 6000.3.27f1 exactly.** Do not upgrade the editor or any package. A test build on Unity 6000.6 force-upgraded
-  XRI to 3.6.1, Input System to 1.20.1 and OpenXR to 1.18 and broke grabbing.
-- **Keep `CLAUDE.md`'s rules:** no camera shake or headset recoil (recoil goes on the weapon model plus haptics only),
-  stable GUIDs, idempotent generators.
-- **Avoid a scene rebuild.** "Rebuild Everything" drops the baked lightmaps. If you do rebuild, re-bake
-  (`VR Range > Build > Bake Lighting`) before the final build. Prefer changing settings assets, prefabs and runtime code.
-- **Test through the rig's real interactors.** The earlier suites grabbed through scripted `XRDirectInteractor`s and
-  `SelectEnter` calls, so they missed the fact that the real `NearFarInteractor` could never see weapons. Every new
-  interaction test must use the rig's `NearFarInteractor` and its casters, as `Assets/Tests/PlayMode/RigGrabAndThumbTests.cs` does.
-- **Tests must measure time, not frames.** Local frame rates are uncapped and much higher than in your container, so a loop
-  over N frames covers far less time. One existing test failed locally for exactly this reason and was fixed.
-- **This round is PCVR only.** The deliverable is the Windows PCVR build (`Tools/Windows/build_pcvr.ps1`, zipped).
-  **Skip the Quest APK entirely**: don't build it, and don't tune for Quest 2 performance. Don't break the Quest
-  configuration either. The focus is polishing and fixing the issues below.
+## 6. What was tried and rejected (do not repeat blindly)
+- Heel-lift rotation about the knuckle line: the bulge sits mid-palm, so it saturated at 14°, moved the wrist 4–5 cm, no gain.
+- Knuckle spheres + 3–4 mm cross-hand inflation alone: support palm sank 6.5–9 mm into the index knuckle. Spheres kept, see patch.
+- Under-receiver SMG support hand: in front of the muzzle whatever the z.
+- "Nearest approach" finger fallback: kept, works (rifle little finger 12.9 → 8.8 mm).
 
-## Owner's decisions (follow these; don't ask again)
-- **Pistol two-handed release:** if the shooting hand lets go while the support hand is on the pistol, the pistol
-  **passes to the support hand**, which becomes the new primary grip. The pistol must not drop.
-- **One-handed rifle:** it stays **usable but hard to control**. It leans and sags down noticeably, has much worse
-  recoil control, and wanders under auto fire. Never block one-handed fire.
-- **Weight on every weapon:** all three weapons get believable, distinct weight (sag, lag, inertia and recoil from their
-  mass and balance). The pistol is light but still has some, the SMG is in between, and the rifle is heaviest and
-  front-heavy.
+## 7. Unpushed progress: apply this patch first
+`Docs/TestResults/round2c/round2c_hand_proportions_experiment.patch` (on top of `3dcf7e7`, `git apply`). It contains, all measured
+in a run whose report is `Docs/TestResults/round2c/hand_report_round2c_last_run.txt`:
+- hand root scaled once at calibration to adult proportions `(0.92, 0.72, 0.92)` (hand-root Y ≈ palm normal) → palm 15.8 mm, back of
+  hand 12.1 mm, finger radius 8.6 mm, wrist→knuckle 88 mm; `BakeWorldVertices` made exact (`BakeMesh(mesh, true)` + `TransformPoint`)
+  so measurements are right under that scale
+- de-penetration travel = exact `ExitDistance` along the push direction (the old depth / cos(face angle) doubled the push at a box corner)
+- both hands know each other (`RefreshTargets`), the shooting hand never moves for the support hand, pass 2 only for support hands
+- SMG `supportHandInfluence` = 0 (cup hold, no two-point aim), thumb opposition search −60..75°, thumb base joint uses bone clearance
+- anchors: pistol primary y −0.026, rifle (0.012, −0.036, −0.018), SMG (0.010, 0.06, −0.006), cups x 0.03
+Result of that run: palm centre 8.0 / 5.8 / 7.1 mm off (pistol / rifle / SMG) — at the bound — but rifle 6.2 mm and SMG 10.7 mm
+inside the grip box outside the compression zone, thumbs 21 / 18 / 26 mm, cups 20–25 mm. It is progress, not a fix.
 
-## Already fixed locally (in the commit you merged; verified with Unity 6000.3.27f1 on the owner's PC)
-1. **Weapons could not be grabbed at all.**
-   - **Cause:** the XRI Starter Assets `NearFarInteractor` casters only query the `Default` layer (near caster,
-     `SphereInteractionCaster.physicsLayerMask`) and `Default`, `UI` and layer 31 (far caster,
-     `CurveInteractionCaster.raycastMask`). The weapons live on the `Weapon` layer (8).
-   - **Fix:** `PlayerRigSetup.Start` ORs the Weapon layer into both masks. It logs
-     `[VRRange] ... grab casters now include the Weapon layer`.
-   - **What this means for you:** the owner's first real grabs happened only after this fix. Nothing about weapon
-     handling had been felt on a headset before (see issues 1, 2 and 5).
-2. **The thumb folded down like a finger** (`HandPresence.Calibrate` / `ApplyCurls`).
-   - **Causes:** the thumb's curl axis aimed at the palm normal; it used finger-sized limits (165° total), which folded
-     it into the palm; and the thumb's spread sign was mirrored wrong on one hand.
-   - **Fix:** the thumb now bends toward the middle finger's intermediate joint, has its own limits
-     (`m_ThumbMaxDegrees` = 15/45/55°), and gets empirical sign checks for both bend and spread at calibration.
-   - **Result:** the fist thumb tip in palm space is (across, inward, forward) = (-11, +11, +29) mm, identical for both hands.
-3. **The player was too short.** OpenXR 1.16 maps Floor mode to the STAGE space, and Virtual Desktop's STAGE floor can be
-   wrong. `PlayerRigSetup` now has a floor calibration:
-   - Rest a controller on the floor and click both thumbsticks for 1 s, or press PageUp / PageDown (±2 cm) or Home
-     (reset). The offset is stored in PlayerPrefs.
-   - The game logs the eye height to `Player.log` 5 s after start. The owner's last session logged 1.51 m.
-4. **Tests:**
-   - Added `RigGrabAndThumbTests`: the real casters include the Weapon layer, the real near caster finds a touched
-     pistol, and the thumb opposes without entering the palm.
-   - Made `TargetMotionTypesBehaveAsSpecified` time-based.
-   - Local results: EditMode 34/34, PlayMode 67/67. Windows PCVR build: 0 errors.
+## 8. Recommended next steps, in order
+1. **Replace the box contact volumes for grip and frame / receiver with convex hulls of the mesh parts** (MeshCollider convex, or a
+   signed-distance over the hull planes computed at prefab build time and stored on `WeaponContactVolumes`). `HandPresence.ContactShape`
+   has `kind` box / capsule / sphere; add a convex kind with `SignedDistance`, `DepthAndNormal`, `ExitDistance`. This removes the
+   edge-versus-penetration trade-off that blocked round 2c. Keep the `HandContact` layer.
+2. With hulls in place, drop the compression allowance to a small uniform value (2–3 mm) and re-measure; the palm should then sit on
+   the real panel with the centre ≤ 4 mm off and nothing > 4 mm inside.
+3. Thumb: run with `VRRANGE_DEBUG_THUMB=1`, print per candidate which constraint rejects it, and fix that constraint (likely the
+   `SampleDeep` clearance for the metacarpal now that the thenar is pressed on the grip, or the side-of-grip sign for the frame).
+4. Cups: author `supportPalm` by measurement — place the support palm skin point on the shooting hand's middle/ring finger capsules
+   (the report prints "authored anchor point ... from the grip" and the skin-point gap), target ≤ 4 mm skin-to-capsule with the 3 mm
+   cross-hand inflation; keep the shooting hand's fingers out of the support thumb.
+5. Only then: full PlayMode + EditMode, Windows build, screenshots, `TEST_RESULTS.md` Stage 7 rewritten with the new numbers,
+   `FINAL_QA_REPORT.md` R2 / R12, commit, push.
 
-## Issues to fix (owner's feedback after playing), in priority order
-
-### 1. Bullet speed is too slow (quick data change; do it first)
-- **Current values:** `muzzleVelocity` 90 / 180 / 110 m/s with `gravityMultiplier` 3 / 2 / 3. The owner wants real values.
-  These were researched already; don't spend time searching:
-
-| Weapon (model) | Round | Real muzzle velocity | Real cyclic rate |
-|---|---|---|---|
-| Pistol (P38-style service pistol) | 9×19 mm, 125 mm barrel | **350–365 m/s** (use 360) | semi-auto |
-| Rifle (M4A1) | 5.56×45 M855, 14.5" barrel | **≈880–900 m/s** (use 885) | 700–950 rpm (use 800) |
-| SMG (Micro Uzi) | 9×19 mm | **≈350 m/s** | ≈1,200 rpm (use 1,200) |
-
-- **Changes:**
-  - Set `gravityMultiplier` to **1** for all three.
-  - Raise the `[Range]` limits in `WeaponDefinition` (`muzzleVelocity` to at least 1,000; `roundsPerMinute` is already 1,500).
-  - Update the defaults in `Assets/Editor/Build/SettingsAssetBuilder.cs` so a regeneration keeps the new values.
-- **Checks:**
-  - The `Projectile` swept hit test must not tunnel at 900 m/s: at 90 Hz a rifle bullet moves about 10 m per frame. Add a
-    PlayMode test that shoots a 1 cm-thick target at 25 m with each weapon and requires a hit.
-  - Tracers will be close to instant. Keep a short, faint tracer streak so shots stay readable; that's realistic too.
-  - Update ballistics tests and docs that assumed the old numbers.
-
-### 2. The rifle has no weight when held in one hand
-- **Symptom:** the owner carries and fully auto-fires the M4A1 one-handed exactly as if it were held with two hands. It
-  doesn't sag or drop.
-- **First, confirm the handling transformer actually applies under the real `NearFarInteractor`.** It replaced XRI's
-  general grab transformer, but it was only tested with scripted direct interactors. Log the live sag angle and
-  response while holding the rifle, and fix any path, such as far-grab attach, that bypasses it.
-- **Then make one-handed rifle use clearly worse.** A 3.4 kg rifle with its balance about 28 cm forward can't be held level
-  at arm's length:
-  - **Sag:** `oneHandSagDegrees` around 18–25°. Raise the `[Range]` cap of 12 and keep the clamps sensible.
-  - **Lag:** `oneHandResponseSeconds` around 0.25–0.35 s.
-  - **Sway:** clearly visible.
-  - **Recoil:** much larger one-handed, so `recoilUnsupportedMultiplier` around 2.5–3. Instability builds quickly during
-    auto fire and makes the muzzle climb and wander.
-  - **Two hands:** with the support hand on the handguard it's steady, as now.
-- **SMG:** somewhere in between: about 2.4 kg, so moderate sag and lag one-handed, and steady with two hands.
-- **Pistol:** light (about 0.9 kg) but not weightless. Give it a small visible inertia and a slight droop after fast
-  movements; it stays quick to aim.
-- **One-handed rifle auto fire stays possible** (owner's decision) but loses control: the muzzle climbs and wanders until
-  it's mostly off target after about 5–8 rounds, and recovers once you stop firing.
-- Keep it fun and usable: the clamps must stop the weapon from going inside the body or the floor.
-- Update `WeaponHandlingTests` to the new expectations.
-
-### 3. Recoil is too weak
-- **Symptom:** the weapon stays almost still even during rapid consecutive shots.
-- **Current values:** `kickUpDegrees` pistol 6 / rifle 2.5 / SMG 1.8. Recovery is fast (`recoverySpeed` 16–24,
-  `recoverySupported` 16–18), so each kick is gone before the next shot.
-- **Target behaviour:**
-  - Larger visible kick per shot: pistol muzzle flip about 8–12°, rifle about 3–5° upward plus a backward push, SMG fast
-    and jittery.
-  - Slower recovery, so muzzle climb **accumulates** during follow-up and auto fire (recoil pattern: mostly up, with a
-    random horizontal walk).
-  - The weapon recovers toward the aim point after the trigger is released.
-  - Stronger, sharper haptics per shot.
-  - Supported (two-handed, or pistol with a support hand, see issue 4) recoil is noticeably smaller.
-- Recoil stays on the weapon model only, never on the camera.
-- Add a PlayMode test: 10 rapid rifle shots must raise the muzzle measurably more than 1 shot, and less when supported.
-
-### 4. Pistol: the second hand should support, not take the gun
-- **Symptom:** squeezing Grip with the other hand near the pistol takes it out of the first hand.
-- **Cause:** the pistol is built with `selectMode = Single` because `twoHanded` is 0. See
-  `Assets/Editor/Build/WeaponPrefabBuilder.cs:137`.
-- **Wanted:** a proper two-handed pistol grip. When the second hand grips near the pistol grip or the shooting hand, it
-  wraps around the shooting hand (support-hand cup, thumbs forward). It never steals the weapon.
-- **Implementation:**
-  - Use `Multiple` select mode for the pistol too, plus a `SupportGrip` anchor whose palm pose wraps the primary hand.
-    Add it to `weapons_layout.json`, `supportPalm`.
-  - `WeaponHandlingTransformer` treats this as "supported": less sway, less recoil, faster recovery.
-  - The support hand's visual snaps around the primary hand without intersecting it.
-  - **Releasing the primary hand while supported hands the pistol over to the support hand** (owner's decision). The
-    support hand smoothly becomes the primary grip on the pistol grip. Don't drop it, and don't snap it visibly.
-    Releasing the support hand returns the pistol to one-handed.
-- Test it with the rig's real interactors.
-
-### 5. Hands go through the weapon grips; the finger wrap is wrong
-- **Symptom:** when holding a weapon, the hand mesh penetrates the grip and the fingers don't wrap it believably.
-- **Review method:** render per-weapon screenshots, as in `VisualCaptureTests` and `RigGrabAndThumbTests.Shot`. Show the
-  pistol, rifle primary + support and SMG from the palm side, thumb side and top. Inspect every one.
-  - Warning: on the owner's PC, manual `Camera.Render()` screenshots in batch mode may not update skinned meshes between
-    poses. Check that the open and fist images actually differ, and force a skinning update if needed.
-- **Fix:**
-  - Re-author palm placement per weapon: `primaryPalm` / `supportPalm` in `Assets/Art/Weapons/weapons_layout.json`.
-  - Add per-finger curl per weapon pose in `Assets/Settings/HandPoses/*.asset`.
-  - Preferably, add a simple per-finger contact solve. For each finger, increase the curl until its segments touch the
-    weapon's grip collider (sphere-cast or `Physics.ComputePenetration` against a grip collider on the weapon), then
-    stop. Fingers then wrap the actual grip shape on every weapon and never pass through it.
-  - Trigger finger: resting outside the guard, then on the trigger when it's pulled.
-- **Acceptance:**
-  - No visible penetration in the screenshots, both hands.
-  - The thumb wraps the grip on the opposite side from the fingers.
-  - The rifle support hand holds the handguard from below.
-  - Add an automated check that fingertip joints sit at most about 5 mm inside the grip collider.
-
-### 6. Overall environment, texture and feature polish (time-box this; only after 1–5 work)
-The owner's focus is **polishing what exists and fixing the issues above**, not big new features. Polish before features.
-- **Visuals (PCVR first):**
-  - Check texture resolution and tiling on the floor, walls, counter and booths for visible blur or obvious repetition;
-    use the 2K/4K CC0 sets where they help.
-  - Add bullet-hole decals that suit each surface, plus dust or sparks on impact.
-  - Better reflection-probe coverage at the counter.
-  - Check the lightmap brightness against the real-time lights.
-- **Features, picked for low risk and high value:**
-  - A results board with per-weapon stats (accuracy, group size).
-  - A hit-confirm sound on the target.
-  - Visible magazine count / ammo on the weapon.
-  - A clear "how to play" sign at the counter (Grip to grab, support hand, calibrate floor).
-- Don't destabilise anything that works. Skip any feature that doesn't fit the remaining time.
-
-## Definition of done (report each item in `TEST_RESULTS.md` Stage 6)
-- Compiles with 0 errors.
-- EditMode and PlayMode suites pass, including the new tests for each issue above.
-- Windows PCVR build succeeds with 0 errors. Hand over `VRShootingRange_PCVR_Windows.zip` with its sha256.
-- The per-weapon hand screenshots are committed under `Docs/Screenshots/round1_fixes/` and inspected.
-- `LOCAL_HANDOFF.md` and `README.md` are updated: controls (support grip on the pistol, floor calibration) and the new
-  ballistics numbers.
-- Write a short on-headset checklist for the owner covering issues 1–5, and list anything you could not verify without a
-  headset.
-- Everything is committed and pushed to `claude/determined-feynman-nc2t0l`.
+## 9. How to run in the cloud (what worked)
+Scripts are committed in `Tools/CloudUnity/` (they were scratch files before). They need `VRRANGE_SCRATCH` pointing at a scratch
+dir containing: `unityproj/` (a copy of the repo; `sync_back.sh` copies Unity-written assets/settings back), `docker/data` (docker
+data root), `unityhome/`, `unitycfg/`, `winmono/root` (the Windows Mono build-support module unpacked from Unity's installer, mounted
+into the Linux editor). Image: `unityci/editor:ubuntu-6000.3.27f1-android-3.2.2` (19 GB; pull once). The docker daemon disappears
+between sessions: `dockerd --data-root $VRRANGE_SCRATCH/docker/data --storage-driver overlay2 --iptables=false --bridge=none &`.
+Licence: `PASS_CREDS=1 unity_run.sh activate.log -username "$UNITY_EMAIL" -password "$UNITY_PASSWORD" -serial "$UNITY_SERIAL" -quit`
+(env vars only, never print them), and **return it at the end** with `-returnlicense`; delete the activate/return logs.
+- One hand-test run with screenshots (~4 min + activation): `round2_gfx.sh` (set `SKIP_ACTIVATE=1` when already activated).
+- Everything (hand test → prefabs → PlayMode → EditMode → Windows build + zip + sha256, ~12 min): `final_chain2.sh`.
+Results: `unityproj/Logs/{hand_report.txt,gfx-results.xml,playmode-results.xml,editmode-results.xml,VRRangeBuildReport_Windows.txt}`,
+screenshots `unityproj/Logs/shots/`. Budget note: a run costs minutes of editor time but the expensive part is reading long reports;
+print only the lines you need.

@@ -180,6 +180,8 @@ namespace VRRange.Tests
                     // 1. skin depth inside the weapon and inside the other hand
                     var depth = MeasureDepths(h, wcv, other);
                     report.AppendLine($"{tag}: max depth {depth.max * 1000f:0.0} mm, {depth.inside}/{depth.total} vertices inside ({depth.Fraction * 100f:0.00} %), de-penetration push {h.DepenetrationOffset.magnitude * 1000f:0.0} mm ({h.DepenetrationInfo})");
+                    report.AppendLine($"{tag}: solve {h.LastSolveMs:0.0} ms (palm {h.LastPalmSolveMs:0.0} ms), {h.SolveCount} solves / {h.GraspSolveCount} grasp solves so far, longest grasp stage {h.MaxStageMs:0.0} ms");
+                    report.AppendLine($"{tag}: grasp {h.GraspInfo}");
                     if (depth.inside > 0) report.AppendLine($"{tag}:   inside by volume: {Breakdown(h, wcv, other)}");
                     report.AppendLine($"{tag}: max depth outside the thenar/hypothenar compression zone {depth.maxOutsideBulges * 1000f:0.0} mm, inside the other hand {depth.maxCrossHand * 1000f:0.0} mm, vertices forward of the muzzle {depth.forwardOfMuzzle}");
                     // bulges may compress into the grip by up to 12 mm (rigid mesh standing in for squashed flesh); everything else ≤ 4 mm
@@ -191,7 +193,9 @@ namespace VRRange.Tests
                     // the palm itself must be ON the grip: its skin point within 4 mm of a weapon volume (shooting hand) or of the shooting hand's
                     // own shapes (pistol support hand, which holds the other hand, not the pistol)
                     float palmGap;
-                    if (h.IsLeft && cups) { other.RefreshOwnShapes(); palmGap = NearestSurface(h.PalmSkinWorldPosition, other.OwnShapes); }
+                    // round 3: the cupping support palm rests on the shooting hand's fingers and on the grip panel behind them, so its
+                    // palm is measured to whichever of the two it rests on (same 8 mm limit)
+                    if (h.IsLeft && cups) { other.RefreshOwnShapes(); palmGap = Mathf.Min(NearestSurface(h.PalmSkinWorldPosition, other.OwnShapes), NearestSurface(h.PalmSkinWorldPosition, wcv.Shapes())); }
                     else palmGap = NearestSurface(h.PalmSkinWorldPosition, wcv.Shapes());
                     var anchorPos = h.CurrentAnchor.GetPalmPose(h.IsLeft).position;
                     report.AppendLine($"{tag}: palm skin point {palmGap * 1000f:0.0} mm from the {(h.IsLeft && cups ? "shooting hand" : "grip")} surface; authored anchor point {NearestSurface(anchorPos, wcv.Shapes()) * 1000f:0.0} mm from the grip, skin point {Vector3.Distance(anchorPos, h.PalmSkinWorldPosition) * 1000f:0.0} mm from the anchor (de-penetration offset {h.DepenetrationOffset.magnitude * 1000f:0.0} mm), skin offset in use {h.PalmSkinOffset * 1000f:0.0} mm");

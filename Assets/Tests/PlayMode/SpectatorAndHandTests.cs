@@ -191,12 +191,12 @@ namespace VRRange.Tests
             // Round 2: fingers close until their flesh touches the grip's contact volumes, then the end joints close onto it, so the
             // common curl alone no longer says "wrapped" (a palm resting on its skin reaches the grip at curl ~0.35). The contact
             // solve must have found the grip and the middle fingertip's bone must lie within 12 mm of a contact surface.
-            Assert.GreaterOrEqual(right.ContactCurl(HandPresence.Finger.Middle), 0f, "middle finger found the grip");
+            Assert.IsTrue(right.GraspActive(HandPresence.Finger.Middle), "middle finger is posed by the grasp solve");
             Assert.IsTrue(right.TryGetTip(HandPresence.Finger.Middle, out var midTip));
             float midGap = float.MaxValue;
             foreach (var sh in right.ContactShapes) midGap = Mathf.Min(midGap, HandPresence.SignedDistance(sh, midTip));
             Assert.Less(midGap, 0.012f, $"fingers wrap the grip (middle fingertip {midGap * 1000f:0.0} mm from the grip)");
-            Assert.GreaterOrEqual(right.ContactCurl(HandPresence.Finger.Middle), 0f, "the contact solve closed the middle finger onto the grip collider");
+            Assert.IsTrue(right.GraspActive(HandPresence.Finger.Middle), "the grasp solve closed the middle finger onto the grip");
             Assert.Less(right.Curl(HandPresence.Finger.Index), 0.6f, "index rests along the frame until the trigger is pulled");
             right.SetInputOverride(null, 1f);
             yield return XrTestRig.WaitSeconds(0.5f);

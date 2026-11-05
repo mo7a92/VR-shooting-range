@@ -309,9 +309,12 @@ namespace VRRange.Tests
                     var grip = h.CurrentAnchor.gripCollider;
                     Assert.IsNotNull(grip, $"{tag}: anchor has a grip collider");
                     // palm outside the grip volume
-                    float palmGap = Vector3.Distance(h.PalmWorldPosition, grip.ClosestPoint(h.PalmWorldPosition));
-                    report.AppendLine($"{tag}: palm centre {palmGap * 1000f:0} mm from the grip collider");
-                    if (palmGap <= 0.004f) failures.Add($"{tag}: palm centre inside/at the grip ({palmGap * 1000f:0} mm)");
+                    // round 3: the palm centre (bone line) must lie outside every contact volume the hand rests on (weapon hulls and, for the
+                    // support hand, the shooting hand); the coarse support box around the shooting hand is no longer where the support palm sits
+                    float palmGap = float.MaxValue;
+                    foreach (var sh in h.ContactShapes) palmGap = Mathf.Min(palmGap, HandPresence.SignedDistance(sh, h.PalmWorldPosition));
+                    report.AppendLine($"{tag}: palm centre {palmGap * 1000f:0} mm from the nearest contact surface");
+                    if (palmGap <= 0.004f) failures.Add($"{tag}: palm centre inside/at a contact surface ({palmGap * 1000f:0} mm)");
                     int touching = 0;
                     foreach (var f in new[] { HandPresence.Finger.Thumb, HandPresence.Finger.Middle, HandPresence.Finger.Ring, HandPresence.Finger.Little })
                     {
@@ -319,9 +322,9 @@ namespace VRRange.Tests
                         bool inside = Physics.ComputePenetration(probe, tip, Quaternion.identity, grip, grip.transform.position, grip.transform.rotation, out _, out float dist);
                         float depth = inside ? dist - probe.radius : 0f;
                         float gap = inside ? 0f : Vector3.Distance(tip, grip.ClosestPoint(tip));
-                        report.AppendLine($"{tag} {f}: contactCurl {h.ContactCurl(f):0.00} curl {h.Curl(f):0.00} tip {(inside ? $"{depth * 1000f:0.0} mm inside" : $"{gap * 1000f:0.0} mm outside")}");
+                        report.AppendLine($"{tag} {f}: grasp {(h.GraspActive(f) ? "on" : "off")} curl {h.Curl(f):0.00} tip {(inside ? $"{depth * 1000f:0.0} mm inside" : $"{gap * 1000f:0.0} mm outside")}");
                         if (depth > 0.005f) failures.Add($"{tag}: {f} tip {depth * 1000f:0.0} mm inside the grip collider (max 5 mm)");
-                        if (h.ContactCurl(f) >= 0f) touching++;
+                        if (h.GraspActive(f)) touching++;
                     }
                     if (touching < 2) failures.Add($"{tag}: only {touching} finger(s) reach the grip (contact solve)");
                     h.TryGetTip(HandPresence.Finger.Thumb, out var thumbTip); h.TryGetTip(HandPresence.Finger.Middle, out var middleTip);

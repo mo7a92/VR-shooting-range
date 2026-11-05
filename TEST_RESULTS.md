@@ -3,7 +3,63 @@
 Honest record of what was verified and how. Two stages so far: a cloud *static* stage (no Unity) and a cloud
 *real-editor* stage (Unity 6000.3.27f1 in a Linux container, GameCI image, Student/Personal licence activated
 through Unity's command-line activation and returned afterwards). Stage 5 adds the first PCVR headset sessions
-(Quest 2 via Virtual Desktop); stages 6 and 7 are the headset-feedback rounds (PCVR only); the standalone Quest APK has still not run on a headset.
+(Quest 2 via Virtual Desktop); stages 6, 7 and 8 are the headset-feedback rounds (PCVR only); the standalone Quest APK has still not run on a headset.
+
+## Stage 8: round 3 — hands actually hold the guns, real Unity editor on the owner's PC (2026-11-05, PCVR only) — **ACCEPTED by the test, headset check pending**
+Starting point: `e177dea` + the round-2c patch (`Docs/TestResults/round2c/`). Unity 6000.3.27f1 on Windows (GPU rendering, not the
+cloud container), packages unchanged, prefab rebuild only (`RunPrefabsBatch`), no scene rebuild. Nothing in this stage ran on a headset.
+
+**Status in one sentence:** the acceptance test `HandPenetrationTests` passes (two consecutive runs), EditMode **34 / 34**, PlayMode **73 / 73**,
+Windows build 0.3.3 succeeds; the hands wrap the grips (fingers around the front strap onto the far side, palm on the panel, thumb resting
+on the frame, trigger finger through the guard on the trigger) and both two-handed holds sit tight on the gun.
+
+**What was actually wrong (found with per-segment diagnostics and screenshots, not guessed):**
+1. The finger solve stopped a whole finger at its first contact, so a fingertip grazing the front strap left the finger straight.
+2. The shooting-thumb search required the thumb on the palm's side of the grip; every natural pose was rejected.
+3. The palm de-penetration only ever pushed out, so a palm whose anchor sat off the surface kept hovering.
+4. The held hand copied the empty-hand fist orientation, whose knuckle line is ~25° off a straight grip, so the fingers spiralled past the grip.
+5. One box per part cannot follow a raked grip: the rifle grip box was 71 mm deep around the visible grip and the fingers rested on air.
+6. The pistol trigger guard was one solid volume, so any finger on the trigger counted as inside the gun.
+7. The solve cost 20–90 ms and ran 20 times a second while holding.
+
+**Changes (`HandPresenceGrasp.cs` new, `HandPresence.cs`, `ContactHull.cs` new, `WeaponPrefabBuilder.cs`, `weapons_layout.json`):**
+- Convex hull (26-direction polytope) per contact volume, fitted to the mesh at prefab build; every solver and the test use it.
+- Shooting hand: target-seeking IK per finger (tip aims at the far side of the grip at its knuckle's height), joint limits + penetration
+  penalty, then a touch pass onto the nearest surface. Thumb rests forward along the near side of the frame (this rig's thumb base sits
+  beside the slide, so the far side is out of reach without passing through it). Trigger finger rests on the trigger, blends into the
+  trigger curl as it is pulled.
+- Support hand: coupled grasp closure (joints close together, a touching segment locks the joints behind it) or sequential wrap,
+  whichever hugs closer, then the touch pass.
+- Palm: slides along the grip so the middle knuckle sits 6 mm behind the front strap, then settles along its normal until it touches,
+  from either side; only the thenar / hypothenar compress by their bulge, the rest ≤ 5 mm, skin on skin ≤ 3 mm.
+- Anchors re-authored: knuckle line along each grip's rake, pistol 12°, rifle 23° (grip boxes 25°), SMG 0°; support palms heel-on-panel.
+- Performance: solve only on change (grab, hand joins / leaves, other hand re-solves, hand still settling); palm placement per tick,
+  grasp only once the hand has settled, one finger per frame. Measured in the editor: 2 grasp solves per one-hand grab, longest frame
+  stage 12–26 ms (Mono editor; a player build is faster). Only weapon volumes within 13 cm of the palm take part.
+- The shooting hand no longer reacts to the support hand (deterministic, no feedback loop); only the support hand adapts.
+
+**Test changes (stated, not hidden):** the cupping support palm is measured to whichever it rests on, the shooting hand or the grip
+(same 8 mm limit), because the support heel now rests on the grip panel; two older tests checked the removed `ContactCurl` value and now
+check `GraspActive`; `HeadsetRound1Tests` measures the palm centre against the contact hulls instead of the old support box. No limit was loosened.
+
+**Final numbers (`Docs/TestResults/round3/hand_report_round3.txt`):**
+
+| Configuration | Max depth outside zone | Palm skin gap | Fingertip bone gaps (thumb / middle / ring / little) | Wrist pitch | Held vs free wrist |
+|---|---|---|---|---|---|
+| Pistol, shooting hand | 2.0 mm | 6.3 mm | 8.9 / 7.6 / 10.6 / 9.0 mm | −12° | 1.6 cm |
+| Pistol, both: shooting / support | 2.6 / 0.0 mm | 6.1 / 7.5 mm | 9.3 / 7.3 / 8.6 / 9.2 · support – / 9.1 / 6.9 / 7.3 | −12° / −12° | 1.6 cm |
+| Rifle, shooting hand | 1.0 mm | 5.9 mm | 10.2 / 9.4 / 9.8 / 7.0 mm | −23° | 2.7 cm |
+| Rifle, both: shooting / support | 0.6 / 0.6 mm | 5.7 / 7.2 mm | 10.4 / 9.9 / 10.4 / 7.4 · support – / 7.8 / 6.5 / 6.6 | −23° / +26° | 1.7 cm |
+| SMG, shooting hand | 1.2 mm | 6.1 mm | 8.7 / 8.1 / 8.5 / 8.6 mm | 0° | 2.8 cm |
+| SMG, both: shooting / support | 1.4 / 2.7 mm | 5.8 / 8.0 mm | 8.6 / 8.8 / 9.8 / 9.1 · support – / 8.7 / 7.2 / 6.9 | 0° / −12° | 3.4 cm |
+
+Limits: ≤ 4 mm outside the compression zone, palm ≤ 8 mm, fingertip bone ≤ 12 mm (flesh radius ≈ 9 mm, so ≈ 9 mm is touching), wrist
+pitch ≤ 25° below (support 30°), held wrist < 4 cm. Margins: the SMG support palm is at the limit (8.0 mm) and run-to-run noise is
+about ±0.5 mm, so that one can flip; everything else has ≥ 1 mm margin.
+
+**Known limits:** the rigid XR Hands mesh cannot arch its palm, so the little finger on the deep pistol grip curls onto the front strap
+rather than the far panel, and the thumb rests along the near side of the frame instead of the far side. The wrist end of the hand model
+is an open stump (no forearm). Screenshots: `Docs/Screenshots/round3_fixes/` (21, all looked at).
 
 ## Stage 7: headset feedback round 2 — hands on grips, real Unity editor in the cloud (2026-11-04, PCVR only) — **NOT ACCEPTED**
 Starting point: commit `36d343b` (round 1). The owner's round-1 screenshots showed hands sinking into the weapons and pistol wrists

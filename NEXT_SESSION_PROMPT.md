@@ -1,3 +1,11 @@
+# UPDATE 2026-11-05 (round 3): the hand-grip problem below is FIXED
+
+`TEST_RESULTS.md` Stage 8 has the details and numbers. Acceptance test `HandPenetrationTests` passes, EditMode 34/34, PlayMode 73/73,
+Windows build 0.3.3. The hand solve now lives mostly in `Assets/Scripts/Hands/HandPresenceGrasp.cs` (IK grasp, convex-hull contact,
+solve-on-change); `Assets/Scripts/Weapons/ContactHull.cs` is fitted at prefab build. Next step: test on the headset (grab each weapon one-
+and two-handed, check the hands look right, check there is no hitch at the moment of grabbing). The text below is the round-2 handoff,
+kept for history.
+
 # Next session: make the hands actually hold the guns (round 2 is NOT accepted)
 
 Read this whole file before touching code. It is the handoff from the cloud sessions of 2026-11-04/05.

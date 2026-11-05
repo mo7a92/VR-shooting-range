@@ -153,7 +153,9 @@ namespace VRRange.Editor
             // Weight / handling simulation and hand grip anchors
             var handling = root.AddComponent<WeaponHandlingTransformer>();
             // the shooting hand's orientation is the free-hand fist (OpenXR grip pose), so the held wrist stays where the real wrist is
-            if (layout.primaryPalm != null) { layout.primaryPalm.forward = new[] { HandPresence.DefaultFreePalmForward.x, HandPresence.DefaultFreePalmForward.y, HandPresence.DefaultFreePalmForward.z }; layout.primaryPalm.up = new[] { HandPresence.DefaultFreePalmUp.x, HandPresence.DefaultFreePalmUp.y, HandPresence.DefaultFreePalmUp.z }; }
+            // round 3: a layout may orient the shooting hand along its grip instead (knuckle line along the grip axis, so the fingers
+            // wrap it); the weapon's orientation in the controller comes from the attach transform either way
+            if (layout.primaryPalm != null && (layout.primaryPalm.forward == null || layout.primaryPalm.forward.Length < 3)) { layout.primaryPalm.forward = new[] { HandPresence.DefaultFreePalmForward.x, HandPresence.DefaultFreePalmForward.y, HandPresence.DefaultFreePalmForward.z }; layout.primaryPalm.up = new[] { HandPresence.DefaultFreePalmUp.x, HandPresence.DefaultFreePalmUp.y, HandPresence.DefaultFreePalmUp.z }; }
             var primaryAnchor = BuildAnchor(root, "PrimaryGrip", layout.primaryPalm, GripRole.Primary, V(layout.grip));
             var supportAnchor = layout.supportPalm != null && layout.supportPalm.pos != null ? BuildAnchor(root, "SupportGrip", layout.supportPalm, GripRole.Support, V(layout.secondaryGrip)) : null;
             // The handling transformer holds the weapon by the PALM CENTROIDS (OpenXR grip pose origin ~ palm centroid): the
@@ -229,16 +231,22 @@ namespace VRRange.Editor
                 var rot = Quaternion.Euler(V(seed.euler)); var inv = Quaternion.Inverse(rot);
                 var c = V(seed.center); var h = V(seed.size) * 0.5f;
                 var min = Vector3.positiveInfinity; var max = Vector3.negativeInfinity; int n = 0;
+                var inside = new List<Vector3>();
                 foreach (var v in verts)
                 {
                     var l = inv * (v - c);
                     if (Mathf.Abs(l.x) > h.x || Mathf.Abs(l.y) > h.y || Mathf.Abs(l.z) > h.z) continue;
-                    min = Vector3.Min(min, l); max = Vector3.Max(max, l); n++;
+                    min = Vector3.Min(min, l); max = Vector3.Max(max, l); n++; inside.Add(l);
                 }
                 if (n < 12) { SetupLog.Warn($"{root.name}: contact seed '{seed.name}' encloses only {n} vertices; skipped"); continue; }
                 var go = EditorRefs.Child(holder, $"Contact_{seed.name}"); go.layer = layer;
                 go.transform.localPosition = c + rot * ((min + max) * 0.5f); go.transform.localRotation = rot;
                 var box = EditorRefs.Ensure<BoxCollider>(go); box.isTrigger = true; box.center = Vector3.zero; box.size = Vector3.Max(max - min, Vector3.one * 0.004f);
+                // round 3: the convex hull (26-direction polytope) of the same vertices, in the volume's own frame; the hand solver
+                // and the acceptance test use it instead of the box, so raked grips and rounded straps are followed
+                var mid = (min + max) * 0.5f;
+                for (int k = 0; k < inside.Count; k++) inside[k] -= mid;
+                EditorRefs.Ensure<ContactHull>(go).Fit(inside);
                 wcv.volumes.Add(box); built++;
             }
             SetupLog.Ok($"{root.name}: {built} hand-contact volumes fitted to the mesh ({verts.Count} vertices)");

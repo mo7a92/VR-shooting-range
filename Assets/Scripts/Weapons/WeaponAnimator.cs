@@ -12,6 +12,8 @@ namespace VRRange.Weapons
         [SerializeField] Transform m_ModelRoot;
         [SerializeField] Transform m_Slide;
         [SerializeField] Transform m_Trigger;
+        /// <summary>The trigger part (the trigger finger's rest target), or null.</summary>
+        public Transform TriggerTransform => m_Trigger;
         [SerializeField] Transform m_Magazine;
         [SerializeField] Transform m_MagazineHome;
 

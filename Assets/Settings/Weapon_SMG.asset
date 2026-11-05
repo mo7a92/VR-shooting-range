@@ -42,7 +42,7 @@ MonoBehaviour:
   swayFrequencyHz: 0.7
   maxPositionLagMetres: 0.03
   maxRotationLagDegrees: 9
-  supportHandInfluence: 0.85
+  supportHandInfluence: 0
   gripTransitionSeconds: 0.2
   recoilUnsupportedMultiplier: 2
   recoilSupportedMultiplier: 0.65

@@ -288,7 +288,7 @@ def process_akm():
     for o in list(bpy.data.objects):
         if o.type != 'MESH': bpy.data.objects.remove(o, do_unlink=True)
     apply_all(objs); orient_and_centre(objs)
-    out = os.path.join(PROPS, "akm_decor"); os.makedirs(out, exist_ok=True)
+    out = os.path.join(ROOT, "Assets", "Art", "Weapons", "Models", "akm"); os.makedirs(out, exist_ok=True)  # playable since 0.4.0 (was a rack prop)
     from PIL import Image
     import numpy as np
     def save(name, fn, mode="RGB", q=90):

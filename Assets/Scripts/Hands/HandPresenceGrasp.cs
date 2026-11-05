@@ -551,7 +551,17 @@ namespace VRRange.Hands
             if (grad.sqrMagnitude < 1e-10f) return gap;
             var target = tip - grad.normalized * (gap + 0.0012f); // a light press: the pad flattens a little on the surface
             var seed = (float[])p.Clone();
-            SolveIk(f, target, extra, lo, hi, new[] { seed }, p);
+            // 0.4.0: a finger whose closure locked with the middle segment on the surface keeps its last joints nearly straight and
+            // its tip points away (a slim forend or handguard); a second seed with the outer joints flexed lets the descent find the
+            // curled pose. The descent keeps whichever seed ends with the lower cost (which includes the penetration penalty).
+            float[][] seeds = { seed };
+            if (f != 0)
+            {
+                var curled = (float[])p.Clone();
+                curled[2] = Mathf.Min(hi[2], curled[2] + 20f); curled[3] = Mathf.Min(hi[3], curled[3] + 30f);
+                seeds = new[] { seed, curled };
+            }
+            SolveIk(f, target, extra, lo, hi, seeds, p);
             IkApply(f, p);
             return MinGap(c.tip.position, null) - radius;
         }
@@ -625,6 +635,7 @@ namespace VRRange.Hands
             offset = float.NegativeInfinity; shapeIndex = -1;
             const float kReach = 0.03f; // how far the palm may travel toward a surface it does not yet touch
             bool primary = m_Anchor != null && m_Anchor.role == GripRole.Primary;
+            float palmCompression = m_Anchor != null ? m_Anchor.palmCompression : 0.005f;
             for (int i = 0; i < m_BakeBuffer.Count; i++)
             {
                 if (i < m_PalmCloudRigid.Count && !m_PalmCloudRigid[i]) continue;
@@ -634,10 +645,11 @@ namespace VRRange.Hands
                 {
                     bool crossHand = m_OtherHandShapeStart >= 0 && si >= m_OtherHandShapeStart;
                     if (crossHand && primary) continue; // the shooting hand never moves for the support hand
-                    // only the thenar / hypothenar bulges squash by their full excess; the rest of the palm by at most 3.5 mm, and
+                    // only the thenar / hypothenar bulges squash by their full excess; the rest of the palm by the anchor's allowance
+                    // (5 mm; 3.5 mm on a narrow forend), and
                     // skin on skin (the other hand) by at most 3 mm
                     bool zone = i < m_PalmCloudZone.Count && m_PalmCloudZone[i];
-                    float shrink = crossHand ? Mathf.Min(excess, kMaxCrossHandCompression) : zone ? excess : Mathf.Min(excess, 0.005f);
+                    float shrink = crossHand ? Mathf.Min(excess, kMaxCrossHandCompression) : zone ? excess : Mathf.Min(excess, palmCompression);
                     if (!RayInterval(m_Shapes[si], v, outward, shrink, out float t0, out float t1)) continue;
                     // the palm comes in from the back-of-hand side (large s) and stops where its first vertex reaches a surface;
                     // a shape entirely on the back-of-hand side of the vertex is not under the palm

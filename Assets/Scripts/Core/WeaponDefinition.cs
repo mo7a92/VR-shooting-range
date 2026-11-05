@@ -2,7 +2,8 @@ using UnityEngine;
 
 namespace VRRange.Core
 {
-    public enum WeaponClass { Pistol, Rifle, SubmachineGun }
+    // new classes are appended so serialized assets keep their values
+    public enum WeaponClass { Pistol, Rifle, SubmachineGun, AssaultRifle, SniperRifle }
 
     [System.Flags]
     public enum FireMode { None = 0, Semi = 1, Auto = 2 }
@@ -27,6 +28,10 @@ namespace VRRange.Core
         [Header("Firing")]
         public FireMode supportedFireModes = FireMode.Semi;
         public FireMode defaultFireMode = FireMode.Semi;
+        [Tooltip("Manual bolt action: after every shot the bolt must be cycled (B / Y, or Weapon.CycleBolt) before the next one fires; the empty case is ejected when the bolt comes back.")]
+        public bool boltAction;
+        [Tooltip("Seconds for a full bolt cycle (lift, back, forward, down).")]
+        [Range(0.2f, 2f)] public float boltCycleSeconds = 0.65f;
         [Tooltip("Shots per minute in automatic / repeated fire.")]
         [Range(60, 1500)] public float roundsPerMinute = 300f;
         [Range(1, 100)] public int magazineSize = 12;

@@ -130,12 +130,17 @@ namespace VRRange.Tests
             return d;
         }
 
-        [UnityTest, Timeout(1200000)] // six configurations, each baked and screenshotted; slow under software rendering
+        [UnityTest, Timeout(1800000)] // ten configurations, each baked and screenshotted; slow under software rendering
         public IEnumerator HandsRestOnTheWeaponsWithoutSinkingInAndWristsSitLikeAHighGrip()
         {
             bool canRender = SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null;
             var shotDir = Path.Combine(Application.dataPath, "..", "Logs", "shots"); Directory.CreateDirectory(shotDir);
-            var supportOffset = new Dictionary<WeaponClass, Vector3> { { WeaponClass.Pistol, new Vector3(-0.05f, -0.01f, 0f) }, { WeaponClass.Rifle, new Vector3(-0.06f, 0.05f, 0.32f) }, { WeaponClass.SubmachineGun, new Vector3(-0.05f, -0.01f, 0.12f) } };
+            var supportOffset = new Dictionary<WeaponClass, Vector3> { { WeaponClass.Pistol, new Vector3(-0.05f, -0.01f, 0f) }, { WeaponClass.Rifle, new Vector3(-0.06f, 0.05f, 0.32f) }, { WeaponClass.SubmachineGun, new Vector3(-0.05f, -0.01f, 0.12f) },
+                { WeaponClass.AssaultRifle, new Vector3(-0.06f, 0.05f, 0.33f) }, { WeaponClass.SniperRifle, new Vector3(-0.06f, 0.0f, 0.47f) } };
+            // VRRANGE_HAND_CLASSES=AssaultRifle,SniperRifle runs a subset while tuning; the acceptance run uses all five
+            var only = System.Environment.GetEnvironmentVariable("VRRANGE_HAND_CLASSES");
+            var classes = new[] { WeaponClass.Pistol, WeaponClass.Rifle, WeaponClass.SubmachineGun, WeaponClass.AssaultRifle, WeaponClass.SniperRifle }
+                .Where(c => string.IsNullOrEmpty(only) || only.Split(',').Contains(c.ToString())).ToArray();
             var right = Hand(false); var left = Hand(true);
             right.DebugThumb = System.Environment.GetEnvironmentVariable("VRRANGE_DEBUG_THUMB") == "1";
             var report = new System.Text.StringBuilder(); var failures = new List<string>();
@@ -143,19 +148,28 @@ namespace VRRange.Tests
             var attachLocal = m_RightController.InverseTransformPoint(m_Right.attachTransform.position);
             var attachRot = (Quaternion.Inverse(m_RightController.rotation) * m_Right.attachTransform.rotation).eulerAngles;
             report.AppendLine($"right interactor attach anchor relative to the controller: ({attachLocal.x * 1000f:0}, {attachLocal.y * 1000f:0}, {attachLocal.z * 1000f:0}) mm, rotation ({attachRot.x:0}, {attachRot.y:0}, {attachRot.z:0}) deg; free-pose reference = {right.PoseReference.name}");
-            foreach (var cls in new[] { WeaponClass.Pistol, WeaponClass.Rifle, WeaponClass.SubmachineGun })
+            foreach (var cls in classes)
             foreach (bool withSupport in new[] { false, true })
             {
                 var w = XrTestRig.Find(cls); var wcv = w.GetComponent<WeaponContactVolumes>();
                 string cfg = $"{w.DisplayName} {(withSupport ? "primary+support" : "primary")}";
                 // the support hand cups the shooting hand on the pistol and on the Micro Uzi (its 10 cm of free receiver between the
                 // trigger finger and the muzzle cannot take a 9 cm wide hand); it goes under the handguard on the rifle
-                bool cups = cls != WeaponClass.Rifle;
+                bool cups = cls == WeaponClass.Pistol || cls == WeaponClass.SubmachineGun;
                 Debug.Log($"[VRRange][Test] hand penetration: {cfg} start");
                 Assert.IsNotNull(wcv, $"{w.DisplayName}: contact volumes"); Assert.GreaterOrEqual(wcv.volumes.Count, 3, $"{w.DisplayName}: fitted contact volumes");
                 m_RightController.SetPositionAndRotation(new Vector3(0.2f, 1.3f, -1.0f), Quaternion.identity);
                 m_LeftController.SetPositionAndRotation(new Vector3(-0.2f, 1.3f, -1.0f), Quaternion.identity);
                 yield return XrTestRig.WaitSeconds(0.5f); // free hands settle on the controllers
+                // 0.4.0: the free-hand reference is taken only once both free hands are at rest (wrists move < 1 mm over 0.2 s, at
+                // most 3 s more): after a heavy rifle is put down a free hand could still be gliding back, and a reference taken
+                // mid-glide made the held wrist look 6 cm off although the hold itself was identical
+                for (float waited = 0f; waited < 3f; waited += 0.2f)
+                {
+                    var r0 = right.WristWorldPosition; var l0 = left.WristWorldPosition;
+                    yield return XrTestRig.WaitSeconds(0.2f);
+                    if (Vector3.Distance(r0, right.WristWorldPosition) < 0.001f && Vector3.Distance(l0, left.WristWorldPosition) < 0.001f) break;
+                }
                 var freeWristR = right.WristWorldPosition; var freeWristL = left.WristWorldPosition; var freePalmR = right.PalmWorldPosition; var freeFwdR = (right.MiddleKnuckleWorldPosition - right.WristWorldPosition).normalized;
                 yield return Grab(m_Right, w);
                 if (withSupport) { yield return XrTestRig.WaitSeconds(0.3f); m_LeftController.position = m_RightController.position + supportOffset[cls]; yield return null; yield return Grab(m_Left, w); }
@@ -243,7 +257,10 @@ namespace VRRange.Tests
                     report.AppendLine($"{tag}: wrist pitch {pitch:0.0} deg (+ above / − below the bore), back-of-hand roll {roll:0.0} deg from outward, palm x {palmLocal.x * 1000f:0} mm");
                     if (!h.IsLeft)
                     {
-                        if (pitch < -25f) failures.Add($"{tag}: wrist pitch {pitch:0.0} deg is more than 25 deg below the bore");
+                        // a pistol grip is held high (≤ 25 deg below the bore); the sniper's straight wrist stock has no pistol grip, the
+                        // hand wraps it diagonally and sits lower (≤ 45 deg), as on any classic bolt-action stock
+                        float maxBelow = cls == WeaponClass.SniperRifle ? 45f : 25f;
+                        if (pitch < -maxBelow) failures.Add($"{tag}: wrist pitch {pitch:0.0} deg is more than {maxBelow:0} deg below the bore");
                         if (pitch > 20f) failures.Add($"{tag}: wrist pitch {pitch:0.0} deg points up");
                         if (roll < -20f || roll > 60f) failures.Add($"{tag}: back of hand roll {roll:0.0} deg (expected −20..60 deg: outward to outward-up, never over the slide)");
                         // 4. wrist placement: the held hand's wrist sits where the free hand's wrist was for the same controller pose

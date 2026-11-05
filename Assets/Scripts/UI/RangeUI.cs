@@ -114,9 +114,9 @@ namespace VRRange.UI
         void HookWeapon(Weapon w)
         {
             if (w == null) return;
-            w.AmmoChanged += (wp, rounds, size) => { m_ActiveWeapon = wp; SetText(ammoLabel, $"{wp.DisplayName}  {rounds}/{size}  [{wp.CurrentFireMode}]"); };
+            w.AmmoChanged += (wp, rounds, size) => { m_ActiveWeapon = wp; SetText(ammoLabel, $"{wp.DisplayName}  {rounds}/{size}  [{wp.FireModeLabel}]"); };
             w.ReloadStateChanged += (wp, reloading) => { if (reloading) SetText(ammoLabel, $"{wp.DisplayName}  reloading..."); };
-            w.FireModeChanged += (wp, mode) => SetText(ammoLabel, $"{wp.DisplayName}  {wp.Rounds}/{wp.MagazineSize}  [{mode}]");
+            w.FireModeChanged += (wp, mode) => SetText(ammoLabel, $"{wp.DisplayName}  {wp.Rounds}/{wp.MagazineSize}  [{wp.FireModeLabel}]");
         }
 
         void OnStatsChanged(SessionStats s)

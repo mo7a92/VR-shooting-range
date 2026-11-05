@@ -38,7 +38,7 @@ namespace VRRange.Editor
                 "<b>GRIP</b>  grab a weapon with either hand\n" +
                 "<b>TRIGGER</b>  fire (shooting hand only)\n" +
                 "<b>SUPPORT HAND</b>  grip the handguard, or cup the pistol hand: steadier, less recoil\n" +
-                "<b>A / X</b>  reload      <b>B / Y</b>  semi / auto\n" +
+                "<b>A / X</b>  reload      <b>B / Y</b>  semi / auto, or work the sniper bolt\n" +
                 "<b>LEFT STICK</b>  teleport      <b>RIGHT STICK</b>  turn\n" +
                 "<b>FLOOR HEIGHT</b>  rest a controller on the floor, click both sticks for 1 s";
             Text(root, "Body", body, font, 0.021f, new Vector3(0f, -0.035f, -0.0075f), new Color(0.92f, 0.92f, 0.9f), FontStyles.Normal, w - 0.05f, h - 0.1f, TextAlignmentOptions.TopLeft);

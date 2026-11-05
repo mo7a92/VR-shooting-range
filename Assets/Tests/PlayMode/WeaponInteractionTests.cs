@@ -39,7 +39,7 @@ namespace VRRange.Tests
             yield return XrTestRig.Grab(hand, pistol);
             Assert.IsTrue(pistol.IsHeld, "reacquire after release");
             Assert.GreaterOrEqual(gripEvents, 3, "GripChanged on grab, release, grab");
-            Assert.AreEqual(3, XrTestRig.AllWeapons().Length, "no weapon was duplicated");
+            Assert.AreEqual(5, XrTestRig.AllWeapons().Length, "no weapon was duplicated");
         }
 
         [UnityTest]
@@ -258,11 +258,11 @@ namespace VRRange.Tests
                 XrTestRig.Release(hand, w); yield return null;
                 Assert.IsFalse(w.IsHeld); Assert.AreEqual(0, w.HandCount);
             }
-            Assert.AreEqual(3, XrTestRig.AllWeapons().Length, "weapon count unchanged");
+            Assert.AreEqual(5, XrTestRig.AllWeapons().Length, "weapon count unchanged");
             Assert.IsFalse(hand.hasSelection, "hand ends empty");
             foreach (var w in weapons) { Assert.IsFalse(w.IsReloading); Assert.Greater(w.Rounds, 0); }
             yield return XrTestRig.WaitSeconds(0.5f);
-            Assert.AreEqual(3, XrTestRig.AllWeapons().Length);
+            Assert.AreEqual(5, XrTestRig.AllWeapons().Length);
         }
 
         [UnityTest]

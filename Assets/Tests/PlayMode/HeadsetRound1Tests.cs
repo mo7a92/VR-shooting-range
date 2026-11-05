@@ -73,7 +73,7 @@ namespace VRRange.Tests
         public IEnumerator RealMuzzleVelocitiesHitAOneCentimetreTargetAt25MetresWithoutTunnelling()
         {
             var gm = GameModeManager.Instance; gm.StartFreePractice(); gm.SetPracticeMotion(TargetMotion.Static); yield return null;
-            var expected = new Dictionary<WeaponClass, (float v, float rpm)> { { WeaponClass.Pistol, (360f, 360f) }, { WeaponClass.Rifle, (885f, 800f) }, { WeaponClass.SubmachineGun, (350f, 1200f) } };
+            var expected = new Dictionary<WeaponClass, (float v, float rpm)> { { WeaponClass.Pistol, (360f, 360f) }, { WeaponClass.Rifle, (885f, 800f) }, { WeaponClass.SubmachineGun, (350f, 1200f) }, { WeaponClass.AssaultRifle, (715f, 600f) }, { WeaponClass.SniperRifle, (830f, 60f) } };
             foreach (var w in XrTestRig.AllWeapons())
             {
                 var def = w.Definition;

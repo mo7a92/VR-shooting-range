@@ -131,7 +131,7 @@ namespace VRRange.Tests
             smg.GetComponent<WeaponHome>().ReturnHome(); yield return null;
             yield return XrTestRig.WaitUntil(() => XrTestRig.ActiveProjectiles() == 0, 5f, "all projectiles recycled");
             yield return XrTestRig.WaitUntil(() => Object.FindObjectsByType<Rigidbody>(FindObjectsSortMode.None).Count(r => r.name.StartsWith("ShellCasing") && r.gameObject.activeInHierarchy) == 0, 6f, "all casings recycled");
-            Assert.AreEqual(3, XrTestRig.AllWeapons().Length); Assert.AreEqual(2, Object.FindObjectsByType<HandPresence>(FindObjectsSortMode.None).Length);
+            Assert.AreEqual(5, XrTestRig.AllWeapons().Length); Assert.AreEqual(2, Object.FindObjectsByType<HandPresence>(FindObjectsSortMode.None).Length);
             foreach (var w in XrTestRig.AllWeapons())
             {
                 var home = w.GetComponent<WeaponHome>();

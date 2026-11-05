@@ -128,6 +128,28 @@ namespace VRRange.Editor
             return mesh;
         }
 
+        /// <summary>Flat disc in the XY plane facing -Z (towards a viewer behind it), uv 0..1 across the diameter, +u to the viewer's right.</summary>
+        public static Mesh Disc(string name, float radius, int segments = 48)
+        {
+            string path = $"{RangePaths.Meshes}/{name}.asset";
+            if (s_Cache.TryGetValue(path, out var cached) && cached != null) return cached;
+            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+            bool create = mesh == null;
+            if (create) mesh = new Mesh();
+            mesh.name = name;
+            var v = new List<Vector3> { Vector3.zero }; var n = new List<Vector3> { Vector3.back }; var uv = new List<Vector2> { new Vector2(0.5f, 0.5f) }; var t = new List<int>();
+            for (int i = 0; i <= segments; i++)
+            {
+                float a = Mathf.PI * 2f * i / segments; var rad = new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f);
+                v.Add(rad * radius); n.Add(Vector3.back); uv.Add(new Vector2(0.5f + rad.x * 0.5f, 0.5f + rad.y * 0.5f));
+                if (i < segments) { int k = 1 + i; t.AddRange(new[] { 0, k + 1, k }); }
+            }
+            mesh.Clear(); mesh.SetVertices(v); mesh.SetNormals(n); mesh.SetUVs(0, uv); mesh.SetTriangles(t, 0);
+            mesh.RecalculateTangents(); mesh.RecalculateBounds();
+            Save(mesh, path, create); s_Cache[path] = mesh;
+            return mesh;
+        }
+
         static void Save(Mesh mesh, string path, bool create)
         {
             if (create) { RangePaths.EnsureFolder(RangePaths.Meshes); AssetDatabase.CreateAsset(mesh, path); }

@@ -82,7 +82,7 @@ namespace VRRange.Tests
             }
             foreach (var w in weapons) w.RefillInstant();
             yield return XrTestRig.WaitSeconds(1f);
-            Assert.AreEqual(3, XrTestRig.AllWeapons().Length);
+            Assert.AreEqual(5, XrTestRig.AllWeapons().Length);
             Assert.IsFalse(hand.hasSelection); Assert.IsFalse(support.hasSelection);
             foreach (var w in weapons) { Assert.IsFalse(w.IsReloading, $"{w.DisplayName} stuck reloading"); Assert.IsFalse(w.IsTwoHanded); Assert.AreEqual(w.MagazineSize, w.Rounds); }
             yield return XrTestRig.WaitUntil(() => XrTestRig.ActiveProjectiles() == 0, 6f, "projectiles");

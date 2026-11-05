@@ -1232,6 +1232,10 @@ MonoBehaviour:
   m_Trigger: {fileID: 3056585055900620818}
   m_Magazine: {fileID: 6277316434876590122}
   m_MagazineHome: {fileID: 0}
+  m_BoltCarrier: {fileID: 0}
+  m_BoltRotor: {fileID: 0}
+  m_BoltTravel: 0.075
+  m_BoltLiftDegrees: 75
   m_SlideReturnSpeed: 18
   m_TriggerPullDegrees: 12
   m_MagazineDropDistance: 0.12
@@ -1731,6 +1735,7 @@ MonoBehaviour:
   pose: {fileID: 11400000, guid: 996e9dd22870ec14fa2b5dd0ad855234, type: 2}
   authoredForRightHand: 1
   gripCollider: {fileID: 7365222019254559987}
+  palmCompression: 0.005
 --- !u!1 &5944899444595103793
 GameObject:
   m_ObjectHideFlags: 0
@@ -1961,6 +1966,7 @@ MonoBehaviour:
   pose: {fileID: 11400000, guid: 3cbc44864ce0a0a29b38b193209dd621, type: 2}
   authoredForRightHand: 1
   gripCollider: {fileID: 4488588631999889446}
+  palmCompression: 0.005
 --- !u!1 &8573151468559033143
 GameObject:
   m_ObjectHideFlags: 0

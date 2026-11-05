@@ -208,9 +208,7 @@ namespace VRRange.Editor
             PropLibrary.Place(staff, "ammo_box", new Vector3(0.35f, 0f, 0.5f), new Vector3(0f, -30f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "AmmoBoxFloor2");
             PropLibrary.Place(staff, "metal_toolbox", new Vector3(-2.35f, 0f, 0.45f), new Vector3(0f, 100f, 0f), 1f, 0f, SurfaceType.Metal, true, true, 0f, "Toolbox");
             var rack = PropLibrary.Place(staff, "worn_metal_rack", new Vector3(-2.4f, 0f, 0f), Vector3.zero, 1f, 0f, SurfaceType.Metal, true, true, 0f, "GunRack");
-            // display weapons on the rack (CC0 AKM + bolt-action rifle), barrels up
-            PropLibrary.Place(staff, "akm_decor", new Vector3(-2.6f, 1.05f, 0.18f), new Vector3(-90f, 0f, 8f), 1f, null, SurfaceType.Metal, false, true, 0f, "RackRifleAKM");
-            PropLibrary.Place(staff, "bolt_action_rifle_7_62", new Vector3(-2.2f, 1.1f, 0.18f), new Vector3(0f, 0f, 90f), 1f, null, SurfaceType.Metal, false, true, 0f, "RackRifleBolt");
+            // the playable AKM and sniper rifle lean against this rack: RackWeaponsBuilder (called by the scene builder)
             PropLibrary.Place(staff, "cardboard_box_01", new Vector3(-3.3f, 0f, 0.3f), new Vector3(0f, 15f, 0f), 1f, 0f, SurfaceType.Wood, true, true, 0f, "Box1");
             PropLibrary.Place(staff, "cardboard_box_01", new Vector3(-3.35f, 0.52f, 0.28f), new Vector3(0f, -20f, 0f), 1f, 0.515f, SurfaceType.Wood, true, true, 0f, "Box2");
 

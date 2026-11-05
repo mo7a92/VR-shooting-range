@@ -44,7 +44,7 @@ namespace VRRange.Weapons
         {
             if (m_Text == null || m_Weapon == null) return;
             int rounds = m_Weapon.Rounds, mag = m_Weapon.MagazineSize;
-            string mode = m_Weapon.CurrentFireMode == FireMode.Auto ? "AUTO" : "SEMI";
+            string mode = m_Weapon.IsBoltAction ? (m_Weapon.NeedsBoltCycle || m_Weapon.IsCyclingBolt ? "BOLT" : "READY") : m_Weapon.CurrentFireMode == FireMode.Auto ? "AUTO" : "SEMI";
             m_Text.text = m_Weapon.IsReloading ? $"-- / {mag}  {mode}" : $"{rounds} / {mag}  {mode}";
             m_Text.color = m_Weapon.IsReloading ? m_ReloadingColor : rounds <= 0 ? m_EmptyColor : rounds <= Mathf.Max(2, mag / 5) ? m_LowColor : m_NormalColor;
         }

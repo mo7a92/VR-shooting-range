@@ -715,12 +715,13 @@ MonoBehaviour:
     pistol hand: steadier, less recoil
 
     <b>A / X</b>  reload      <b>B / Y</b> 
-    semi / auto
+    semi / auto, or work the sniper bolt
 
-    <b>LEFT STICK</b>  teleport      <b>RIGHT STICK</b>  turn
+    <b>LEFT STICK</b>  teleport      <b>RIGHT
+    STICK</b>  turn
 
-    <b>FLOOR
-    HEIGHT</b>  rest a controller on the floor, click both sticks for 1 s'
+    <b>FLOOR HEIGHT</b>  rest a controller on the floor, click
+    both sticks for 1 s'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 49fdfd86a653215148bfea39cf1bb027, type: 2}
   m_sharedMaterial: {fileID: -4449340106992077729, guid: 49fdfd86a653215148bfea39cf1bb027, type: 2}

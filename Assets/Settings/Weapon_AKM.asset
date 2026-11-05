@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aabf84a7cb784c4e4a4cc05d4da1faaa, type: 3}
+  m_Name: Weapon_AKM
+  m_EditorClassIdentifier: VRRange.Runtime::VRRange.Core.WeaponDefinition
+  weaponId: akm
+  displayName: AKM
+  weaponClass: 3
+  twoHanded: 1
+  allowsSupportHand: 1
+  supportedFireModes: 3
+  defaultFireMode: 1
+  boltAction: 0
+  boltCycleSeconds: 0.65
+  roundsPerMinute: 600
+  magazineSize: 30
+  reloadSeconds: 2.4
+  muzzleVelocity: 715
+  spreadDegrees: 0.3
+  gravityMultiplier: 1
+  projectileLifetime: 3
+  kickBackMetres: 0.035
+  kickUpDegrees: 5.5
+  kickSideDegrees: 1.3
+  recoverySpeed: 14
+  slideTravel: 0.04
+  virtualMassKg: 3.6
+  balanceForwardMetres: 0.26
+  oneHandResponseSeconds: 0.32
+  twoHandResponseSeconds: 0.04
+  oneHandSagDegrees: 22
+  twoHandSagDegrees: 0.6
+  oneHandSwayDegrees: 1.7
+  twoHandSwayDegrees: 0.15
+  swayFrequencyHz: 0.7
+  maxPositionLagMetres: 0.04
+  maxRotationLagDegrees: 14
+  supportHandInfluence: 0.85
+  gripTransitionSeconds: 0.2
+  recoilUnsupportedMultiplier: 3
+  recoilSupportedMultiplier: 0.65
+  recoveryUnsupported: 4.5
+  recoverySupported: 11
+  instabilityPerShot: 0.4
+  instabilityDecayPerSecond: 2
+  maxRecoilPitchDegrees: 32
+  maxRecoilYawDegrees: 15
+  hapticAmplitude: 1
+  hapticDuration: 0.07
+  secondaryHandHapticScale: 0.55
+  fireClip: {fileID: 8300000, guid: 2dd9a5623018cdf01a009c9584d614fc, type: 3}
+  dryFireClip: {fileID: 8300000, guid: a7342e2ed45e7329fbdbccb417e51288, type: 3}
+  reloadStartClip: {fileID: 8300000, guid: c8c6f4260f946371a979025123b4cb30, type: 3}
+  reloadEndClip: {fileID: 8300000, guid: 4350e70c015a4205488e655b85498225, type: 3}
+  fireModeClip: {fileID: 8300000, guid: c952828795ab8155080d31b754bd349f, type: 3}
+  slideRackClip: {fileID: 8300000, guid: 2356547e49cc380fa9cb104dee738556, type: 3}
+  fireVolume: 1
+  muzzleFlashScale: 1.3
+  tracerColor: {r: 1, g: 0.55, b: 0.25, a: 1}

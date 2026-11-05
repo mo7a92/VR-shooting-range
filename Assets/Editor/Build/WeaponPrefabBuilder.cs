@@ -9,16 +9,27 @@ using VRRange.Weapons;
 
 namespace VRRange.Editor
 {
-    /// <summary>Assembles the three weapon prefabs from the generated OBJ parts described in weapons_layout.json.</summary>
+    /// <summary>Assembles the weapon prefabs (pistol, rifle, SMG, AKM, sniper) from the models described in weapons_layout.json.</summary>
     public static class WeaponPrefabBuilder
     {
         [System.Serializable] class Part { public string name; public string file; public float[] pivot; public string role; }
-        [System.Serializable] class Palm { public float[] pos; public float[] forward; public float[] up; public string pose; }
+        [System.Serializable] class Palm { public float[] pos; public float[] forward; public float[] up; public string pose; public float compression; }
         [System.Serializable] class GripBox { public float[] center; public float[] size; public float[] euler; }
         [System.Serializable] class ContactSeed { public string name; public float[] center; public float[] size; public float[] euler; }
-        [System.Serializable] class WeaponLayout { public string model; public string textureSet; public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public GripBox primaryGripCollider; public GripBox supportGripCollider; public List<ContactSeed> contactVolumes; public float[] ejectionPort; public float[] ammoDisplay; public float[] ammoDisplayEuler; }
+        [System.Serializable] class PartMaterial { public string match; public string textureSet; public int submesh = -1; public string flat; }
+        [System.Serializable] class BoltDef { public string[] carrier; public string[] rotor; public float[] pivot; public float travel; public float lift; }
+        [System.Serializable] class ScopeDef { public float[] eyepiece; public float[] objective; public float lensRadius; public float fov; public float zero; }
+        [System.Serializable] class WeaponLayout { public string model; public float[] modelEuler; public float[] modelOffset; public string[] hiddenParts; public List<PartMaterial> partMaterials; public BoltDef bolt; public ScopeDef scope; public string textureSet; public List<Part> parts; public float[] muzzle; public float[] grip; public float gripPitchDegrees; public float[] secondaryGrip; public float[] colliderCenter; public float[] colliderSize; public float mass; public Palm primaryPalm; public Palm supportPalm; public GripBox primaryGripCollider; public GripBox supportGripCollider; public List<ContactSeed> contactVolumes; public float[] ejectionPort; public float[] ammoDisplay; public float[] ammoDisplayEuler; }
 
         public static readonly Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
+        /// <summary>Every weapon id in weapons_layout.json, in build order (the first three sit on the counter, the rest on the gun rack).</summary>
+        public static readonly string[] Ids = { "pistol", "rifle", "smg", "akm", "sniper" };
+
+        static WeaponDefinition DefinitionFor(string id) => id switch
+        {
+            "pistol" => SettingsAssetBuilder.Pistol, "rifle" => SettingsAssetBuilder.Rifle, "smg" => SettingsAssetBuilder.Smg,
+            "akm" => SettingsAssetBuilder.Akm, "sniper" => SettingsAssetBuilder.Sniper, _ => null,
+        };
 
         public static void Build()
         {
@@ -30,7 +41,7 @@ namespace VRRange.Editor
             var layouts = ParseLayouts(json);
             foreach (var kv in layouts)
             {
-                var def = kv.Key == "pistol" ? SettingsAssetBuilder.Pistol : kv.Key == "rifle" ? SettingsAssetBuilder.Rifle : SettingsAssetBuilder.Smg;
+                var def = DefinitionFor(kv.Key);
                 var prefab = BuildWeapon(kv.Key, kv.Value, def);
                 if (prefab != null) Prefabs[kv.Key] = prefab;
             }
@@ -44,7 +55,7 @@ namespace VRRange.Editor
             int w = json.IndexOf("\"weapons\"", System.StringComparison.Ordinal);
             if (w < 0) return result;
             int idx = json.IndexOf('{', w);
-            foreach (var name in new[] { "pistol", "rifle", "smg" })
+            foreach (var name in Ids)
             {
                 int k = json.IndexOf($"\"{name}\"", idx, System.StringComparison.Ordinal);
                 if (k < 0) continue;
@@ -84,9 +95,17 @@ namespace VRRange.Editor
                 inst.name = "Mesh"; inst.transform.SetParent(model.transform, false);
                 inst_for_contacts = inst;
                 inst.transform.localPosition = Vector3.zero; inst.transform.localRotation = Quaternion.identity; inst.transform.localScale = Vector3.one;
-                var texFolder = System.IO.Path.GetDirectoryName($"{RangePaths.ArtWeapons}/{layout.textureSet}").Replace('\\', '/');
-                var texBase = System.IO.Path.GetFileName(layout.textureSet);
-                var mat = MaterialLibrary.PbrFromFolder(texFolder, texBase, $"Weapon_{id}", 0.5f);
+                if (layout.modelEuler != null && layout.modelEuler.Length >= 3)
+                {
+                    // downloaded models keep their import axis / unit compensation on the root; turn barrel-forward on top of it
+                    inst.transform.localRotation = Quaternion.Euler(V(layout.modelEuler)) * asset.transform.localRotation;
+                    inst.transform.localScale = asset.transform.localScale;
+                    inst.transform.localPosition = V(layout.modelOffset);
+                }
+                if (layout.hiddenParts != null)
+                    foreach (var t in inst.GetComponentsInChildren<Transform>(true))
+                        if (t != inst.transform && System.Array.Exists(layout.hiddenParts, h => !string.IsNullOrEmpty(h) && t.name.Contains(h))) Object.DestroyImmediate(t.gameObject);
+                var mat = TextureSetMaterial(layout.textureSet, $"Weapon_{id}");
                 var roles = new Dictionary<string, string>();
                 if (layout.parts != null) foreach (var p in layout.parts) if (!string.IsNullOrEmpty(p.name)) roles[p.name] = p.role;
                 foreach (var t in inst.GetComponentsInChildren<Transform>(true))
@@ -95,13 +114,17 @@ namespace VRRange.Editor
                     var mr = t.GetComponent<MeshRenderer>();
                     if (mr != null)
                     {
-                        var mats = new Material[Mathf.Max(1, mr.sharedMaterials.Length)]; for (int i = 0; i < mats.Length; i++) mats[i] = mat;
+                        var mf = t.GetComponent<MeshFilter>();
+                        int slots = Mathf.Max(1, mf != null && mf.sharedMesh != null ? mf.sharedMesh.subMeshCount : mr.sharedMaterials.Length);
+                        var mats = new Material[slots]; for (int i = 0; i < mats.Length; i++) mats[i] = PartMaterialFor(layout, id, t.name, i, mat);
                         mr.sharedMaterials = mats; mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
                     }
                     if (roles.TryGetValue(t.name, out var role))
                         switch (role) { case "slide": slide = t; break; case "trigger": trigger = t; break; case "magazine": magazine = t; break; }
                 }
                 if (inst.GetComponentsInChildren<MeshRenderer>(true).Length == 0) SetupLog.Warn($"{id}: model has no mesh renderers");
+                if (layout.bolt != null && layout.bolt.carrier != null && layout.bolt.carrier.Length > 0) BuildBolt(root, inst, layout.bolt);
+                trigger = HingeAtTop(root, trigger, "TriggerPivot");
             }
             else
             foreach (var part in layout.parts)
@@ -146,6 +169,7 @@ namespace VRRange.Editor
 
             var animator = root.AddComponent<WeaponAnimator>();
             animator.Configure(model.transform, slide, trigger, magazine);
+            if (s_LastBoltCarrier != null) { animator.ConfigureBolt(s_LastBoltCarrier, s_LastBoltRotor, layout.bolt.travel > 0f ? layout.bolt.travel : 0.075f, layout.bolt.lift > 0f ? layout.bolt.lift : 75f); s_LastBoltCarrier = null; s_LastBoltRotor = null; }
             var weapon = root.AddComponent<Weapon>();
             weapon.Initialize(def, muzzle.transform, animator, flash, audio, light);
             root.AddComponent<WeaponHome>();
@@ -166,7 +190,7 @@ namespace VRRange.Editor
             GameObject supportPalmAttach = null;
             if (supportAnchor != null) supportPalmAttach = EditorRefs.Child(root, "SupportPalmAttach", supportAnchor.transform.localPosition + supportAnchor.transform.localRotation * Vector3.up * kPalmSkin);
             handling.Configure(def, palmAttach.transform, supportPalmAttach != null ? supportPalmAttach.transform : (secondary != null ? secondary.transform : null));
-            BuildContactVolumes(root, inst_for_contacts, layout);
+            BuildContactVolumes(root, inst_for_contacts != null ? model : null, layout); // the whole model: bolt rig parts live beside the mesh instance
             // Convex grip volumes the fingers close onto (HandPresence contact solve): the pistol grip / handguard, and on the
             // pistol's support grip the whole shooting hand. Solid (non-trigger) so Collider.ClosestPoint is exact; they sit
             // inside the weapon's main collider and are on the Weapon layer, which projectiles ignore.
@@ -179,11 +203,94 @@ namespace VRRange.Editor
                 weapon.SetEjectionPort(port.transform);
             }
             BuildAmmoDisplay(root, weapon, layout);
+            if (layout.scope != null && layout.scope.eyepiece != null && layout.scope.eyepiece.Length >= 3) BuildScope(root, model, weapon, layout.scope);
 
             var path = $"{RangePaths.Prefabs}/Weapon_{display}.prefab";
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
             Object.DestroyImmediate(root);
             return prefab;
+        }
+
+        static Material TextureSetMaterial(string textureSet, string materialName)
+        {
+            var texFolder = System.IO.Path.GetDirectoryName($"{RangePaths.ArtWeapons}/{textureSet}").Replace('\\', '/');
+            return MaterialLibrary.PbrFromFolder(texFolder, System.IO.Path.GetFileName(textureSet), materialName, 0.5f);
+        }
+
+        /// <summary>Per-part material: a part (name contains <c>match</c>, optionally one submesh) may use its own texture set or a flat material.</summary>
+        static Material PartMaterialFor(WeaponLayout layout, string id, string partName, int submesh, Material fallback)
+        {
+            if (layout.partMaterials == null) return fallback;
+            foreach (var pm in layout.partMaterials)
+            {
+                if (pm == null || string.IsNullOrEmpty(pm.match) || !partName.Contains(pm.match) || (pm.submesh >= 0 && pm.submesh != submesh)) continue;
+                if (pm.flat == "ScopeGlass") return MaterialLibrary.Flat("ScopeGlass", new Color(0.02f, 0.03f, 0.04f), 0.95f, 0f);
+                if (!string.IsNullOrEmpty(pm.textureSet)) return TextureSetMaterial(pm.textureSet, $"Weapon_{id}_{System.IO.Path.GetFileName(pm.textureSet)}");
+            }
+            return fallback;
+        }
+
+        static Transform s_LastBoltCarrier, s_LastBoltRotor;
+
+        /// <summary>
+        /// A part whose pivot is not on its mesh (the downloaded sniper's trigger pivots at the model origin, by the butt) gets a
+        /// hinge at the top centre of its mesh, aligned with the weapon, so a trigger pull turns it in place and the trigger
+        /// finger aims at the trigger itself. Parts already pivoted on their mesh are returned unchanged.
+        /// </summary>
+        static Transform HingeAtTop(GameObject root, Transform part, string name)
+        {
+            if (part == null) return null;
+            var mf = part.GetComponent<MeshFilter>(); if (mf == null || mf.sharedMesh == null) return part;
+            var min = Vector3.positiveInfinity; var max = Vector3.negativeInfinity;
+            foreach (var v in mf.sharedMesh.vertices) { var w = root.transform.InverseTransformPoint(part.TransformPoint(v)); min = Vector3.Min(min, w); max = Vector3.Max(max, w); }
+            var top = new Vector3((min.x + max.x) * 0.5f, max.y, (min.z + max.z) * 0.5f);
+            // only a pivot far off the part (the sniper's: 28 cm) is moved; the round-3 pistol and rifle keep their accepted setup
+            if (Vector3.Distance(root.transform.InverseTransformPoint(part.position), top) < 0.10f) return part;
+            var hinge = new GameObject(name).transform; hinge.SetParent(part.parent, false);
+            hinge.position = root.transform.TransformPoint(top); hinge.rotation = root.transform.rotation; hinge.gameObject.layer = root.layer;
+            part.SetParent(hinge, true);
+            SetupLog.Ok($"{root.name}: {part.name} re-hinged at its top ({top.x * 1000f:0}, {top.y * 1000f:0}, {top.z * 1000f:0}) mm");
+            return hinge;
+        }
+
+        /// <summary>
+        /// Bolt rig: a carrier at the bolt's pivot on the bore axis (slides back) holding the cocking piece, and a rotor in it
+        /// holding the bolt body with the handle (turns about the bore to lift the handle). Parts keep their world pose.
+        /// </summary>
+        static void BuildBolt(GameObject root, GameObject meshRoot, BoltDef bolt)
+        {
+            var carrier = new GameObject("BoltCarrier").transform; carrier.SetParent(meshRoot.transform.parent, false);
+            carrier.localPosition = V(bolt.pivot); carrier.localRotation = Quaternion.identity;
+            var rotor = new GameObject("BoltRotor").transform; rotor.SetParent(carrier, false);
+            int moved = 0;
+            foreach (var t in meshRoot.GetComponentsInChildren<Transform>(true))
+            {
+                if (System.Array.Exists(bolt.rotor ?? new string[0], n => t.name == n)) { t.SetParent(rotor, true); moved++; }
+                else if (System.Array.Exists(bolt.carrier, n => t.name == n)) { t.SetParent(carrier, true); moved++; }
+            }
+            foreach (var t in carrier.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = root.layer;
+            s_LastBoltCarrier = carrier; s_LastBoltRotor = rotor;
+            SetupLog.Ok($"{root.name}: bolt rig with {moved} parts (travel {bolt.travel * 1000f:0} mm, lift {bolt.lift:0} deg)");
+        }
+
+        /// <summary>Working scope: the eyepiece lens (VRRange/ScopeLens) and the scope camera at the objective, both on the model so they follow the recoil kick.</summary>
+        static void BuildScope(GameObject root, GameObject model, Weapon weapon, ScopeDef scope)
+        {
+            var shader = Shader.Find("VRRange/ScopeLens");
+            if (shader == null) { SetupLog.Error("Shader VRRange/ScopeLens not found; the scope stays dark"); return; }
+            var matPath = $"{RangePaths.Materials}/ScopeLens.mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            if (mat == null) { mat = new Material(shader); RangePaths.EnsureFolder(RangePaths.Materials); AssetDatabase.CreateAsset(mat, matPath); }
+            mat.shader = shader; EditorUtility.SetDirty(mat);
+            float r = scope.lensRadius > 0f ? scope.lensRadius : 0.007f;
+            var lens = EditorRefs.MeshObject(model, "ScopeLens", EditorMeshUtil.Disc("ScopeLensDisc", r), new[] { mat }, V(scope.eyepiece), default, root.layer);
+            var lensMr = lens.GetComponent<MeshRenderer>(); lensMr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; lensMr.receiveShadows = false;
+            var camGo = EditorRefs.Child(model, "ScopeCamera", V(scope.objective));
+            var cam = EditorRefs.Ensure<Camera>(camGo); cam.enabled = false; cam.fieldOfView = scope.fov > 0f ? scope.fov : 4.5f; cam.nearClipPlane = 0.05f; cam.farClipPlane = 200f; cam.tag = "Untagged";
+            EditorRefs.Ensure<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>(camGo);
+            var ws = EditorRefs.Ensure<WeaponScope>(root);
+            ws.Configure(weapon, cam, lensMr, cam.fieldOfView, scope.zero > 0f ? scope.zero : 25f);
+            SetupLog.Ok($"{root.name}: scope lens r {r * 1000f:0.0} mm, field {cam.fieldOfView:0.0} deg, zero {(scope.zero > 0f ? scope.zero : 25f):0} m");
         }
 
         /// <summary>Small 3D ammo counter at the rear of the receiver, readable by the shooter looking down the weapon.</summary>
@@ -276,6 +383,7 @@ namespace VRRange.Editor
             anchor.role = role; anchor.authoredForRightHand = true;
             anchor.pose = SettingsAssetBuilder.Pose(palm != null ? palm.pose : (role == GripRole.Primary ? "PistolGrip" : "RifleSupport"));
             anchor.gripCollider = null;
+            anchor.palmCompression = palm != null && palm.compression > 0f ? palm.compression : 0.005f;
             return anchor;
         }
 

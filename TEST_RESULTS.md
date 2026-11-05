@@ -3,7 +3,107 @@
 Honest record of what was verified and how. Two stages so far: a cloud *static* stage (no Unity) and a cloud
 *real-editor* stage (Unity 6000.3.27f1 in a Linux container, GameCI image, Student/Personal licence activated
 through Unity's command-line activation and returned afterwards). Stage 5 adds the first PCVR headset sessions
-(Quest 2 via Virtual Desktop); stages 6, 7 and 8 are the headset-feedback rounds (PCVR only); the standalone Quest APK has still not run on a headset.
+(Quest 2 via Virtual Desktop); stages 6, 7, 8 and 9 are the headset-feedback rounds (PCVR only); the standalone Quest APK has still not run on a headset.
+
+## Stage 9: 0.4.0 — the rack AKM and sniper are playable, real Unity editor on the owner's PC (2026-11-06, PCVR only) — **ACCEPTED by the tests, headset check pending**
+Starting point: `c3e2e4c` (round 3). Unity 6000.3.27f1 on Windows, packages unchanged. Prefab rebuild (`RunPrefabsBatch`) plus a scene
+**patch**, not a scene rebuild: `RackWeaponsBuilder.RunBatch` edits the saved scene. Lighting was **not** re-baked. Nothing in this
+stage ran on a headset.
+
+**Status in one sentence:** EditMode **35 / 35**, PlayMode **78 / 78** (this includes the 10-configuration hand acceptance test), and the
+Windows build 0.4.0 succeeds. The hand test passed in 3 full runs out of 4 with the final code; the failing run is described under
+"Known limits".
+
+**What the owner asked for:**
+- make the AKM and the bolt-action rifle on the staff-area gun rack playable;
+- keep them on the same rack, but stop them breaching it (the old decor rifles passed through two shelves);
+- add a scope to the sniper rifle.
+
+**What was done:**
+- **Rack.**
+  - The two static decor props are gone. Both rifles now stand in front of the rack with their butts on the floor, leaning back 9–11 deg
+    against the front lip of the 0.91 m shelf.
+  - The placement is computed from each rifle's real mesh: vertices plus a point every 8 mm along every triangle edge. Nothing at or
+    below the lip's top surface is behind the rack's front plane.
+  - An exact intersection test runs at build time and again in the new EditMode test `RackPlacementTests`:
+    - temporary mesh colliders on the rack and the 11 props around it (toolbox, boxes, shelves, wet-floor sign);
+    - every rifle triangle edge is linecast against them, back faces included;
+    - a ray-parity "inside" test checks the closed props.
+  - Result: 0 crossings, 0 points inside. The sniper slid 8 cm sideways to clear the toolbox standing in front of the rack.
+  - Each rifle sits in its own rack socket, which is also its home: a dropped rifle returns there. Both rifles are tracked by the game
+    mode manager, so they are refilled on mode restarts and shown on the HUD.
+- **AKM** (OpenGameArt CC0 model, moved from Props to `Models/akm`):
+  - 7.62x39 mm, 715 m/s, 600 rpm, 30 rounds, semi / auto.
+  - Heavier and kicks harder than the M4.
+  - Hand anchors start from the M4's round-3 values: the model is offset so its 25 deg grip lands where the M4's grip is.
+  - 13 fitted contact hulls.
+- **Sniper** (Poly Haven CC0 model, re-downloaded in full):
+  - The old decimated copy had empty bolt, trigger and scope meshes.
+  - 7.62x54R, 830 m/s, 5 rounds, spread 0.04 deg.
+  - **Bolt action:**
+    - after each shot the trigger only clicks until the bolt is worked with B / Y;
+    - the bolt handle lifts 75 deg, the bolt travels back 75 mm (the case is ejected then) and closes again;
+    - a reload also works the bolt.
+  - The trigger mesh pivoted at the model origin by the butt, so it got a hinge at the top of its mesh (the trigger finger was aiming
+    263 mm away).
+- **Scope** (`WeaponScope` + shader `VRRange/ScopeLens`):
+  - It is the model's own PU-type scope, made to work. A 4.5 deg camera at the objective renders to a 640 px texture.
+  - The eyepiece lens shows that texture inside a field stop, with a PU reticle (side bars, pointed post) and an exit-pupil shadow that
+    follows the eye.
+  - Zeroed at 25 m: the line of sight crosses the bullet's path (velocity and gravity from the definition) within 5 mm (tested).
+  - It renders only while the rifle is held and an eye is within 45 cm. The rifle's own layer is culled from the scope image.
+
+**Hand changes (stated, not hidden):**
+- The palm's compression allowance outside the thenar / hypothenar zone is now a per-grip value: `WeaponGripAnchor.palmCompression`.
+  - It is 5 mm everywhere as before, except the sniper's 3 cm forend, which gets 3.5 mm.
+  - Lowering it globally to 3.5 mm was tried and rejected: the round-3 palms then floated past the 8 mm limit.
+- The finger touch pass now also descends from a seed with the outer joints curled (fingers only, not the thumb).
+  - Before, the support middle finger on a slim forend or handguard landed either near 8 mm or near 13 mm from run to run. This
+    happened on the M4 as well.
+  - It now lands at 6.6–9.4 mm in every run.
+- Test changes:
+  - The free-hand reference is taken only after both free hands have come to rest. A reference captured while a hand was still gliding
+    back from the heavy sniper made one wrist read 6 cm off with an identical hold.
+  - The sniper's shooting wrist may sit up to 45 deg below the bore (pistol grips: 25 deg). It has a straight-wrist stock with no
+    pistol grip, so the hand wraps it diagonally.
+  - No other limit was changed.
+
+**New rifles (`Docs/TestResults/round4/hand_report_round4.txt`):**
+
+| Configuration | Max depth outside zone | Palm skin gap | Fingertip bone gaps | Wrist pitch | Held vs free wrist |
+|---|---|---|---|---|---|
+| AKM, shooting hand | 2.6 mm | 4.8 mm | thumb 8.7 / middle 10.4 / ring 9.1 / little 5.6 mm | −23° | 3.7 cm |
+| AKM, both: support | 0.4 mm | 3.6 mm | middle 7.1 / ring 7.2 / little 7.1 mm | +26° | – |
+| Sniper, shooting hand | 1.9 mm | 6.1 mm | thumb 8.3 / middle 7.6 / ring 7.3 / little 7.0 mm | −40° | 3.4 cm (1.5 cm two-handed) |
+| Sniper, both: support | 2.6 mm | 2.4 mm | middle 9.2 / ring 9.0 / little 7.2 mm | +23° | – |
+
+**New tests:**
+- `RackWeaponsTests` (PlayMode, 5 tests):
+  - both rifles start socketed, loaded and tracked;
+  - the bolt must be worked between shots, it moves, the case is ejected, and a reload refills and chambers;
+  - the scope renders, is zeroed at 25 m and turns off when the rifle is put down;
+  - the AKM fires semi and about 600 rpm auto;
+  - a dropped rifle returns to the rack.
+- `RackPlacementTests` (EditMode): the exact intersection test against the rack and props, nothing below the floor, the rifle leaning
+  on the lip, and the socket wiring.
+
+Updated: weapon counts 3 → 5, prefab, definition and material lists, the ballistics table (AKM 715 / 600, sniper 830 / 60), and two
+narrow exemptions in the material checks (the custom URP lens shader and the untextured scope glass).
+
+**Known limits:**
+- **M4 shooting thumb.** In 1 of the 4 full hand runs with the final code, the M4's (round-3) shooting thumb measured 12.5 mm against the
+  12 mm limit. Across runs it ranges 7.8–12.5 mm. Earlier today it read 12.0 mm, before any of this stage's hand changes; the new curled
+  seed does not apply to thumbs. Report: `Docs/TestResults/round4/hand_report_round4_run3_m4_thumb.txt`.
+- **Grab-time cost.** The longest grasp stage measured 31.7–32.5 ms, on the pistol's two-handed grab. The new rifles stay below that.
+  Round 3 reported 12–26 ms in the same Mono editor; the build is faster, and the headset is unverified.
+- **Lightmap.** Not re-baked, so faint baked shadows of the removed decor rifles may remain on the shelves. A re-bake needs the owner's
+  approval.
+- **Model detail.** The scope lens is the real 13 mm PU eyepiece, which may feel small in VR. The AKM is one solid mesh: its magazine
+  and trigger do not animate.
+- **Bolt control.** The bolt is worked with a button; there is no physical pull-the-handle interaction.
+
+Screenshots: `Docs/Screenshots/round4_rack_rifles/`. Before / after on the rack, the lip and floor contact, the scope eye view, and the
+AKM and sniper holds.
 
 ## Stage 8: round 3 — hands actually hold the guns, real Unity editor on the owner's PC (2026-11-05, PCVR only) — **ACCEPTED by the test, headset check pending**
 Starting point: `e177dea` + the round-2c patch (`Docs/TestResults/round2c/`). Unity 6000.3.27f1 on Windows (GPU rendering, not the

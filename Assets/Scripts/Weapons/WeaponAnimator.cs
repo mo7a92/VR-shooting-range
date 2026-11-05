@@ -17,6 +17,14 @@ namespace VRRange.Weapons
         [SerializeField] Transform m_Magazine;
         [SerializeField] Transform m_MagazineHome;
 
+        [Header("Bolt action (optional)")]
+        [Tooltip("Slides back along the bore during a bolt cycle (bolt body + cocking piece).")]
+        [SerializeField] Transform m_BoltCarrier;
+        [Tooltip("Child of the carrier that turns about the bore to lift the bolt handle.")]
+        [SerializeField] Transform m_BoltRotor;
+        [SerializeField] float m_BoltTravel = 0.075f;
+        [SerializeField] float m_BoltLiftDegrees = 75f;
+
         [Header("Tuning")]
         [SerializeField] float m_SlideReturnSpeed = 18f;
         [SerializeField] float m_TriggerPullDegrees = 12f;
@@ -30,6 +38,15 @@ namespace VRRange.Weapons
         bool m_SlideLocked, m_TriggerPulled;
         float m_MagProgress = 1f; // 1 = seated, 0 = fully out
         float m_MagSpeed = 1f;
+        Vector3 m_CarrierHomePos; Quaternion m_RotorHomeRot;
+        float m_BoltT = -1f, m_BoltDuration = 0.65f; // -1 idle, else 0..1 through lift / back / forward / down
+
+        /// <summary>Bolt cycle progress 0..1, or -1 when the bolt is closed and idle.</summary>
+        public float BoltProgress => m_BoltT;
+        public bool HasBolt => m_BoltCarrier != null;
+        /// <summary>Current bolt position: handle lift (degrees) and travel back (metres).</summary>
+        public float BoltLiftNow { get; private set; }
+        public float BoltBackNow { get; private set; }
 
         public Transform ModelRoot => m_ModelRoot;
 
@@ -40,6 +57,25 @@ namespace VRRange.Weapons
             if (m_Slide != null) m_SlideHomePos = m_Slide.localPosition;
             if (m_Magazine != null) m_MagHomePos = m_MagazineHome != null ? m_MagazineHome.localPosition : m_Magazine.localPosition;
             if (m_Trigger != null) m_TriggerHomeRot = m_Trigger.localRotation;
+            if (m_BoltCarrier != null) m_CarrierHomePos = m_BoltCarrier.localPosition;
+            if (m_BoltRotor != null) m_RotorHomeRot = m_BoltRotor.localRotation;
+        }
+
+        public void ConfigureBolt(Transform carrier, Transform rotor, float travel, float liftDegrees)
+        {
+            m_BoltCarrier = carrier; m_BoltRotor = rotor; m_BoltTravel = travel; m_BoltLiftDegrees = liftDegrees;
+        }
+
+        /// <summary>Runs one bolt cycle: handle up (first quarter), back (to 45 %), forward (to 75 %), down (last quarter).</summary>
+        public void PlayBoltCycle(float duration) { m_BoltDuration = Mathf.Max(0.1f, duration); m_BoltT = 0f; }
+
+        public void ResetBolt() { m_BoltT = -1f; ApplyBolt(0f, 0f); }
+
+        void ApplyBolt(float lift, float back)
+        {
+            BoltLiftNow = lift; BoltBackNow = back;
+            if (m_BoltCarrier != null) m_BoltCarrier.localPosition = m_CarrierHomePos + Vector3.back * back;
+            if (m_BoltRotor != null) m_BoltRotor.localRotation = m_RotorHomeRot * Quaternion.Euler(0f, 0f, lift);
         }
 
         public void Configure(Transform modelRoot, Transform slide, Transform trigger, Transform magazine)
@@ -99,8 +135,19 @@ namespace VRRange.Weapons
                 var target = m_TriggerHomeRot * Quaternion.Euler(m_TriggerPulled ? m_TriggerPullDegrees : 0f, 0f, 0f);
                 m_Trigger.localRotation = Quaternion.Slerp(m_Trigger.localRotation, target, 1f - Mathf.Exp(-25f * dt));
             }
+            if (m_BoltT >= 0f && m_BoltCarrier != null)
+            {
+                m_BoltT += dt / m_BoltDuration;
+                float t = Mathf.Clamp01(m_BoltT);
+                float lift = t < 0.25f ? Smooth(t / 0.25f) : t < 0.75f ? 1f : 1f - Smooth((t - 0.75f) / 0.25f);
+                float back = t < 0.25f ? 0f : t < 0.45f ? Smooth((t - 0.25f) / 0.2f) : t < 0.5f ? 1f : t < 0.75f ? 1f - Smooth((t - 0.5f) / 0.25f) : 0f;
+                ApplyBolt(lift * m_BoltLiftDegrees, back * m_BoltTravel);
+                if (m_BoltT >= 1f) { m_BoltT = -1f; ApplyBolt(0f, 0f); }
+            }
             if (m_Magazine != null)
                 m_Magazine.localPosition = m_MagHomePos + Vector3.down * (m_MagazineDropDistance * (1f - m_MagProgress));
         }
+    
+        static float Smooth(float x) { x = Mathf.Clamp01(x); return x * x * (3f - 2f * x); }
     }
 }

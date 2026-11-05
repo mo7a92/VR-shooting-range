@@ -17,6 +17,8 @@ namespace VRRange.Hands
         public bool authoredForRightHand = true;
         [Tooltip("Convex collider of the part the hand wraps (grip, handguard, or the shooting hand on a supported pistol). HandPresence closes each finger until it touches this collider.")]
         public Collider gripCollider;
+        [Tooltip("How far the palm outside the thenar / hypothenar bulges may press into the weapon (metres). A narrow forend that only the palm's centre rests on gets less than a grip the whole palm wraps.")]
+        [Range(0f, 0.008f)] public float palmCompression = 0.005f;
 
         /// <summary>World palm pose for the given hand. Left hands get a mirrored anchor unless the anchor was authored for them.</summary>
         public Pose GetPalmPose(bool isLeftHand)

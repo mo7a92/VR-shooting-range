@@ -22,7 +22,7 @@ namespace VRRange.Tests
     /// <summary>Prefabs, settings assets and the generated scene: required components, no missing scripts or broken references, no missing textures, sane placement.</summary>
     public class ProjectIntegrityTests
     {
-        static readonly string[] WeaponPrefabs = { "Weapon_Pistol", "Weapon_Rifle", "Weapon_SMG" };
+        static readonly string[] WeaponPrefabs = { "Weapon_Pistol", "Weapon_Rifle", "Weapon_SMG", "Weapon_AKM", "Weapon_Sniper" };
 
         static GameObject Prefab(string name)
         {
@@ -69,7 +69,7 @@ namespace VRRange.Tests
                 foreach (var a in anchors) { Assert.IsNotNull(a.pose, $"{name}: anchor {a.role} has a hand pose"); Assert.IsNotNull(a.gripCollider, $"{name}: anchor {a.role} has a grip collider for the finger contact solve"); Assert.IsTrue(a.gripCollider.transform.IsChildOf(go.transform), $"{name}: grip collider belongs to the weapon"); }
                 Assert.AreEqual(LayerMask.NameToLayer("Weapon"), go.layer, $"{name}: Weapon layer");
                 Assert.IsTrue(go.GetComponentsInChildren<MeshRenderer>(true).Length >= 2, $"{name}: visible model parts");
-                foreach (var mr in go.GetComponentsInChildren<MeshRenderer>(true)) { if (mr.GetComponent<TMPro.TMP_Text>() != null) continue; /* ammo counter: SDF font material */ foreach (var m in mr.sharedMaterials) { Assert.IsNotNull(m, $"{name}: {mr.name} has a null material"); Assert.IsNotNull(m.GetTexture("_BaseMap"), $"{name}: {mr.name} material {m.name} has no albedo texture"); } }
+                foreach (var mr in go.GetComponentsInChildren<MeshRenderer>(true)) { if (mr.GetComponent<TMPro.TMP_Text>() != null) continue; /* ammo counter: SDF font material */ foreach (var m in mr.sharedMaterials) { Assert.IsNotNull(m, $"{name}: {mr.name} has a null material"); if (m.name == "ScopeGlass" || m.name == "ScopeLens") continue; /* scope glass and the live lens are untextured by design */ Assert.IsNotNull(m.GetTexture("_BaseMap"), $"{name}: {mr.name} material {m.name} has no albedo texture"); } }
                 Assert.AreEqual(0, GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(go), $"{name}: missing scripts");
                 CollectionAssert.IsEmpty(MissingReferences(go), $"{name}: broken references");
             }
@@ -100,9 +100,9 @@ namespace VRRange.Tests
         [Test]
         public void WeaponDefinitionsAreConsistent()
         {
-            var defs = new[] { "Weapon_Pistol", "Weapon_Rifle", "Weapon_SMG" }.Select(n => AssetDatabase.LoadAssetAtPath<WeaponDefinition>($"{RangePaths.Settings}/{n}.asset")).ToArray();
+            var defs = new[] { "Weapon_Pistol", "Weapon_Rifle", "Weapon_SMG", "Weapon_AKM", "Weapon_Sniper" }.Select(n => AssetDatabase.LoadAssetAtPath<WeaponDefinition>($"{RangePaths.Settings}/{n}.asset")).ToArray();
             Assert.IsTrue(defs.All(d => d != null), "weapon definitions exist");
-            var pistol = defs[0]; var rifle = defs[1]; var smg = defs[2];
+            var pistol = defs[0]; var rifle = defs[1]; var smg = defs[2]; var akm = defs[3]; var sniper = defs[4];
             foreach (var d in defs)
             {
                 Assert.IsTrue(d.Supports(d.defaultFireMode), $"{d.displayName}: default fire mode supported");
@@ -126,6 +126,14 @@ namespace VRRange.Tests
             Assert.GreaterOrEqual(rifle.oneHandSagDegrees, 18f); Assert.GreaterOrEqual(rifle.oneHandResponseSeconds, 0.25f); Assert.GreaterOrEqual(rifle.recoilUnsupportedMultiplier, 2.5f);
             Assert.Greater(rifle.oneHandResponseSeconds, smg.oneHandResponseSeconds); Assert.Greater(smg.oneHandResponseSeconds, pistol.oneHandResponseSeconds);
             Assert.AreEqual(0f, pistol.supportHandInfluence, 1e-3f, "the pistol's support hand steadies but does not steer (no two-point aim)");
+            // 0.4.0: AKM (7.62x39 mm, ~715 m/s, ~600 rpm, 30 rounds, semi/auto) and bolt-action sniper (7.62x54R, ~830 m/s, 5 rounds)
+            Assert.AreEqual(715f, akm.muzzleVelocity, 1f); Assert.AreEqual(600f, akm.roundsPerMinute, 1f); Assert.AreEqual(30, akm.magazineSize);
+            Assert.IsTrue(akm.Supports(FireMode.Auto) && akm.Supports(FireMode.Semi)); Assert.IsFalse(akm.boltAction);
+            Assert.AreEqual(830f, sniper.muzzleVelocity, 1f); Assert.AreEqual(5, sniper.magazineSize); Assert.IsTrue(sniper.boltAction); Assert.AreEqual(FireMode.Semi, sniper.supportedFireModes);
+            Assert.Greater(sniper.virtualMassKg, akm.virtualMassKg); Assert.Greater(akm.virtualMassKg, rifle.virtualMassKg, "rifle < AKM < sniper weight");
+            Assert.Less(sniper.spreadDegrees, rifle.spreadDegrees, "the sniper is the most accurate");
+            Assert.IsTrue(akm.twoHanded && sniper.twoHanded);
+            foreach (var d in new[] { akm, sniper }) Assert.AreEqual(1f, d.gravityMultiplier, 1e-3f, $"{d.weaponId}: real gravity");
         }
 
         [Test]
@@ -149,7 +157,7 @@ namespace VRRange.Tests
             {
                 var path = AssetDatabase.GUIDToAssetPath(g); var m = AssetDatabase.LoadAssetAtPath<Material>(path);
                 if (m.shader == null || m.shader.name.Contains("InternalErrorShader") || m.shader.name == "Hidden/InternalErrorShader") problems.Add($"{m.name}: error shader");
-                if (!m.shader.name.StartsWith("Universal Render Pipeline")) problems.Add($"{m.name}: not a URP shader ({m.shader.name})");
+                if (!m.shader.name.StartsWith("Universal Render Pipeline") && !m.shader.name.StartsWith("VRRange/")) problems.Add($"{m.name}: not a URP shader ({m.shader.name})");
                 var so = new SerializedObject(m); var texs = so.FindProperty("m_SavedProperties.m_TexEnvs");
                 for (int i = 0; texs != null && i < texs.arraySize; i++)
                 {
@@ -160,7 +168,7 @@ namespace VRRange.Tests
             }
             CollectionAssert.IsEmpty(problems);
             // the key PBR sets must be textured (a missing download would silently fall back to white)
-            foreach (var n in new[] { "FloorConcrete", "WallConcrete", "MetalBrushed", "Wood", "Weapon_pistol", "Weapon_rifle", "Weapon_smg", "HandSkinLeft", "HandSkinRight" })
+            foreach (var n in new[] { "FloorConcrete", "WallConcrete", "MetalBrushed", "Wood", "Weapon_pistol", "Weapon_rifle", "Weapon_smg", "Weapon_akm", "Weapon_sniper", "Weapon_sniper_sniper_acc", "HandSkinLeft", "HandSkinRight" })
             {
                 var m = AssetDatabase.LoadAssetAtPath<Material>($"{RangePaths.Materials}/{n}.mat");
                 Assert.IsNotNull(m, $"{n}.mat"); Assert.IsNotNull(m.GetTexture("_BaseMap"), $"{n}: albedo texture");
@@ -186,7 +194,7 @@ namespace VRRange.Tests
                 Assert.AreEqual(1, all.Count(g => g.GetComponent<AudioListener>() != null), "exactly one AudioListener");
                 Assert.AreEqual(5, all.Count(g => g.GetComponent<TargetLane>() != null)); Assert.AreEqual(5, all.Count(g => g.GetComponent<BullseyeTarget>() != null));
                 var weapons = all.Where(g => g.GetComponent<Weapon>() != null).Select(g => g.GetComponent<Weapon>()).ToArray();
-                Assert.AreEqual(3, weapons.Length);
+                Assert.AreEqual(5, weapons.Length, "pistol, rifle, SMG on the counter; AKM and sniper on the gun rack");
                 foreach (var w in weapons)
                 {
                     var home = w.GetComponent<WeaponHome>(); Assert.IsNotNull(home.HomeSocket, $"{w.name}: socket");
@@ -195,7 +203,7 @@ namespace VRRange.Tests
                     Assert.Less(Vector3.Distance(grab.attachTransform.position, home.HomeSocket.attachTransform.position), 0.005f, $"{w.name}: socket attach mirrors the weapon attach (no re-pose at runtime)");
                     Assert.Less(Quaternion.Angle(grab.attachTransform.rotation, home.HomeSocket.attachTransform.rotation), 0.5f, $"{w.name}: socket attach rotation mirrors the weapon attach");
                 }
-                Assert.AreEqual(3, all.Count(g => g.GetComponent<XRSocketInteractor>() != null));
+                Assert.AreEqual(5, all.Count(g => g.GetComponent<XRSocketInteractor>() != null), "one home socket per weapon");
                 Assert.AreEqual(2, all.Count(g => g.GetComponent<HandPresence>() != null), "two hands on the rig");
                 var ui = all.Select(g => g.GetComponent<RangeUI>()).FirstOrDefault(c => c != null); Assert.IsNotNull(ui);
                 foreach (var f in typeof(RangeUI).GetFields().Where(f => f.IsPublic && !f.IsStatic))

@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aabf84a7cb784c4e4a4cc05d4da1faaa, type: 3}
+  m_Name: Weapon_Sniper
+  m_EditorClassIdentifier: VRRange.Runtime::VRRange.Core.WeaponDefinition
+  weaponId: sniper
+  displayName: Sniper
+  weaponClass: 4
+  twoHanded: 1
+  allowsSupportHand: 1
+  supportedFireModes: 1
+  defaultFireMode: 1
+  boltAction: 1
+  boltCycleSeconds: 0.7
+  roundsPerMinute: 60
+  magazineSize: 5
+  reloadSeconds: 2.8
+  muzzleVelocity: 830
+  spreadDegrees: 0.04
+  gravityMultiplier: 1
+  projectileLifetime: 3
+  kickBackMetres: 0.05
+  kickUpDegrees: 9
+  kickSideDegrees: 1
+  recoverySpeed: 10
+  slideTravel: 0
+  virtualMassKg: 4.5
+  balanceForwardMetres: 0.38
+  oneHandResponseSeconds: 0.4
+  twoHandResponseSeconds: 0.05
+  oneHandSagDegrees: 28
+  twoHandSagDegrees: 0.7
+  oneHandSwayDegrees: 2
+  twoHandSwayDegrees: 0.12
+  swayFrequencyHz: 0.7
+  maxPositionLagMetres: 0.05
+  maxRotationLagDegrees: 16
+  supportHandInfluence: 0.9
+  gripTransitionSeconds: 0.2
+  recoilUnsupportedMultiplier: 3.2
+  recoilSupportedMultiplier: 0.7
+  recoveryUnsupported: 4
+  recoverySupported: 10
+  instabilityPerShot: 0.5
+  instabilityDecayPerSecond: 1.5
+  maxRecoilPitchDegrees: 35
+  maxRecoilYawDegrees: 12
+  hapticAmplitude: 1
+  hapticDuration: 0.1
+  secondaryHandHapticScale: 0.6
+  fireClip: {fileID: 8300000, guid: 2dd9a5623018cdf01a009c9584d614fc, type: 3}
+  dryFireClip: {fileID: 8300000, guid: a7342e2ed45e7329fbdbccb417e51288, type: 3}
+  reloadStartClip: {fileID: 8300000, guid: c8c6f4260f946371a979025123b4cb30, type: 3}
+  reloadEndClip: {fileID: 8300000, guid: 4350e70c015a4205488e655b85498225, type: 3}
+  fireModeClip: {fileID: 8300000, guid: c952828795ab8155080d31b754bd349f, type: 3}
+  slideRackClip: {fileID: 8300000, guid: 2356547e49cc380fa9cb104dee738556, type: 3}
+  fireVolume: 1
+  muzzleFlashScale: 1.5
+  tracerColor: {r: 1, g: 0.6, b: 0.3, a: 1}

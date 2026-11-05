@@ -14,7 +14,7 @@ namespace VRRange.Weapons
 {
     /// <summary>
     /// Grabbable weapon driven by XR Interaction Toolkit events. Trigger (XRI "Activate") fires, A/X reloads,
-    /// B/Y toggles fire mode where supported. Recoil is purely visual on the weapon model plus controller haptics.
+    /// B/Y toggles fire mode where supported, or cycles the bolt on a bolt-action rifle. Recoil is purely visual on the weapon model plus controller haptics.
     /// Missing references degrade gracefully (the weapon still fires, just without that effect).
     /// </summary>
     [RequireComponent(typeof(XRGrabInteractable))]
@@ -35,6 +35,7 @@ namespace VRRange.Weapons
         FireMode m_FireMode = FireMode.Semi;
         int m_Rounds;
         bool m_TriggerHeld, m_Reloading, m_Warned;
+        bool m_BoltNeedsCycle, m_CyclingBolt; // bolt action: a fired case sits in the chamber until the bolt is worked
         float m_NextFireTime;
         Coroutine m_ReloadRoutine;
         XRBaseInputInteractor m_LastPrimary;
@@ -44,6 +45,8 @@ namespace VRRange.Weapons
         public event Action<Weapon, int, int> AmmoChanged;      // weapon, rounds, magazineSize
         public event Action<Weapon, bool> ReloadStateChanged;  // weapon, isReloading
         public event Action<Weapon, FireMode> FireModeChanged;
+        /// <summary>Bolt action: raised when a bolt cycle completes (case ejected, next round chambered).</summary>
+        public event Action<Weapon> BoltCycled;
         /// <summary>Raised when the set of hands holding the weapon changes (one-handed <-> two-handed, hand swap).</summary>
         public event Action<Weapon> GripChanged;
 
@@ -55,6 +58,12 @@ namespace VRRange.Weapons
         public bool IsReloading => m_Reloading;
         public bool IsHeld => m_Grab != null && m_Grab.isSelected && PrimaryHandInteractor != null;
         public FireMode CurrentFireMode => m_FireMode;
+        public bool IsBoltAction => m_Definition != null && m_Definition.boltAction;
+        /// <summary>Bolt action: the last shot's case is still in the chamber; the trigger only clicks until the bolt is cycled.</summary>
+        public bool NeedsBoltCycle => IsBoltAction && m_BoltNeedsCycle;
+        public bool IsCyclingBolt => m_CyclingBolt;
+        /// <summary>Fire mode for the HUD: "Semi" / "Auto", or "Bolt" / "Cycle bolt" on a bolt action.</summary>
+        public string FireModeLabel => IsBoltAction ? (m_BoltNeedsCycle || m_CyclingBolt ? "Cycle bolt" : "Bolt") : m_FireMode.ToString();
         public string DisplayName => m_Definition != null ? m_Definition.displayName : name;
         public WeaponHandlingTransformer Handling => m_Handling;
         public bool IsTwoHanded => m_Handling != null && m_Handling.IsTwoHanded;
@@ -128,6 +137,7 @@ namespace VRRange.Weapons
             m_Grab.selectExited.RemoveListener(OnSelectExited);
             m_Grab.selectEntered.RemoveListener(OnSelectEntered);
             m_TriggerHeld = false;
+            m_CyclingBolt = false; // coroutines stop with the component; a half-done cycle is simply repeated
         }
 
         void OnSelectEntered(SelectEnterEventArgs args)
@@ -176,13 +186,20 @@ namespace VRRange.Weapons
 
             var handedness = hand.handedness;
             if (WeaponInput.ReloadPressedThisFrame(handedness)) StartReload();
-            if (WeaponInput.FireModePressedThisFrame(handedness)) ToggleFireMode();
+            if (WeaponInput.FireModePressedThisFrame(handedness)) { if (IsBoltAction) CycleBolt(); else ToggleFireMode(); }
         }
 
         public bool TryFire()
         {
             if (m_Definition == null || m_Reloading) return false;
             if (Time.time < m_NextFireTime) return false;
+            if (IsBoltAction && (m_BoltNeedsCycle || m_CyclingBolt))
+            {
+                // the hammer falls on the fired case (or the bolt is open): a click, no shot
+                m_NextFireTime = Time.time + 0.2f;
+                if (!m_CyclingBolt) DryFire();
+                return false;
+            }
             if (m_Rounds <= 0)
             {
                 m_NextFireTime = Time.time + 0.2f;
@@ -224,16 +241,51 @@ namespace VRRange.Weapons
             PlayClip(m_Definition.fireClip, m_Definition.fireVolume, 0.06f);
             float gripScale = m_Handling != null ? Mathf.Lerp(1.15f, 0.85f, m_Handling.TwoHandBlend) : 1f; // unsupported shots kick the hand harder
             SendHaptics(m_Definition.hapticAmplitude * gripScale, m_Definition.hapticDuration);
-            if (m_Rounds <= 0) m_Animator?.SetSlideLocked(true);
-
-            if (m_EjectionPort != null)
+            if (IsBoltAction) m_BoltNeedsCycle = true; // the case stays in the chamber until the bolt is worked
+            else
             {
-                var port = m_EjectionPort;
-                var vel = port.right * UnityEngine.Random.Range(1.6f, 2.6f) + port.up * UnityEngine.Random.Range(0.8f, 1.6f) + port.forward * UnityEngine.Random.Range(-0.3f, 0.3f);
-                ShellCasingPool.Eject(port.position, vel, UnityEngine.Random.insideUnitSphere * 30f, m_Definition.weaponClass == WeaponClass.Pistol ? 0.8f : 1f);
+                if (m_Rounds <= 0) m_Animator?.SetSlideLocked(true);
+                EjectCase(1f);
             }
 
             Fired?.Invoke(this);
+            AmmoChanged?.Invoke(this, m_Rounds, MagazineSize);
+        }
+
+        void EjectCase(float strength)
+        {
+            if (m_EjectionPort == null) return;
+            var port = m_EjectionPort;
+            var vel = (port.right * UnityEngine.Random.Range(1.6f, 2.6f) + port.up * UnityEngine.Random.Range(0.8f, 1.6f) + port.forward * UnityEngine.Random.Range(-0.3f, 0.3f)) * strength;
+            ShellCasingPool.Eject(port.position, vel, UnityEngine.Random.insideUnitSphere * 30f, m_Definition.weaponClass == WeaponClass.Pistol ? 0.8f : 1f);
+        }
+
+        /// <summary>
+        /// Bolt action: lift, pull back (the fired case flies out), push forward (the next round is chambered) and lock.
+        /// Returns false when there is nothing to do right now (not a bolt action, reloading, already cycling).
+        /// </summary>
+        public bool CycleBolt()
+        {
+            if (!IsBoltAction || m_Reloading || m_CyclingBolt || !isActiveAndEnabled) return false;
+            StartCoroutine(BoltRoutine());
+            return true;
+        }
+
+        IEnumerator BoltRoutine()
+        {
+            m_CyclingBolt = true;
+            float seconds = m_Definition.boltCycleSeconds;
+            m_Animator?.PlayBoltCycle(seconds);
+            PlayClip(m_Definition.slideRackClip, 0.75f, 0.05f);
+            SendHaptics(0.25f, 0.03f);
+            AmmoChanged?.Invoke(this, m_Rounds, MagazineSize);
+            yield return new WaitForSeconds(seconds * 0.45f); // bolt fully back
+            if (m_BoltNeedsCycle) EjectCase(0.7f);
+            m_BoltNeedsCycle = false;
+            yield return new WaitForSeconds(seconds * 0.55f);
+            SendHaptics(0.35f, 0.04f); // bolt locked
+            m_CyclingBolt = false;
+            BoltCycled?.Invoke(this);
             AmmoChanged?.Invoke(this, m_Rounds, MagazineSize);
         }
 
@@ -253,7 +305,7 @@ namespace VRRange.Weapons
 
         public void StartReload()
         {
-            if (m_Definition == null || m_Reloading || m_Rounds >= m_Definition.magazineSize) return;
+            if (m_Definition == null || m_Reloading || m_CyclingBolt || (m_Rounds >= m_Definition.magazineSize && !m_BoltNeedsCycle)) return;
             m_ReloadRoutine = StartCoroutine(ReloadRoutine());
         }
 
@@ -269,7 +321,17 @@ namespace VRRange.Weapons
             m_Rounds = m_Definition.magazineSize;
             m_Animator?.SetSlideLocked(false);
             PlayClip(m_Definition.reloadEndClip, 0.8f, 0.03f);
-            if (m_Definition.slideRackClip != null) { yield return new WaitForSeconds(0.12f); PlayClip(m_Definition.slideRackClip, 0.7f, 0.04f); m_Animator?.PlayFire(0f, 0f, 0f, 12f, m_Definition.slideTravel); }
+            if (IsBoltAction)
+            {
+                // the reload ends by working the bolt: a fired case still in the chamber is ejected, a fresh round chambered
+                m_Animator?.PlayBoltCycle(m_Definition.boltCycleSeconds);
+                PlayClip(m_Definition.slideRackClip, 0.7f, 0.04f);
+                yield return new WaitForSeconds(m_Definition.boltCycleSeconds * 0.45f);
+                if (m_BoltNeedsCycle) EjectCase(0.7f);
+                m_BoltNeedsCycle = false;
+                yield return new WaitForSeconds(m_Definition.boltCycleSeconds * 0.55f);
+            }
+            else if (m_Definition.slideRackClip != null) { yield return new WaitForSeconds(0.12f); PlayClip(m_Definition.slideRackClip, 0.7f, 0.04f); m_Animator?.PlayFire(0f, 0f, 0f, 12f, m_Definition.slideTravel); }
             SendHaptics(0.4f, 0.06f);
             m_Reloading = false;
             ReloadStateChanged?.Invoke(this, false);
@@ -278,7 +340,7 @@ namespace VRRange.Weapons
 
         public void ToggleFireMode()
         {
-            if (m_Definition == null) return;
+            if (m_Definition == null || IsBoltAction) return;
             var next = m_FireMode == FireMode.Semi ? FireMode.Auto : FireMode.Semi;
             if (!m_Definition.Supports(next)) return;
             m_FireMode = next;
@@ -293,7 +355,10 @@ namespace VRRange.Weapons
             if (m_ReloadRoutine != null) { StopCoroutine(m_ReloadRoutine); m_ReloadRoutine = null; }
             m_Reloading = false;
             m_Rounds = MagazineSize;
+            m_BoltNeedsCycle = false;
+            if (m_CyclingBolt) { StopAllCoroutines(); m_CyclingBolt = false; }
             m_Animator?.SetSlideLocked(false);
+            m_Animator?.ResetBolt();
             AmmoChanged?.Invoke(this, m_Rounds, MagazineSize);
         }
 

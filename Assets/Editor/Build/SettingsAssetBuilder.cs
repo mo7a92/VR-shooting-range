@@ -14,6 +14,8 @@ namespace VRRange.Editor
         public static WeaponDefinition Pistol { get; private set; }
         public static WeaponDefinition Rifle { get; private set; }
         public static WeaponDefinition Smg { get; private set; }
+        public static WeaponDefinition Akm { get; private set; }
+        public static WeaponDefinition Sniper { get; private set; }
         static readonly Dictionary<string, HandPose> s_Poses = new Dictionary<string, HandPose>();
         public static HandPose Pose(string name) => s_Poses.TryGetValue(name ?? "", out var p) ? p : (s_Poses.TryGetValue("Fist", out var f) ? f : null);
 
@@ -53,6 +55,28 @@ namespace VRRange.Editor
                 w.hapticAmplitude = 0.8f; w.hapticDuration = 0.035f; w.secondaryHandHapticScale = 0.6f; w.muzzleFlashScale = 0.9f; w.tracerColor = new Color(1f, 0.9f, 0.6f);
                 Audio(w, "smg_fire");
             });
+            Akm = Create<WeaponDefinition>($"{RangePaths.Settings}/Weapon_AKM.asset", force, w =>
+            {
+                w.weaponId = "akm"; w.displayName = "AKM"; w.weaponClass = WeaponClass.AssaultRifle; w.twoHanded = true;
+                // 7.62x39 mm AKM (16.3" barrel, M43 ball): ~715 m/s, ~600 rpm cyclic; heavier recoil than the 5.56 mm carbine
+                w.supportedFireModes = FireMode.Semi | FireMode.Auto; w.defaultFireMode = FireMode.Semi; w.roundsPerMinute = 600f;
+                w.magazineSize = 30; w.reloadSeconds = 2.4f; w.muzzleVelocity = 715f; w.spreadDegrees = 0.3f; w.gravityMultiplier = 1f;
+                w.kickBackMetres = 0.035f; w.kickUpDegrees = 5.5f; w.kickSideDegrees = 1.3f; w.recoverySpeed = 14f; w.slideTravel = 0.04f;
+                w.hapticAmplitude = 1f; w.hapticDuration = 0.07f; w.secondaryHandHapticScale = 0.55f; w.muzzleFlashScale = 1.3f; w.tracerColor = new Color(1f, 0.55f, 0.25f);
+                Audio(w, "rifle_fire");
+            });
+            Sniper = Create<WeaponDefinition>($"{RangePaths.Settings}/Weapon_Sniper.asset", force, w =>
+            {
+                w.weaponId = "sniper"; w.displayName = "Sniper"; w.weaponClass = WeaponClass.SniperRifle; w.twoHanded = true;
+                // 7.62x54R bolt-action sniper rifle with a 3.5x PU-type scope (7N1 sniper load): ~830 m/s, 5 rounds,
+                // manual bolt after every shot (B / Y); the rate cap only matters for the click of an un-cycled trigger
+                w.supportedFireModes = FireMode.Semi; w.defaultFireMode = FireMode.Semi; w.roundsPerMinute = 60f;
+                w.boltAction = true; w.boltCycleSeconds = 0.7f;
+                w.magazineSize = 5; w.reloadSeconds = 2.8f; w.muzzleVelocity = 830f; w.spreadDegrees = 0.04f; w.gravityMultiplier = 1f;
+                w.kickBackMetres = 0.05f; w.kickUpDegrees = 9f; w.kickSideDegrees = 1f; w.recoverySpeed = 10f; w.slideTravel = 0f;
+                w.hapticAmplitude = 1f; w.hapticDuration = 0.1f; w.secondaryHandHapticScale = 0.6f; w.muzzleFlashScale = 1.5f; w.tracerColor = new Color(1f, 0.6f, 0.3f);
+                Audio(w, "rifle_fire");
+            });
             // Handling profiles are always (re)applied: they are tuned together with WeaponHandlingTransformer.
             // Headset round 1 (2026-11-04): every weapon has believable, distinct weight. The pistol is light but not weightless;
             // the SMG sits in between; the rifle is heavy and front-heavy, so one-handed it sags, lags, sways and loses control
@@ -60,9 +84,13 @@ namespace VRRange.Editor
             ApplyHandling(Pistol, mass: 0.9f, balance: 0.04f, oneHandResp: 0.06f, twoHandResp: 0.04f, sag1: 1.5f, sag2: 0.5f, sway1: 0.3f, sway2: 0.12f, posLag: 0.015f, rotLag: 5f, recoilUnsup: 1.3f, recoilSup: 0.75f, recUnsup: 9f, recSup: 14f, instab: 0.18f, decay: 3f, supportInfluence: 0f, maxPitch: 25f, maxYaw: 10f);
             ApplyHandling(Rifle, mass: 3.4f, balance: 0.28f, oneHandResp: 0.3f, twoHandResp: 0.04f, sag1: 22f, sag2: 0.6f, sway1: 1.6f, sway2: 0.15f, posLag: 0.04f, rotLag: 14f, recoilUnsup: 2.8f, recoilSup: 0.6f, recUnsup: 4.5f, recSup: 12f, instab: 0.35f, decay: 2f, supportInfluence: 0.85f, maxPitch: 30f, maxYaw: 14f);
             ApplyHandling(Smg, mass: 2.4f, balance: 0.14f, oneHandResp: 0.16f, twoHandResp: 0.04f, sag1: 9f, sag2: 0.5f, sway1: 0.9f, sway2: 0.15f, posLag: 0.03f, rotLag: 9f, recoilUnsup: 2.0f, recoilSup: 0.65f, recUnsup: 7f, recSup: 14f, instab: 0.25f, decay: 2.5f, supportInfluence: 0f, maxPitch: 25f, maxYaw: 12f); // cup hold like the pistol: no two-point aim
+            // AKM: a touch heavier than the M4 and kicks harder under auto fire. Sniper: long and muzzle-heavy, hard to hold up
+            // with one hand, very steady with two.
+            ApplyHandling(Akm, mass: 3.6f, balance: 0.26f, oneHandResp: 0.32f, twoHandResp: 0.04f, sag1: 22f, sag2: 0.6f, sway1: 1.7f, sway2: 0.15f, posLag: 0.04f, rotLag: 14f, recoilUnsup: 3.0f, recoilSup: 0.65f, recUnsup: 4.5f, recSup: 11f, instab: 0.4f, decay: 2f, supportInfluence: 0.85f, maxPitch: 32f, maxYaw: 15f);
+            ApplyHandling(Sniper, mass: 4.5f, balance: 0.38f, oneHandResp: 0.4f, twoHandResp: 0.05f, sag1: 28f, sag2: 0.7f, sway1: 2.0f, sway2: 0.12f, posLag: 0.05f, rotLag: 16f, recoilUnsup: 3.2f, recoilSup: 0.7f, recUnsup: 4f, recSup: 10f, instab: 0.5f, decay: 1.5f, supportInfluence: 0.9f, maxPitch: 35f, maxYaw: 12f);
             BuildHandPoses(force);
             AssetDatabase.SaveAssets();
-            SetupLog.Ok("ScoringRules, GameModeSettings, 3 WeaponDefinitions (with handling profiles) and hand poses ready in Assets/Settings");
+            SetupLog.Ok("ScoringRules, GameModeSettings, 5 WeaponDefinitions (with handling profiles) and hand poses ready in Assets/Settings");
         }
 
         static void ApplyHandling(WeaponDefinition w, float mass, float balance, float oneHandResp, float twoHandResp, float sag1, float sag2, float sway1, float sway2, float posLag, float rotLag, float recoilUnsup, float recoilSup, float recUnsup, float recSup, float instab, float decay, float supportInfluence, float maxPitch, float maxYaw)

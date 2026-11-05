@@ -18,7 +18,7 @@ namespace VRRange.Editor
         public const string ProductName = "VR Shooting Range";
         public const string CompanyName = "UniversityProject";
         public const string PackageId = "com.universityproject.vrshootingrange";
-        public const string Version = "0.3.2";
+        public const string Version = "0.4.0";
         public const string OpenXRLoaderTypeName = "UnityEngine.XR.OpenXR.OpenXRLoader";
 
         public static readonly string[] RequiredLayers = { "Weapon", "Projectile", "Target", "Environment", "HeadsetOnly", HandContactLayer };

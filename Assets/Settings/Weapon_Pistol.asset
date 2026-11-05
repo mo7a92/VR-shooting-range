@@ -19,6 +19,8 @@ MonoBehaviour:
   allowsSupportHand: 1
   supportedFireModes: 1
   defaultFireMode: 1
+  boltAction: 0
+  boltCycleSeconds: 0.65
   roundsPerMinute: 360
   magazineSize: 12
   reloadSeconds: 1.5

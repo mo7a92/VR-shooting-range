@@ -36,8 +36,8 @@ namespace VRRange.Tests
             Assert.IsNotNull(GameModeManager.Instance, "GameModeManager missing");
             Assert.AreEqual(5, Object.FindObjectsByType<TargetLane>(FindObjectsSortMode.None).Length, "expected 5 lanes");
             var weapons = Object.FindObjectsByType<Weapon>(FindObjectsSortMode.None);
-            Assert.AreEqual(3, weapons.Length, "expected 3 weapons");
-            CollectionAssert.AreEquivalent(new[] { WeaponClass.Pistol, WeaponClass.Rifle, WeaponClass.SubmachineGun }, weapons.Select(w => w.Definition.weaponClass));
+            Assert.AreEqual(5, weapons.Length, "expected 5 weapons (3 on the counter, AKM + sniper on the gun rack)");
+            CollectionAssert.AreEquivalent(new[] { WeaponClass.Pistol, WeaponClass.Rifle, WeaponClass.SubmachineGun, WeaponClass.AssaultRifle, WeaponClass.SniperRifle }, weapons.Select(w => w.Definition.weaponClass));
             foreach (var w in weapons) Assert.AreEqual(w.MagazineSize, w.Rounds, $"{w.DisplayName} should start loaded");
             Assert.IsTrue(weapons.All(w => w.Muzzle != null));
             yield return null;

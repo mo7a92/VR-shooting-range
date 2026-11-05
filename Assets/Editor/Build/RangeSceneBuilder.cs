@@ -38,6 +38,7 @@ namespace VRRange.Editor
             EnvironmentBuilder.Build(root);
             var lanes = BuildLanes(root);
             var weapons = BuildWeaponCounter(root);
+            weapons.AddRange(RackWeaponsBuilder.Build(root)); // AKM + sniper on the staff-area gun rack
             var rig = BuildRig(root);
             BuildSpectatorAndGraphics(root, rig);
             var ui = UiBuilder.Build(root);

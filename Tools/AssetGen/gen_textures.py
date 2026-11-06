@@ -18,8 +18,11 @@ rng = np.random.default_rng(42)
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 FONT_REG = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 def font(size, bold=True):
-    try: return ImageFont.truetype(FONT_BOLD if bold else FONT_REG, size)
-    except Exception: return ImageFont.load_default(size=size)
+    # DejaVu (Linux, where the signs were first made), then Windows look-alikes, then Pillow's default
+    for path in ([FONT_BOLD, "C:/Windows/Fonts/verdanab.ttf", "C:/Windows/Fonts/arialbd.ttf"] if bold else [FONT_REG, "C:/Windows/Fonts/verdana.ttf", "C:/Windows/Fonts/arial.ttf"]):
+        try: return ImageFont.truetype(path, size)
+        except Exception: pass
+    return ImageFont.load_default(size=size)
 
 # ---------------- noise helpers ----------------
 def value_noise(size, cells, seed=None):
@@ -234,7 +237,9 @@ def sign(name, lines, size=(1024, 512), bg=(250, 212, 40), fg=(20, 20, 20), bord
     n = len(lines)
     fs = max(28, min(70, int((size[1] - y - 40) / max(n, 1) * 0.7)))
     for i, line in enumerate(lines):
-        d.text((size[0] / 2, y + i * (fs + 18) + fs / 2), line, fill=fg, font=font(fs, i < 2), anchor="mm")
+        f = font(fs, i < 2)
+        while f.getlength(line) > size[0] - 80 and f.size > 20: f = font(f.size - 2, i < 2)  # long lines shrink to fit the border
+        d.text((size[0] / 2, y + i * (fs + 18) + fs / 2), line, fill=fg, font=f, anchor="mm")
     img.save(os.path.join(SIGNS, f"{name}.png")); print("wrote", f"Signs/{name}.png")
 
 def lane_number(n, size=256):
@@ -281,9 +286,9 @@ def main():
     sign("sign_safety", ["EYE AND EAR PROTECTION", "REQUIRED BEYOND THIS POINT", "", "Keep weapons pointed downrange"], title="SAFETY")
     sign("sign_firing_line", ["FIRING LINE", "DO NOT CROSS WHILE THE RANGE IS HOT"], bg=(200, 30, 30), fg=(255, 255, 255), border=(255, 255, 255))
     sign("sign_rules", ["1. Treat every weapon as loaded", "2. Finger off the trigger until ready", "3. Fire only at your lane's target", "4. Return weapons to the counter", "5. Reset targets between sessions"], title="RANGE RULES", bg=(245, 245, 240), title_bg=(30, 60, 120))
-    sign("sign_controls", ["GRIP button: pick up / drop weapon", "TRIGGER: fire     A / X: reload", "B / Y: toggle semi / auto", "LEFT STICK: teleport     RIGHT STICK: snap turn", "Point at a panel and pull trigger to press buttons"], title="VR CONTROLS", bg=(235, 240, 250), title_bg=(30, 90, 170))
-    sign("sign_welcome", ["WELCOME TO THE", "VR SHOOTING RANGE", "", "Pick a weapon from the counter", "Choose a mode on the panel"], bg=(30, 32, 36), fg=(240, 240, 240), border=(240, 200, 40))
-    sign("sign_counter", ["WEAPON COUNTER", "Pistol   •   Rifle   •   SMG", "Return weapons here"], size=(1024, 384), bg=(30, 60, 120), fg=(255, 255, 255), border=(255, 255, 255))
+    sign("sign_controls", ["GRIP button: pick up / drop weapon", "TRIGGER: fire     A / X: reload", "B / Y: semi / auto  -  sniper: work the bolt", "LEFT STICK: teleport     RIGHT STICK: snap turn", "Point at a panel and pull trigger to press buttons"], title="VR CONTROLS", bg=(235, 240, 250), title_bg=(30, 90, 170))
+    sign("sign_welcome", ["WELCOME TO THE", "VR SHOOTING RANGE", "", "Pick a weapon from the counter or the rack", "Choose a mode on the panel"], bg=(30, 32, 36), fg=(240, 240, 240), border=(240, 200, 40))
+    sign("sign_counter", ["WEAPON COUNTER", "Pistol / Rifle / SMG / AKM / Sniper", "Return weapons here"], size=(1024, 384), bg=(30, 60, 120), fg=(255, 255, 255), border=(255, 255, 255))
     for n in range(1, 6): lane_number(n)
     for m in (5, 10, 15, 25): distance_label(m)
 

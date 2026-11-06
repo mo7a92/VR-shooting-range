@@ -52,7 +52,10 @@ namespace VRRange.Tests
             var seconds = new List<int>(); gm.CountdownSecond += s => seconds.Add(s);
             var states = new List<ModeState>(); gm.StateChanged += s => states.Add(s);
             ui.accuracyButton.onClick.Invoke();
-            Assert.IsFalse(ui.mainMenuPanel.activeSelf, "menu hides when a mode starts"); Assert.IsFalse(ui.laneControlsPanel.activeSelf, "lane controls hidden outside free practice");
+            // 0.4.1 (owner): no menu ever disappears; the target controls lock while the challenge owns the targets
+            Assert.IsTrue(ui.mainMenuPanel.activeSelf, "the menu stays when a mode starts"); Assert.IsTrue(ui.laneControlsPanel.activeSelf, "the target controls stay during a challenge");
+            Assert.IsFalse(ui.distanceButtons[0].interactable, "distance locked during a challenge"); Assert.IsFalse(ui.resetTargetsButton.interactable);
+            Assert.IsTrue(ui.endChallengeButton.interactable, "End Challenge available while a challenge runs");
             Assert.AreEqual(ModeState.Countdown, gm.State); Assert.IsFalse(ScoreManager.Instance.IsTiming, "timer paused during countdown");
             yield return null;
             StringAssert.StartsWith("Ready", ui.timerLabel.text);
@@ -69,7 +72,9 @@ namespace VRRange.Tests
             Assert.AreEqual(10, result.Value.stats.score); Assert.AreEqual(1, result.Value.stats.bullseyes);
             Assert.IsTrue(result.Value.isNewPersonalBest, "first result is a personal best");
             Assert.AreEqual(10, GameModeManager.PersonalBest(GameMode.AccuracyChallenge, gm.CurrentDifficulty));
-            Assert.IsTrue(ui.resultsPanel.activeSelf, "results panel shown"); Assert.IsFalse(ui.mainMenuPanel.activeSelf);
+            Assert.IsTrue(ui.resultsPanel.activeSelf, "results panel shown"); Assert.IsTrue(ui.mainMenuPanel.activeSelf, "the menu stays beside the results"); Assert.IsTrue(ui.laneControlsPanel.activeSelf);
+            Assert.IsFalse(ui.endChallengeButton.interactable, "nothing to end once finished");
+            Assert.Greater(Vector3.Distance(ui.resultsPanel.transform.position, ui.mainMenuPanel.transform.position), 0.6f, "results have their own panel, not the menu's spot");
             StringAssert.Contains("Accuracy Challenge complete", ui.resultsTitle.text);
             StringAssert.Contains("Score: 10 / ", ui.resultsBody.text); StringAssert.Contains("NEW PERSONAL BEST", ui.resultsBody.text);
             Assert.IsFalse(ScoreManager.Instance.IsTiming, "timer stops at the end");
@@ -223,6 +228,27 @@ namespace VRRange.Tests
             Assert.IsNotNull(Object.FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>());
             Assert.IsNotNull(Object.FindFirstObjectByType<UnityEngine.XR.Interaction.Toolkit.UI.XRUIInputModule>(), "XRUIInputModule missing: VR rays could not click buttons");
             yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator EndChallengeStopsAChallengeAndNoMenuEverDisappears()
+        {
+            // owner, headset round 4: starting a challenge hid the right menu, finishing hid the left one; both must stay
+            var gm = GameModeManager.Instance; var ui = Ui();
+            void AllMenus(string when) { Assert.IsTrue(ui.mainMenuPanel.activeSelf, $"main menu visible {when}"); Assert.IsTrue(ui.laneControlsPanel.activeSelf, $"target controls visible {when}"); Assert.IsTrue(ui.hudPanel.activeSelf, $"HUD visible {when}"); }
+            AllMenus("at start"); Assert.IsFalse(ui.endChallengeButton.interactable, "nothing to end in free practice");
+            ui.movingButton.onClick.Invoke(); yield return null;
+            AllMenus("in the countdown");
+            yield return XrTestRig.WaitUntil(() => gm.State == ModeState.Running, 6f, "countdown");
+            AllMenus("while the challenge runs"); Assert.IsTrue(ui.endChallengeButton.interactable);
+            StringAssert.Contains("targets set by the challenge", ui.laneStatusLabel.text);
+            ui.endChallengeButton.onClick.Invoke(); yield return null;
+            Assert.AreEqual(ModeState.Finished, gm.State, "End Challenge finishes it"); Assert.IsTrue(ui.resultsPanel.activeSelf, "results shown");
+            AllMenus("with the results open");
+            ui.backToMenuButton.onClick.Invoke(); yield return null;
+            Assert.IsFalse(ui.resultsPanel.activeSelf, "Close hides only the results"); AllMenus("after closing the results");
+            ui.freePracticeButton.onClick.Invoke(); yield return null;
+            AllMenus("back in free practice"); Assert.IsTrue(ui.distanceButtons[0].interactable, "target controls unlocked again");
         }
 
         [UnityTest]

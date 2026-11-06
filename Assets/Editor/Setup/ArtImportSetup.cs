@@ -72,6 +72,13 @@ namespace VRRange.Editor
         static bool ConfigureAudio(AudioImporter ai, string path)
         {
             var s = ai.defaultSampleSettings;
+            if (path.Contains("/Music/"))
+            {
+                // radio music: minutes long, so streamed from disk (never decompressed into memory); mono, it plays from one 3D source
+                var music = new AudioImporterSampleSettings { loadType = AudioClipLoadType.Streaming, compressionFormat = AudioCompressionFormat.Vorbis, quality = 0.5f, sampleRateSetting = AudioSampleRateSetting.PreserveSampleRate };
+                if (s.loadType == music.loadType && s.compressionFormat == music.compressionFormat && ai.forceToMono) return false;
+                ai.forceToMono = true; ai.defaultSampleSettings = music; return true;
+            }
             bool loop = path.Contains("Ambience");
             var wanted = new AudioImporterSampleSettings
             {

@@ -3,7 +3,83 @@
 Honest record of what was verified and how. Two stages so far: a cloud *static* stage (no Unity) and a cloud
 *real-editor* stage (Unity 6000.3.27f1 in a Linux container, GameCI image, Student/Personal licence activated
 through Unity's command-line activation and returned afterwards). Stage 5 adds the first PCVR headset sessions
-(Quest 2 via Virtual Desktop); stages 6, 7, 8 and 9 are the headset-feedback rounds (PCVR only); the standalone Quest APK has still not run on a headset.
+(Quest 2 via Virtual Desktop); stages 6 to 10 are the headset-feedback rounds (PCVR only); the standalone Quest APK has still not run on a headset.
+
+## Stage 10: 0.4.1 — menus that stay, gloved hands, jazz radio, stocked shelves (2026-11-06, PCVR only) — **ACCEPTED by the tests, headset check pending**
+**Starting point:** `925c09b` (0.4.0).
+
+**How it was done:**
+- Unity 6000.3.27f1, prefab rebuild.
+- **No scene rebuild and no re-bake:** `ScenePatches.RunBatch` edits the saved scene, so the lightmaps stay valid. Everything added is dynamic and lit by the light probes.
+- Nothing in this stage ran on a headset.
+
+**Status:**
+- EditMode **35 / 35** and PlayMode **81 / 81**. PlayMode includes the hand acceptance test, which passed **two consecutive full runs**.
+- Windows build 0.4.1 succeeds.
+
+**Owner's requests and what was done:**
+
+1. **"Starting a challenge hid the right menu, finishing hid the left one; both must stay."**
+   - **Cause:** `RangeUI.ShowHud` hid the main menu when any mode started. The target-control panel was only shown in Free Practice. Results replaced the main menu in the same spot.
+   - **Now:**
+     - The main menu and the target controls are **always visible**.
+     - During a challenge the target-control buttons are locked, and the panel says the challenge sets the targets.
+     - The main menu has an **End Challenge** button.
+     - Results open on **their own panel**, about 100° to the player's left. It is clear of the booths and never behind the menu. Its "Close" button closes only the results.
+   - **Tested by:** `GameModeAndUiTests.EndChallengeStopsAChallengeAndNoMenuEverDisappears`, plus the updated checks in the existing UI tests.
+2. **"The hand model causes our problems and is ugly; find a better one, e.g. gloved hands."**
+   - **Why the model was kept:**
+     - The hand problems were in the grip solver and the contact geometry. Rounds 2–4 fixed those, and the acceptance test measures them.
+     - A different rig would invalidate every tuned anchor and offset.
+     - So the **same XR Hands rig now wears tactical gloves**.
+   - **Gloves (`GloveBuilder`):**
+     - The sample mesh's UVs are one planar projection, with palm and back on the same texels. A copy of the mesh gets separate back, palm and wrist-cut islands. Joints, bones and skin weights are unchanged.
+     - The glove texture set is painted procedurally from the bind-pose geometry:
+       - black stretch fabric;
+       - coyote synthetic-leather palm and finger pads, with creases across every joint;
+       - a moulded knuckle guard and finger-back pads;
+       - reinforced tips and stitched seams;
+       - a ribbed olive cuff with a hook-and-loop strap, which replaces the bare wrist stump.
+     - The assets are in `Assets/Art/Hands/Glove`, with albedo, normal, mask and AO maps at 2K.
+   - **Tested by:** `RadioAndGloveTests.HandsWearTheTexturedGloves`.
+3. **"Add a radio for jazz music."**
+   - Poly Haven "Boombox" (CC0), scaled to a 40 cm portable, on the left end of the weapons counter.
+   - Four Kevin MacLeod jazz tracks (CC BY 4.0, credited on the radio display and in `ASSET_CREDITS.md`).
+   - **Behaviour:**
+     - It starts quietly at load, as a 3D source on the radio.
+     - Gripping the radio, near or by ray, goes to the next station; after the last station it turns off.
+     - The target-control panel has the same radio button.
+     - Tracks advance on their own.
+     - The music streams from disk, so it is never decompressed into memory.
+   - **Tested by:** `RadioAndGloveTests.JazzRadioPlaysCyclesStationsTurnsOffAndAnswersGripAndMenu`.
+4. **"Check for environment improvements."**
+   - **Shelves:** the two staff-area shelves were empty. They now carry 20 items: ammo cans, cardboard boxes, plastic crates and a toolbox.
+     - The shelf levels were found by raycasting the shelf mesh.
+     - Each item is checked to fit between the posts and under the next shelf. Items that don't fit are left out and logged.
+   - **Signs:** the counter, welcome and controls signs were regenerated to name the AKM and sniper, the rack, and the B / Y bolt.
+     - They are drawn with Verdana Bold on Windows, the closest match to the DejaVu Bold used elsewhere.
+     - Long lines now shrink to fit.
+   - **Hint texts:** the HUD and menu hints mention the rack and the bolt.
+
+**Hand tuning in this stage, stated:**
+- **Cupping support palms.** The pistol and SMG support palms measured to the shooting hand had sat at 7.8–8.2 mm against the 8 mm limit since round 3, and they flipped the test.
+  - Support anchors were swept: angle, height, along the bore.
+  - Pistol support palm moved 7 mm up the grip; SMG support palm moved 8 mm back along the bore.
+  - Both now measure **6.5–6.8 mm**.
+- **Test diagnostic.** The test also logs the interactor attach point at measurement time.
+- **No limit was changed.**
+
+**Known limits:**
+- **AKM shooting hand.** The middle fingertip usually measures 10.4–10.6 mm against the 12 mm limit, with rare outliers of 12.2–12.6 mm. The middle finger's last pad already touches the thin AKM grip, and the tip end curves away past its far edge.
+  - Sweeps of pitch, yaw, height and grip-box width did not give a robust improvement, so the round-4 anchor was kept.
+  - A sniper two-handed wrist outlier (6.6 cm) appeared once more in the full sequence, and did not reproduce in four later full runs with the attach diagnostic.
+- **Hand rig.** It is still the XR Hands sample mesh: proportions unchanged, only the surface is new.
+- **Glove texture stretch.** The texture is projected, so it stretches on the side walls of the fingers. Those walls are plain fabric, so the stretch is hard to see.
+- **Radio volume.** The radio starts on; its volume (0.35, 3D) is untested on the headset.
+
+**Evidence:**
+- Screenshots: `Docs/Screenshots/round5_menus_gloves_radio/` (menus and results from the spawn point, radio, shelves, glove holds, glove atlas).
+- Report and XMLs: `Docs/TestResults/round5/`.
 
 ## Stage 9: 0.4.0 — the rack AKM and sniper are playable, real Unity editor on the owner's PC (2026-11-06, PCVR only) — **ACCEPTED by the tests, headset check pending**
 Starting point: `c3e2e4c` (round 3). Unity 6000.3.27f1 on Windows, packages unchanged. Prefab rebuild (`RunPrefabsBatch`) plus a scene

@@ -18,7 +18,7 @@ PROPS = {  # asset id -> texture resolution
     "plastic_monobloc_chair_01": "1k", "worn_metal_rack": "1k", "tool_cart": "1k", "fire_alarm": "1k", "security_camera_01": "1k", "wall_clock": "1k",
     "WetFloorSign_01": "1k", "metal_trash_can": "1k", "cardboard_box_01": "1k", "plastic_crate_01": "1k",
     "ammo_box": "1k", "wooden_military_crate": "1k", "metal_toolbox": "1k",
-    "clipboard": "1k", "hand_truck": "1k", "television_02": "1k", "power_box_01": "1k", "projector_screen": "1k", "bolt_action_rifle_7_62": "1k",
+    "clipboard": "1k", "hand_truck": "1k", "television_02": "1k", "power_box_01": "1k", "projector_screen": "1k", "bolt_action_rifle_7_62": "1k", "boombox": "1k",
 }
 
 def get(url, timeout=180):

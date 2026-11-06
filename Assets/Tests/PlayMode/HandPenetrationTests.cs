@@ -267,6 +267,8 @@ namespace VRRange.Tests
                         float offset = Vector3.Distance(h.WristWorldPosition, freeWristR);
                         var palmDelta = m_RightController.InverseTransformVector(h.PalmWorldPosition - freePalmR);
                         var fk = m_RightController.InverseTransformDirection(freeFwdR); var hk = m_RightController.InverseTransformDirection((h.MiddleKnuckleWorldPosition - h.WristWorldPosition).normalized); var bore = m_RightController.InverseTransformDirection(w.transform.forward);
+                        var attachNow = m_RightController.InverseTransformPoint(m_Right.attachTransform.position);
+                        report.AppendLine($"{tag}: interactor attach now at ({attachNow.x * 1000f:0}, {attachNow.y * 1000f:0}, {attachNow.z * 1000f:0}) mm in controller space");
                         report.AppendLine($"{tag}: wrist {offset * 100f:0.0} cm from the free hand's wrist (palm centre moved ({palmDelta.x * 1000f:0}, {palmDelta.y * 1000f:0}, {palmDelta.z * 1000f:0}) mm in controller space; knuckle line free ({fk.x:0.00}, {fk.y:0.00}, {fk.z:0.00}) vs held ({hk.x:0.00}, {hk.y:0.00}, {hk.z:0.00}), bore ({bore.x:0.00}, {bore.y:0.00}, {bore.z:0.00}) in controller space, turned {Vector3.Angle(freeFwdR, h.MiddleKnuckleWorldPosition - h.WristWorldPosition):0.0} deg)");
                         if (offset > 0.04f) failures.Add($"{tag}: wrist {offset * 100f:0.0} cm from the free hand's wrist (max 4 cm)");
                     }

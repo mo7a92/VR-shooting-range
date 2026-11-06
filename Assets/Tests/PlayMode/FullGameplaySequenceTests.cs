@@ -52,7 +52,7 @@ namespace VRRange.Tests
             // 3. Select a game mode from the VR menu
             ui.difficultyButtons[1].onClick.Invoke();
             ui.freePracticeButton.onClick.Invoke(); yield return null;
-            Assert.AreEqual(GameMode.FreePractice, gm.CurrentMode); Assert.IsFalse(ui.mainMenuPanel.activeSelf);
+            Assert.AreEqual(GameMode.FreePractice, gm.CurrentMode); Assert.IsTrue(ui.mainMenuPanel.activeSelf, "menus never hide"); Assert.IsTrue(ui.laneControlsPanel.activeSelf);
 
             // 4. Pick up the pistol with the right hand
             var pistol = XrTestRig.Find(WeaponClass.Pistol); var rifle = XrTestRig.Find(WeaponClass.Rifle); var smg = XrTestRig.Find(WeaponClass.SubmachineGun);

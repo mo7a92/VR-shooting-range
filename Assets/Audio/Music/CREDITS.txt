@@ -1,0 +1,9 @@
+Jazz radio tracks by Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 4.0 License
+http://creativecommons.org/licenses/by/4.0/
+
+jazz_bossa_antigua.mp3  "Bossa Antigua"
+jazz_cool_vibes.mp3     "Cool Vibes"
+jazz_hot_swing.mp3      "Hot Swing"
+jazz_lobby_time.mp3     "Lobby Time"
+Downloaded unmodified from https://incompetech.com/music/royalty-free/ on 2026-11-06.

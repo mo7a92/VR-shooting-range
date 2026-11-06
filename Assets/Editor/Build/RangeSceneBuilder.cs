@@ -39,6 +39,8 @@ namespace VRRange.Editor
             var lanes = BuildLanes(root);
             var weapons = BuildWeaponCounter(root);
             weapons.AddRange(RackWeaponsBuilder.Build(root)); // AKM + sniper on the staff-area gun rack
+            RadioBuilder.Build(root); // jazz radio on the counter
+            ShelfStockBuilder.Build(root); // stock on the staff shelves
             var rig = BuildRig(root);
             BuildSpectatorAndGraphics(root, rig);
             var ui = UiBuilder.Build(root);
@@ -254,6 +256,7 @@ namespace VRRange.Editor
                     r.sharedMaterials = mats; r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                     if (r is SkinnedMeshRenderer smr) smr.updateWhenOffscreen = true;
                 }
+                GloveBuilder.ApplyTo(model, isLeft); // 0.4.1: tactical gloves on the same rig
                 var hand = EditorRefs.Ensure<HandPresence>(holder);
                 hand.Configure(isLeft, model.transform, controller, SettingsAssetBuilder.Pose("Open"), SettingsAssetBuilder.Pose("Fist"), SettingsAssetBuilder.Pose("Idle"), SettingsAssetBuilder.Pose("Pinch"));
                 built++;

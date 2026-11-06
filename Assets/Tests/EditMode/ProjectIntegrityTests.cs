@@ -168,7 +168,7 @@ namespace VRRange.Tests
             }
             CollectionAssert.IsEmpty(problems);
             // the key PBR sets must be textured (a missing download would silently fall back to white)
-            foreach (var n in new[] { "FloorConcrete", "WallConcrete", "MetalBrushed", "Wood", "Weapon_pistol", "Weapon_rifle", "Weapon_smg", "Weapon_akm", "Weapon_sniper", "Weapon_sniper_sniper_acc", "HandSkinLeft", "HandSkinRight" })
+            foreach (var n in new[] { "FloorConcrete", "WallConcrete", "MetalBrushed", "Wood", "Weapon_pistol", "Weapon_rifle", "Weapon_smg", "Weapon_akm", "Weapon_sniper", "Weapon_sniper_sniper_acc", "HandGloveLeft", "HandGloveRight" })
             {
                 var m = AssetDatabase.LoadAssetAtPath<Material>($"{RangePaths.Materials}/{n}.mat");
                 Assert.IsNotNull(m, $"{n}.mat"); Assert.IsNotNull(m.GetTexture("_BaseMap"), $"{n}: albedo texture");

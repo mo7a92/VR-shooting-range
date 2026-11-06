@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="35" result="Passed" total="35" passed="35" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:59Z" duration="1.1362628">
+  <test-suite type="TestSuite" id="1000" name="VR Shooting Range" fullname="VR Shooting Range" runstate="Runnable" testcasecount="35" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:59Z" duration="1.136263" total="35" passed="35" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1049" name="VRRange.Tests.EditMode.dll" fullname="M:/Games/VR-shooting-range-claude-determined-feynman-nc2t0l/VR-shooting-range-claude-determined-feynman-nc2t0l/Library/ScriptAssemblies/VRRange.Tests.EditMode.dll" runstate="Runnable" testcasecount="35" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:59Z" duration="1.131771" total="35" passed="35" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="13116" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1050" name="VRRange" fullname="VRRange" runstate="Runnable" testcasecount="35" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:59Z" duration="1.131329" total="35" passed="35" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1051" name="Tests" fullname="VRRange.Tests" runstate="Runnable" testcasecount="35" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:59Z" duration="1.131010" total="35" passed="35" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1007" name="BallisticsMathTests" fullname="VRRange.Tests.BallisticsMathTests" classname="VRRange.Tests.BallisticsMathTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.019627" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1012" name="CompensationAngleIsSmallAndPositive" fullname="VRRange.Tests.BallisticsMathTests.CompensationAngleIsSmallAndPositive" methodname="CompensationAngleIsSmallAndPositive" classname="VRRange.Tests.BallisticsMathTests" runstate="Runnable" seed="339417514" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.009218" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1008" name="DropGrowsWithDistance" fullname="VRRange.Tests.BallisticsMathTests.DropGrowsWithDistance" methodname="DropGrowsWithDistance" classname="VRRange.Tests.BallisticsMathTests" runstate="Runnable" seed="608452803" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.000540" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1010" name="IntegrationFallsUnderGravity" fullname="VRRange.Tests.BallisticsMathTests.IntegrationFallsUnderGravity" methodname="IntegrationFallsUnderGravity" classname="VRRange.Tests.BallisticsMathTests" runstate="Runnable" seed="1019109412" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.000303" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1011" name="SpreadStaysWithinCone" fullname="VRRange.Tests.BallisticsMathTests.SpreadStaysWithinCone" methodname="SpreadStaysWithinCone" classname="VRRange.Tests.BallisticsMathTests" runstate="Runnable" seed="840610194" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.001886" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1009" name="TimeOfFlightIsDistanceOverSpeed" fullname="VRRange.Tests.BallisticsMathTests.TimeOfFlightIsDistanceOverSpeed" methodname="TimeOfFlightIsDistanceOverSpeed" classname="VRRange.Tests.BallisticsMathTests" runstate="Runnable" seed="209813332" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.000227" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1013" name="BuildConfigurationTests" fullname="VRRange.Tests.BuildConfigurationTests" classname="VRRange.Tests.BuildConfigurationTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.016315" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1020" name="BuildModulesAreReported" fullname="VRRange.Tests.BuildConfigurationTests.BuildModulesAreReported" methodname="BuildModulesAreReported" classname="VRRange.Tests.BuildConfigurationTests" runstate="Runnable" seed="1262607366" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.001173" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[[VRRange] Build support in this editor: Android=False, Windows x64=True
+]]></output>
+            </test-case>
+            <test-case id="1015" name="InteractionProfilesCoverQuestAndPcHeadsets" fullname="VRRange.Tests.BuildConfigurationTests.InteractionProfilesCoverQuestAndPcHeadsets" methodname="InteractionProfilesCoverQuestAndPcHeadsets" classname="VRRange.Tests.BuildConfigurationTests" runstate="Runnable" seed="955438812" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.001899" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1014" name="OpenXRLoaderIsEnabledForAndroidAndStandalone" fullname="VRRange.Tests.BuildConfigurationTests.OpenXRLoaderIsEnabledForAndroidAndStandalone" methodname="OpenXRLoaderIsEnabledForAndroidAndStandalone" classname="VRRange.Tests.BuildConfigurationTests" runstate="Runnable" seed="1675159555" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.000209" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1018" name="PlayerSettingsMatchBothTargets" fullname="VRRange.Tests.BuildConfigurationTests.PlayerSettingsMatchBothTargets" methodname="PlayerSettingsMatchBothTargets" classname="VRRange.Tests.BuildConfigurationTests" runstate="Runnable" seed="1575972984" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.002151" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1016" name="QualityLevelsAreSplitPerPlatform" fullname="VRRange.Tests.BuildConfigurationTests.QualityLevelsAreSplitPerPlatform" methodname="QualityLevelsAreSplitPerPlatform" classname="VRRange.Tests.BuildConfigurationTests" runstate="Runnable" seed="870570335" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.002166" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1017" name="UrpPresetsDifferAsIntended" fullname="VRRange.Tests.BuildConfigurationTests.UrpPresetsDifferAsIntended" methodname="UrpPresetsDifferAsIntended" classname="VRRange.Tests.BuildConfigurationTests" runstate="Runnable" seed="1965832897" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.001845" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1019" name="WeaponExtraButtonsHaveFallbackBindingsForAllControllerFamilies" fullname="VRRange.Tests.BuildConfigurationTests.WeaponExtraButtonsHaveFallbackBindingsForAllControllerFamilies" methodname="WeaponExtraButtonsHaveFallbackBindingsForAllControllerFamilies" classname="VRRange.Tests.BuildConfigurationTests" runstate="Runnable" seed="1233056460" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.005949" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1021" name="ProjectIntegrityTests" fullname="VRRange.Tests.ProjectIntegrityTests" classname="VRRange.Tests.ProjectIntegrityTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:59Z" duration="0.702139" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1026" name="GeneratedMaterialsHaveShadersAndTextures" fullname="VRRange.Tests.ProjectIntegrityTests.GeneratedMaterialsHaveShadersAndTextures" methodname="GeneratedMaterialsHaveShadersAndTextures" classname="VRRange.Tests.ProjectIntegrityTests" runstate="Runnable" seed="662702043" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:58Z" duration="0.181922" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1027" name="SceneIsWiredCompletelyAndSanelyPlaced" fullname="VRRange.Tests.ProjectIntegrityTests.SceneIsWiredCompletelyAndSanelyPlaced" methodname="SceneIsWiredCompletelyAndSanelyPlaced" classname="VRRange.Tests.ProjectIntegrityTests" runstate="Runnable" seed="1903288301" result="Passed" start-time="2026-11-06 10:46:58Z" end-time="2026-11-06 10:46:59Z" duration="0.461977" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1025" name="SettingsAssetsExist" fullname="VRRange.Tests.ProjectIntegrityTests.SettingsAssetsExist" methodname="SettingsAssetsExist" classname="VRRange.Tests.ProjectIntegrityTests" runstate="Runnable" seed="894014154" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.001459" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1023" name="TargetProjectileAndFxPrefabsAreComplete" fullname="VRRange.Tests.ProjectIntegrityTests.TargetProjectileAndFxPrefabsAreComplete" methodname="TargetProjectileAndFxPrefabsAreComplete" classname="VRRange.Tests.ProjectIntegrityTests" runstate="Runnable" seed="770723694" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.007614" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1024" name="WeaponDefinitionsAreConsistent" fullname="VRRange.Tests.ProjectIntegrityTests.WeaponDefinitionsAreConsistent" methodname="WeaponDefinitionsAreConsistent" classname="VRRange.Tests.ProjectIntegrityTests" runstate="Runnable" seed="1945720295" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.002313" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1022" name="WeaponPrefabsHaveEveryRequiredComponentAndReference" fullname="VRRange.Tests.ProjectIntegrityTests.WeaponPrefabsHaveEveryRequiredComponentAndReference" methodname="WeaponPrefabsHaveEveryRequiredComponentAndReference" classname="VRRange.Tests.ProjectIntegrityTests" runstate="Runnable" seed="246592985" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.045451" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1028" name="RackPlacementTests" fullname="VRRange.Tests.RackPlacementTests" classname="VRRange.Tests.RackPlacementTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.306921" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1029" name="RackRiflesLeanOnTheRackWithoutPassingThroughItOrAnyProp" fullname="VRRange.Tests.RackPlacementTests.RackRiflesLeanOnTheRackWithoutPassingThroughItOrAnyProp" methodname="RackRiflesLeanOnTheRackWithoutPassingThroughItOrAnyProp" classname="VRRange.Tests.RackPlacementTests" runstate="Runnable" seed="1565818276" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.305606" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1030" name="ScoringTests" fullname="VRRange.Tests.ScoringTests" classname="VRRange.Tests.ScoringTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.080973" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1040" name="AccuracyIsHitsOverShots" fullname="VRRange.Tests.ScoringTests.AccuracyIsHitsOverShots" methodname="AccuracyIsHitsOverShots" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="106709371" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000245" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1042" name="DistancePresetsSnapToNearest" fullname="VRRange.Tests.ScoringTests.DistancePresetsSnapToNearest" methodname="DistancePresetsSnapToNearest" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="748063225" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000305" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1041" name="GradesFollowScoreRatio" fullname="VRRange.Tests.ScoringTests.GradesFollowScoreRatio" methodname="GradesFollowScoreRatio" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="345406826" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000194" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1039" name="MissHasNoNameOrPoints" fullname="VRRange.Tests.ScoringTests.MissHasNoNameOrPoints" methodname="MissHasNoNameOrPoints" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="2114731078" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000289" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1038" name="RingPointsMatchSpecification" fullname="VRRange.Tests.ScoringTests.RingPointsMatchSpecification" classname="VRRange.Tests.ScoringTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.001163" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1031" name="RingPointsMatchSpecification(0.0f,10)" fullname="VRRange.Tests.ScoringTests.RingPointsMatchSpecification(0.0f,10)" methodname="RingPointsMatchSpecification" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="1450482650" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000256" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1032" name="RingPointsMatchSpecification(0.049f,10)" fullname="VRRange.Tests.ScoringTests.RingPointsMatchSpecification(0.049f,10)" methodname="RingPointsMatchSpecification" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="616118844" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000060" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1033" name="RingPointsMatchSpecification(0.08f,8)" fullname="VRRange.Tests.ScoringTests.RingPointsMatchSpecification(0.08f,8)" methodname="RingPointsMatchSpecification" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="1598749621" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000039" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1034" name="RingPointsMatchSpecification(0.15f,5)" fullname="VRRange.Tests.ScoringTests.RingPointsMatchSpecification(0.15f,5)" methodname="RingPointsMatchSpecification" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="1925942054" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000039" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1035" name="RingPointsMatchSpecification(0.25f,2)" fullname="VRRange.Tests.ScoringTests.RingPointsMatchSpecification(0.25f,2)" methodname="RingPointsMatchSpecification" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="899124870" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000075" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1036" name="RingPointsMatchSpecification(0.29f,0)" fullname="VRRange.Tests.ScoringTests.RingPointsMatchSpecification(0.29f,0)" methodname="RingPointsMatchSpecification" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="557531864" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000041" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1037" name="RingPointsMatchSpecification(1.0f,0)" fullname="VRRange.Tests.ScoringTests.RingPointsMatchSpecification(1.0f,0)" methodname="RingPointsMatchSpecification" classname="VRRange.Tests.ScoringTests" runstate="Runnable" seed="1503199716" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000032" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1043" name="WeaponHandlingMathTests" fullname="VRRange.Tests.WeaponHandlingMathTests" classname="VRRange.Tests.WeaponHandlingMathTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.003853" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1047" name="HeavierAndUnsupportedWeaponsKickMoreAndRecoverSlower" fullname="VRRange.Tests.WeaponHandlingMathTests.HeavierAndUnsupportedWeaponsKickMoreAndRecoverSlower" methodname="HeavierAndUnsupportedWeaponsKickMoreAndRecoverSlower" classname="VRRange.Tests.WeaponHandlingMathTests" runstate="Runnable" seed="413621117" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000321" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1046" name="LagClampsStayWithinLimits" fullname="VRRange.Tests.WeaponHandlingMathTests.LagClampsStayWithinLimits" methodname="LagClampsStayWithinLimits" classname="VRRange.Tests.WeaponHandlingMathTests" runstate="Runnable" seed="568013951" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000765" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1044" name="PoseFromGripPutsGripExactlyOnHand" fullname="VRRange.Tests.WeaponHandlingMathTests.PoseFromGripPutsGripExactlyOnHand" methodname="PoseFromGripPutsGripExactlyOnHand" classname="VRRange.Tests.WeaponHandlingMathTests" runstate="Runnable" seed="1030994312" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000748" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1048" name="SwayIsBoundedAndDeterministic" fullname="VRRange.Tests.WeaponHandlingMathTests.SwayIsBoundedAndDeterministic" methodname="SwayIsBoundedAndDeterministic" classname="VRRange.Tests.WeaponHandlingMathTests" runstate="Runnable" seed="476922101" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000493" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1045" name="TwoPointAimPointsSupportGripAtSupportHand" fullname="VRRange.Tests.WeaponHandlingMathTests.TwoPointAimPointsSupportGripAtSupportHand" methodname="TwoPointAimPointsSupportGripAtSupportHand" classname="VRRange.Tests.WeaponHandlingMathTests" runstate="Runnable" seed="1782382283" result="Passed" start-time="2026-11-06 10:46:59Z" end-time="2026-11-06 10:46:59Z" duration="0.000775" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/mohmd/AppData/LocalLow/UniversityProject/VR Shooting Range\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

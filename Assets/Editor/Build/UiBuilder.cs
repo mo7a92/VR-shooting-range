@@ -45,8 +45,9 @@ namespace VRRange.Editor
             };
             ui.bestLabel = Label(menu, "BestLabel", "", 19, new Vector2(0, -176), 460, 30, TextMuted);
             Divider(menu, new Vector2(0, -204), 440);
-            Label(menu, "Hint", "GRIP grab      TRIGGER fire      A / X reload      B / Y fire mode\nLEFT STICK teleport      RIGHT STICK turn", 16, new Vector2(0, -244), 460, 60, TextMuted);
-            ui.exitButton = Button(menu, "Exit", "Exit", new Vector2(0, -306), 180, 50, new Color(0.42f, 0.14f, 0.14f));
+            Label(menu, "Hint", "GRIP grab      TRIGGER fire      A / X reload      B / Y mode / bolt\nLEFT STICK teleport      RIGHT STICK turn", 16, new Vector2(0, -244), 460, 60, TextMuted);
+            ui.endChallengeButton = Button(menu, "EndChallenge", "End Challenge", new Vector2(-105, -306), 200, 50);
+            ui.exitButton = Button(menu, "Exit", "Exit", new Vector2(115, -306), 180, 50, new Color(0.42f, 0.14f, 0.14f));
             ui.mainMenuPanel = menu;
 
             // Lane controls: right of the spawn point
@@ -69,6 +70,8 @@ namespace VRRange.Editor
             ui.resetTargetsButton = Button(lane, "ResetTargets", "Reset Targets", new Vector2(120, -110), 200, 56, ButtonPrimary);
             Divider(lane, new Vector2(0, -160), 440);
             ui.laneStatusLabel = Label(lane, "LaneStatus", "Distance 10 m   Motion: Static", 20, new Vector2(0, -192), 460, 40, Color.white);
+            Divider(lane, new Vector2(0, -222), 440);
+            ui.radioButton = Button(lane, "Radio", "Radio", new Vector2(0, -262), 440, 52);
             ui.laneControlsPanel = lane;
 
             // HUD above the centre lane shelf, facing the shooter
@@ -78,17 +81,17 @@ namespace VRRange.Editor
             ui.shotsLabel = Label(hud, "Shots", "Shots 0   Hits 0", 26, new Vector2(60, 25), 300, 44, Color.white);
             ui.accuracyLabel = Label(hud, "Accuracy", "Accuracy 0%", 26, new Vector2(270, 25), 200, 44, Color.white);
             ui.timerLabel = Label(hud, "Timer", "Time 0.0s", 26, new Vector2(-230, -25), 240, 40, Color.white);
-            ui.ammoLabel = Label(hud, "Ammo", "Pick a weapon from the counter", 22, new Vector2(110, -25), 440, 40, new Color(0.85f, 0.9f, 1f));
+            ui.ammoLabel = Label(hud, "Ammo", "Pick a weapon from the counter or the rack", 22, new Vector2(110, -25), 440, 40, new Color(0.85f, 0.9f, 1f));
             ui.lastHitLabel = Label(hud, "LastHit", "", 30, new Vector2(-150, -75), 420, 44, AccentColor);
             ui.comboLabel = Label(hud, "Combo", "", 30, new Vector2(230, -75), 260, 44, new Color(1f, 0.55f, 0.2f));
             ui.hudPanel = hud;
 
-            // Results (same spot as the main menu, shown when a challenge ends)
-            var results = Panel(root, "ResultsPanel", new Vector3(-1.35f, 1.38f, -0.75f), new Vector3(8f, -38f, 0f), 500, 600);
+            // Results: their own panel left of the main menu (outside the booths), so no menu is ever replaced
+            var results = Panel(root, "ResultsPanel", ResultsPos, ResultsEuler, 500, 600);
             ui.resultsTitle = Title(results, "RESULTS", 38);
             ui.resultsBody = Label(results, "Body", "", 25, new Vector2(0, 50), 440, 320, Color.white, TextAlignmentOptions.TopLeft);
             ui.restartButton = Button(results, "Restart", "Restart", new Vector2(-110, -220), 200, 66, ButtonPrimary);
-            ui.backToMenuButton = Button(results, "Menu", "Main Menu", new Vector2(110, -220), 200, 66);
+            ui.backToMenuButton = Button(results, "Menu", "Close", new Vector2(110, -220), 200, 66);
             ui.resultsPanel = results;
             results.SetActive(false);
 
@@ -97,6 +100,38 @@ namespace VRRange.Editor
 
             SetupLog.Ok("World-space UI built (menu, lane controls, HUD, results)");
             return ui;
+        }
+
+        static readonly Vector3 ResultsPos = new Vector3(-2.25f, 1.38f, -1.75f), ResultsEuler = new Vector3(8f, -85f, 0f); // ~100 deg left of the spawn view: never behind the main menu
+
+        /// <summary>
+        /// 0.4.1 scene patch (no rebuild): moves the results panel beside the main menu, renames its "Main Menu" button to
+        /// "Close", and adds "End Challenge" to the main menu next to Exit. Idempotent.
+        /// </summary>
+        public static void PatchMenusInOpenScene()
+        {
+            s_Font = GetFont();
+            s_PanelSprite = LoadSprite("ui_panel_rounded"); s_ButtonSprite = LoadSprite("ui_button"); s_OutlineSprite = LoadSprite("ui_outline"); s_ShadowSprite = LoadSprite("ui_shadow");
+            var ui = Object.FindFirstObjectByType<RangeUI>(FindObjectsInactive.Include);
+            if (ui == null) { SetupLog.Warn("RangeUI not found; menus not patched"); return; }
+            if (ui.resultsPanel != null) { ui.resultsPanel.transform.localPosition = ResultsPos; ui.resultsPanel.transform.localRotation = Quaternion.Euler(ResultsEuler); }
+            if (ui.backToMenuButton != null) { var t = ui.backToMenuButton.GetComponentInChildren<TMP_Text>(true); if (t != null) t.text = "Close"; }
+            if (ui.mainMenuPanel != null)
+            {
+                var old = ui.mainMenuPanel.transform.Find("EndChallenge"); if (old != null) Object.DestroyImmediate(old.gameObject);
+                ui.endChallengeButton = Button(ui.mainMenuPanel, "EndChallenge", "End Challenge", new Vector2(-105, -306), 200, 50);
+                if (ui.exitButton != null) { var rt = ui.exitButton.GetComponent<RectTransform>(); rt.anchoredPosition = new Vector2(115, -306); }
+            }
+            if (ui.ammoLabel != null) ui.ammoLabel.text = "Pick a weapon from the counter or the rack";
+            if (ui.mainMenuPanel != null) { var hint = ui.mainMenuPanel.transform.Find("Hint"); if (hint != null) hint.GetComponent<TMP_Text>().text = "GRIP grab      TRIGGER fire      A / X reload      B / Y mode / bolt\nLEFT STICK teleport      RIGHT STICK turn"; }
+            if (ui.laneControlsPanel != null)
+            {
+                foreach (var n in new[] { "Radio", "RadioDivider" }) { var o = ui.laneControlsPanel.transform.Find(n); if (o != null) Object.DestroyImmediate(o.gameObject); }
+                var d = Divider(ui.laneControlsPanel, new Vector2(0, -222), 440); if (d != null) d.name = "RadioDivider";
+                ui.radioButton = Button(ui.laneControlsPanel, "Radio", "Radio", new Vector2(0, -262), 440, 52);
+            }
+            EditorUtility.SetDirty(ui);
+            SetupLog.Ok("Menus patched: results beside the main menu, End Challenge button, menus never hide");
         }
 
         /// <summary>Digital scoreboard text on each booth's screen housing (built by EnvironmentBuilder).</summary>
@@ -157,11 +192,12 @@ namespace VRRange.Editor
             return go;
         }
 
-        static void Divider(GameObject panel, Vector2 pos, float width)
+        static GameObject Divider(GameObject panel, Vector2 pos, float width)
         {
             var go = new GameObject("Divider", typeof(RectTransform)); go.transform.SetParent(panel.transform, false);
             var rt = go.GetComponent<RectTransform>(); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(width, 2);
             var img = go.AddComponent<Image>(); img.color = new Color(1f, 1f, 1f, 0.12f); img.raycastTarget = false;
+            return go;
         }
 
         static TMP_Text Title(GameObject panel, string text, float size)

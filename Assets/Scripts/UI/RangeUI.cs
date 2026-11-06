@@ -12,7 +12,9 @@ namespace VRRange.UI
 {
     /// <summary>
     /// Binds the world-space menu / HUD / results canvases to the managers. All references are assigned by the
-    /// scene builder; any missing reference is tolerated.
+    /// scene builder; any missing reference is tolerated. 0.4.1: the main menu (left) and the target controls (right) are
+    /// always shown; during a challenge the target controls are locked (the challenge sets the targets) and the menu offers
+    /// "End Challenge". Results appear on their own panel beside the menu and never replace it.
     /// </summary>
     public class RangeUI : MonoBehaviour
     {
@@ -28,6 +30,7 @@ namespace VRRange.UI
         public Button movingButton;
         public Button[] difficultyButtons;
         public Button exitButton;
+        public Button endChallengeButton;
         public TMP_Text difficultyLabel;
 
         [Header("Lane controls")]
@@ -35,6 +38,7 @@ namespace VRRange.UI
         public Button[] motionButtons;
         public Button resetTargetsButton;
         public TMP_Text laneStatusLabel;
+        public Button radioButton;
 
         [Header("HUD")]
         public TMP_Text modeLabel;
@@ -69,6 +73,9 @@ namespace VRRange.UI
             Bind(resetTargetsButton, () => gm?.ResetTargets());
             Bind(restartButton, () => { gm?.Restart(); ShowHud(); });
             Bind(backToMenuButton, ShowMenu);
+            if (radioButton != null) radioButton.onClick.AddListener(() => JazzRadio.Instance?.Next()); // the radio clicks itself
+            if (JazzRadio.Instance != null) { JazzRadio.Instance.Changed += OnRadio; OnRadio(JazzRadio.Instance); }
+            Bind(endChallengeButton, () => { if (gm != null && IsChallengeActive(gm)) gm.Finish(); });
             if (difficultyButtons != null)
                 for (int i = 0; i < difficultyButtons.Length; i++) { int idx = i; Bind(difficultyButtons[i], () => { gm?.SetDifficultyIndex(idx); RefreshLabels(); }); }
             if (distanceButtons != null)
@@ -87,7 +94,7 @@ namespace VRRange.UI
                 foreach (var w in gm.Weapons) HookWeapon(w);
             }
             if (sm != null) { sm.StatsChanged += OnStatsChanged; sm.HitRegistered += OnHit; }
-            SetText(hintLabel, "Grip = grab weapon   Trigger = fire   A/X = reload   B/Y = fire mode\nLeft stick = teleport   Right stick = snap turn   Point at panels to use buttons");
+            SetText(hintLabel, "Grip = grab weapon   Trigger = fire   A/X = reload   B/Y = fire mode / sniper bolt\nLeft stick = teleport   Right stick = snap turn   Point at panels to use buttons");
             ShowMenu();
             RefreshLabels();
             if (sm != null) OnStatsChanged(sm.Stats);
@@ -137,7 +144,11 @@ namespace VRRange.UI
         void OnStateChanged(ModeState state)
         {
             if (state == ModeState.Finished) ShowResults();
+            RefreshLabels();
         }
+
+        /// <summary>A challenge (not free practice) is counting down, running or landing its last shots.</summary>
+        static bool IsChallengeActive(GameModeManager gm) => gm.CurrentMode != GameMode.FreePractice && (gm.State == ModeState.Countdown || gm.State == ModeState.Running || gm.State == ModeState.Finishing);
 
         void OnModeFinished(ModeResult r)
         {
@@ -161,28 +172,44 @@ namespace VRRange.UI
             if (gm == null) return;
             SetText(modeLabel, ModeName(gm.CurrentMode));
             SetText(difficultyLabel, $"Difficulty: {gm.CurrentDifficulty}");
-            SetText(laneStatusLabel, $"Distance {gm.CurrentDistance:0} m   Motion: {gm.CurrentMotion}");
+            bool practice = gm.CurrentMode == GameMode.FreePractice;
+            SetText(laneStatusLabel, practice ? $"Distance {gm.CurrentDistance:0} m   Motion: {gm.CurrentMotion}" : $"{ModeName(gm.CurrentMode)}: targets set by the challenge\n(start Free Practice to change them)");
             int best = GameModeManager.PersonalBest(gm.CurrentMode, gm.CurrentDifficulty);
             SetText(bestLabel, best > 0 ? $"Personal best ({gm.CurrentDifficulty}): {best}" : "No personal best yet");
-            if (laneControlsPanel != null) laneControlsPanel.SetActive(gm.CurrentMode == GameMode.FreePractice);
+            // the panel stays; only its buttons lock while a challenge owns the targets
+            Toggle(laneControlsPanel, true); Toggle(mainMenuPanel, true);
+            SetInteractable(distanceButtons, practice); SetInteractable(motionButtons, practice);
+            if (resetTargetsButton != null) resetTargetsButton.interactable = practice;
+            if (endChallengeButton != null) endChallengeButton.interactable = IsChallengeActive(gm);
         }
 
+        /// <summary>Closes the results; the menu and the target controls are always visible.</summary>
         public void ShowMenu()
         {
-            Toggle(mainMenuPanel, true); Toggle(resultsPanel, false); Toggle(hudPanel, true);
+            Toggle(mainMenuPanel, true); Toggle(laneControlsPanel, true); Toggle(resultsPanel, false); Toggle(hudPanel, true);
             RefreshLabels();
         }
 
+        /// <summary>A mode started: old results close, nothing else changes.</summary>
         public void ShowHud()
         {
-            Toggle(mainMenuPanel, false); Toggle(resultsPanel, false); Toggle(hudPanel, true);
+            Toggle(mainMenuPanel, true); Toggle(laneControlsPanel, true); Toggle(resultsPanel, false); Toggle(hudPanel, true);
             RefreshLabels();
         }
 
+        /// <summary>A challenge ended: the results open on their own panel beside the menu.</summary>
         public void ShowResults()
         {
-            Toggle(resultsPanel, true); Toggle(mainMenuPanel, false);
+            Toggle(resultsPanel, true); Toggle(mainMenuPanel, true); Toggle(laneControlsPanel, true);
         }
+
+        void OnRadio(JazzRadio r)
+        {
+            var t = radioButton != null ? radioButton.GetComponentInChildren<TMP_Text>(true) : null;
+            if (t != null) t.text = r.IsOn ? $"Radio: {r.NowPlaying}  (next)" : "Radio: off  (turn on)";
+        }
+
+        static void SetInteractable(Button[] buttons, bool on) { if (buttons != null) foreach (var b in buttons) if (b != null) b.interactable = on; }
 
         static void Toggle(GameObject go, bool on) { if (go != null && go.activeSelf != on) go.SetActive(on); }
         static void SetText(TMP_Text t, string s) { if (t != null) t.text = s; }
